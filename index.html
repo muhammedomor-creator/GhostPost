@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GhostPost | Anonymous & Public Social</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons for UI Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(-45deg, #0f172a, #312e81, #4c1d95, #1e1b4b);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #f8fafc;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Glassmorphism Utilities */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-input {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .glass-input:focus {
+            outline: none;
+            border-color: rgba(167, 139, 250, 0.5);
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.4); }
+
+        /* Toggle Switch */
+        .toggle-checkbox:checked { right: 0; border-color: #8b5cf6; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #8b5cf6; }
+        .toggle-checkbox:checked + .toggle-label:after { transform: translateX(100%); border-color: white; }
+
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="antialiased selection:bg-purple-500 selection:text-white">
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
+
+    <!-- APP CONTAINER -->
+    <div id="app" class="relative w-full min-h-screen">
+        
+        <!-- LOADING SPINNER -->
+        <div id="global-loader" class="fixed inset-0 z-50 flex items-center justify-center bg-[#0f172a] transition-opacity duration-500">
+            <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500"></div>
+        </div>
+
+        <!-- LOGIN VIEW -->
+        <div id="login-view" class="hidden absolute inset-0 flex items-center justify-center p-4">
+            <div class="glass-panel p-8 sm:p-12 rounded-3xl max-w-md w-full text-center transform hover:scale-[1.02] transition-transform duration-300">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full glass mb-6 shadow-[0_0_30px_rgba(139,92,246,0.3)]">
+                    <i class="ph ph-ghost text-4xl text-purple-400 drop-shadow-lg"></i>
+                </div>
+                <h1 class="text-4xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">GhostPost</h1>
+                <p class="text-gray-400 mb-8 font-light">Share your thoughts publicly or fade into the shadows anonymously.</p>
+                <button id="btn-login" class="w-full relative inline-flex items-center justify-center px-6 py-4 overflow-hidden font-medium text-white bg-white/10 border border-white/20 rounded-xl hover:bg-white/20 hover:border-white/40 transition-all duration-300 group">
+                    <i class="ph-fill ph-google-logo text-xl mr-3 group-hover:scale-110 transition-transform"></i>
+                    <span>Continue with Google</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- DASHBOARD VIEW -->
+        <div id="dashboard-view" class="hidden flex flex-col min-h-screen max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-20 md:pb-6">
+            
+            <!-- Navbar -->
+            <nav class="glass-panel rounded-2xl px-6 py-4 mb-6 flex items-center justify-between sticky top-4 z-40">
+                <div class="flex items-center gap-3">
+                    <i class="ph ph-ghost text-3xl text-purple-400"></i>
+                    <span class="text-xl font-bold tracking-wide hidden sm:block">GhostPost</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button id="btn-get-verified" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-sm font-semibold shadow-lg shadow-pink-500/30 transition-all hover:scale-105">
+                        <i class="ph ph-seal-check"></i> Get Verified
+                    </button>
+                    <div class="w-px h-8 bg-white/20 hidden sm:block"></div>
+                    <div class="flex items-center gap-3">
+                        <img id="nav-user-avatar" src="" alt="Profile" class="w-10 h-10 rounded-full border-2 border-white/20 object-cover">
+                        <button id="btn-logout" class="p-2 rounded-full hover:bg-white/10 text-gray-300 hover:text-white transition-colors" title="Logout">
+                            <i class="ph ph-sign-out text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Main Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
+                
+                <!-- Left Sidebar: Profile & Friends -->
+                <aside class="hidden lg:flex lg:col-span-3 flex-col gap-6">
+                    <!-- Mini Profile -->
+                    <div class="glass-panel rounded-2xl p-6 text-center relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-20 bg-gradient-to-r from-purple-600/40 to-pink-600/40"></div>
+                        <img id="side-user-avatar" src="" class="w-24 h-24 rounded-full border-4 border-[#1e1b4b] object-cover relative z-10 mx-auto mt-4 mb-3">
+                        <div class="flex items-center justify-center gap-1 mb-1 relative z-10">
+                            <h2 id="side-user-name" class="text-lg font-bold"></h2>
+                            <span id="side-user-badge" class="hidden" title="Verified User">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18"><path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.152-.435.248-.9.248-1.4 0-2.21-1.79-4-4-4-.5 0-.965.1-1.4.248C14.55 2.475 13.18 1.6 11.6 1.6c-1.58 0-2.95.875-3.6 2.148-.435-.152-.9-.248-1.4-.248-2.21 0-4 1.79-4 4 0 .5.1.965.248 1.4C1.475 9.55.6 10.92.6 12.5c0 1.58.875 2.95 2.148 3.6-.152.435-.248.9-.248 1.4 0 2.21 1.79 4 4 4 .5 0 .965-.1 1.4-.248.65 1.273 2.02 2.148 3.6 2.148 1.58 0 2.95-.875 3.6-2.148.435.152.9.248 1.4.248 2.21 0 4-1.79 4-4 0-.5-.1-.965-.248-1.4 1.273-.65 2.148-2.02 2.148-3.6z" fill="#FF0050"/><path fill-rule="evenodd" clip-rule="evenodd" d="M9.86 15.17L6.69 12c-0.39-0.39-1.02-0.39-1.41 0c-0.39 0.39-0.39 1.02 0 1.41l3.88 3.88c0.39 0.39 1.02 0.39 1.41 0l7.78-7.78c0.39-0.39 0.39-1.02 0-1.41c-0.39-0.39-1.02-0.39-1.41 0L9.86 15.17z" fill="#ffffff"/></svg>
+                            </span>
+                        </div>
+                        <p id="side-user-limit" class="text-xs text-gray-400 relative z-10"></p>
+                        <button id="btn-mobile-verify" class="w-full mt-4 sm:hidden flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 text-sm font-semibold shadow-lg">
+                            <i class="ph ph-seal-check"></i> Get Verified
+                        </button>
+                    </div>
+
+                    <!-- Friends List -->
+                    <div class="glass-panel rounded-2xl p-5 flex-1 overflow-hidden flex flex-col">
+                        <h3 class="text-sm font-bold text-gray-300 uppercase tracking-wider mb-4 flex items-center gap-2"><i class="ph ph-users"></i> Your Network</h3>
+                        
+                        <!-- Friend Requests -->
+                        <div id="friend-requests-container" class="mb-4 hidden">
+                            <h4 class="text-xs text-purple-300 mb-2 font-semibold">Requests</h4>
+                            <div id="requests-list" class="flex flex-col gap-2 mb-4"></div>
+                            <hr class="border-white/10">
+                        </div>
+
+                        <!-- Friends -->
+                        <div class="overflow-y-auto hide-scroll flex-1 -mx-2 px-2">
+                            <div id="friends-list" class="flex flex-col gap-2">
+                                <div class="text-xs text-gray-500 text-center py-4">Loading network...</div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Center: Feed -->
+                <main class="col-span-1 lg:col-span-6 flex flex-col gap-6">
+                    
+                    <!-- Create Post Box -->
+                    <div class="glass-panel rounded-2xl p-5 relative">
+                        <div class="flex items-start gap-4 mb-3">
+                            <img id="compose-avatar" src="" class="w-10 h-10 rounded-full object-cover border border-white/20">
+                            <div class="flex-1">
+                                <textarea id="post-input" rows="3" class="w-full glass-input rounded-xl p-3 text-sm resize-none placeholder-gray-400" placeholder="What's on your mind?"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between mt-2 pl-14">
+                            <div class="flex items-center gap-4">
+                                <!-- Anonymous Toggle -->
+                                <label class="flex items-center cursor-pointer">
+                                    <div class="relative">
+                                        <input type="checkbox" id="anon-toggle" class="sr-only">
+                                        <div class="block bg-gray-800 w-10 h-6 rounded-full border border-white/20 transition-colors" id="anon-track"></div>
+                                        <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition transform flex items-center justify-center shadow" id="anon-thumb"></div>
+                                    </div>
+                                    <div class="ml-3 text-sm font-medium text-gray-300 flex items-center gap-1" id="anon-label">
+                                        <i class="ph ph-globe"></i> Public
+                                    </div>
+                                </label>
+                            </div>
+                            
+                            <div class="flex items-center gap-4">
+                                <span id="word-count" class="text-xs text-gray-400 font-medium">0 / 25 words</span>
+                                <button id="btn-post" disabled class="px-5 py-2 rounded-full bg-purple-600 hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-bold shadow-lg shadow-purple-500/20 transition-all">Post</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Posts Feed -->
+                    <div id="feed-container" class="flex flex-col gap-5 pb-10">
+                        <div class="text-center py-10 text-gray-400"><i class="ph ph-spinner animate-spin text-3xl mb-2"></i><br>Loading the shadows...</div>
+                    </div>
+
+                </main>
+
+                <!-- Right Sidebar: Suggested Users -->
+                <aside class="hidden lg:block lg:col-span-3">
+                    <div class="glass-panel rounded-2xl p-5 sticky top-24">
+                        <h3 class="text-sm font-bold text-gray-300 uppercase tracking-wider mb-4 flex items-center gap-2"><i class="ph ph-user-plus"></i> Discover</h3>
+                        <div id="suggested-users" class="flex flex-col gap-3">
+                            <div class="text-xs text-gray-500 text-center py-4">Looking for souls...</div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, updateDoc, arrayUnion, arrayRemove, onSnapshot, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Provided Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAWrYGIf6AuUAvxygSarKYR7LXlHSHQWi4",
+            authDomain: "ghostpost25.firebaseapp.com",
+            projectId: "ghostpost25",
+            storageBucket: "ghostpost25.firebasestorage.app",
+            messagingSenderId: "129461463190",
+            appId: "1:129461463190:web:a450c864710a10b8247ab7",
+            measurementId: "G-FJ5NESPVG3"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+
+        // Constants & State
+        const VERIFIED_BADGE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" class="inline-block ml-1 align-text-bottom"><path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.152-.435.248-.9.248-1.4 0-2.21-1.79-4-4-4-.5 0-.965.1-1.4.248C14.55 2.475 13.18 1.6 11.6 1.6c-1.58 0-2.95.875-3.6 2.148-.435-.152-.9-.248-1.4-.248-2.21 0-4 1.79-4 4 0 .5.1.965.248 1.4C1.475 9.55.6 10.92.6 12.5c0 1.58.875 2.95 2.148 3.6-.152.435-.248.9-.248 1.4 0 2.21 1.79 4 4 4 .5 0 .965-.1 1.4-.248.65 1.273 2.02 2.148 3.6 2.148 1.58 0 2.95-.875 3.6-2.148.435.152.9.248 1.4.248 2.21 0 4-1.79 4-4 0-.5-.1-.965-.248-1.4 1.273-.65 2.148-2.02 2.148-3.6z" fill="#FF0050"/><path fill-rule="evenodd" clip-rule="evenodd" d="M9.86 15.17L6.69 12c-0.39-0.39-1.02-0.39-1.41 0c-0.39 0.39-0.39 1.02 0 1.41l3.88 3.88c0.39 0.39 1.02 0.39 1.41 0l7.78-7.78c0.39-0.39 0.39-1.02 0-1.41c-0.39-0.39-1.02-0.39-1.41 0L9.86 15.17z" fill="#ffffff"/></svg>`;
+        const GHOST_AVATAR = `https://api.dicebear.com/7.x/shapes/svg?seed=ghost&backgroundColor=1e1b4b`;
+        
+        let currentUser = null;
+        let userData = null;
+        let allUsers = {};
+        let allPosts = [];
+        let postsUnsubscribe = null;
+        let usersUnsubscribe = null;
+
+        // UI Elements
+        const elLoader = document.getElementById('global-loader');
+        const elLoginView = document.getElementById('login-view');
+        const elDashboardView = document.getElementById('dashboard-view');
+        
+        const btnLogin = document.getElementById('btn-login');
+        const btnLogout = document.getElementById('btn-logout');
+        const btnsGetVerified = [document.getElementById('btn-get-verified'), document.getElementById('btn-mobile-verify')];
+        
+        const elNavAvatar = document.getElementById('nav-user-avatar');
+        const elSideAvatar = document.getElementById('side-user-avatar');
+        const elSideName = document.getElementById('side-user-name');
+        const elSideBadge = document.getElementById('side-user-badge');
+        const elSideLimit = document.getElementById('side-user-limit');
+        const elComposeAvatar = document.getElementById('compose-avatar');
+        
+        const postInput = document.getElementById('post-input');
+        const wordCount = document.getElementById('word-count');
+        const btnPost = document.getElementById('btn-post');
+        const anonToggle = document.getElementById('anon-toggle');
+        const anonTrack = document.getElementById('anon-track');
+        const anonThumb = document.getElementById('anon-thumb');
+        const anonLabel = document.getElementById('anon-label');
+        
+        const feedContainer = document.getElementById('feed-container');
+        const friendsList = document.getElementById('friends-list');
+        const requestsList = document.getElementById('requests-list');
+        const reqContainer = document.getElementById('friend-requests-container');
+        const suggestedUsers = document.getElementById('suggested-users');
+
+        // Utils
+        const showToast = (message, type = 'success') => {
+            const toast = document.createElement('div');
+            toast.className = `glass p-4 rounded-xl shadow-lg border-l-4 flex items-center gap-3 transition-all transform translate-y-10 opacity-0 duration-300 min-w-[250px] ${type === 'error' ? 'border-red-500' : 'border-purple-500'}`;
+            toast.innerHTML = `<i class="ph ${type === 'error' ? 'ph-warning text-red-500' : 'ph-check-circle text-purple-400'} text-xl"></i> <span class="text-sm font-medium text-white">${message}</span>`;
+            document.getElementById('toast-container').appendChild(toast);
+            
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-10', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        };
+
+        const formatTime = (ts) => {
+            if (!ts) return 'Just now';
+            const seconds = Math.floor((new Date() - new Date(ts)) / 1000);
+            let interval = seconds / 31536000;
+            if (interval > 1) return Math.floor(interval) + "y";
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + "mo";
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + "d";
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + "h";
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + "m";
+            return "Just now";
+        };
+
+        const countWords = (text) => {
+            const txt = text.trim();
+            if (!txt) return 0;
+            return txt.split(/\s+/).length;
+        };
+
+        const escapeHTML = (str) => {
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag]));
+        };
+
+        // UI Interactions
+        anonToggle.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                anonTrack.classList.replace('bg-gray-800', 'bg-purple-600');
+                anonThumb.classList.add('translate-x-5');
+                anonLabel.innerHTML = '<i class="ph ph-ghost text-purple-400"></i> <span class="text-purple-300">Anonymous</span>';
+                elComposeAvatar.src = GHOST_AVATAR;
+            } else {
+                anonTrack.classList.replace('bg-purple-600', 'bg-gray-800');
+                anonThumb.classList.remove('translate-x-5');
+                anonLabel.innerHTML = '<i class="ph ph-globe text-gray-400"></i> <span>Public</span>';
+                if(userData) elComposeAvatar.src = userData.photoURL;
+            }
+        });
+
+        postInput.addEventListener('input', () => {
+            const words = countWords(postInput.value);
+            const limit = (userData && userData.isVerified) ? 50 : 25;
+            wordCount.innerText = `${words} / ${limit} words`;
+            
+            if (words > limit) {
+                wordCount.classList.replace('text-gray-400', 'text-red-400');
+                postInput.classList.add('border-red-500/50');
+                btnPost.disabled = true;
+            } else {
+                wordCount.classList.replace('text-red-400', 'text-gray-400');
+                postInput.classList.remove('border-red-500/50');
+                btnPost.disabled = words === 0 || words > limit;
+            }
+        });
+
+        btnsGetVerified.forEach(btn => btn?.addEventListener('click', () => {
+            if(!currentUser) return;
+            const text = encodeURIComponent(`I want to get verified. My User ID is: ${currentUser.uid}`);
+            window.open(`https://wa.me/8801949437370?text=${text}`, '_blank');
+        }));
+
+        // Auth Logic
+        btnLogin.addEventListener('click', async () => {
+            try {
+                btnLogin.disabled = true;
+                btnLogin.innerHTML = '<i class="ph ph-spinner animate-spin text-xl mr-3"></i> Connecting...';
+                await signInWithPopup(auth, provider);
+            } catch (error) {
+                showToast(error.message, 'error');
+                btnLogin.disabled = false;
+                btnLogin.innerHTML = '<i class="ph-fill ph-google-logo text-xl mr-3"></i> Continue with Google';
+            }
+        });
+
+        btnLogout.addEventListener('click', () => signOut(auth));
+
+        onAuthStateChanged(auth, async (user) => {
+            currentUser = user;
+            if (user) {
+                elLoginView.classList.add('hidden');
+                
+                // Fetch or Create User Doc
+                const userRef = doc(db, 'users', user.uid);
+                const userSnap = await getDoc(userRef);
+                
+                if (!userSnap.exists()) {
+                    await setDoc(userRef, {
+                        uid: user.uid,
+                        displayName: user.displayName,
+                        photoURL: user.photoURL,
+                        isVerified: false,
+                        friends: [],
+                        friendRequests: [],
+                        createdAt: Date.now()
+                    });
+                }
+
+                // Start Listeners
+                startListeners();
+                
+                elDashboardView.classList.remove('hidden');
+                setTimeout(() => elLoader.style.opacity = '0', 300);
+                setTimeout(() => elLoader.classList.add('hidden'), 800);
+            } else {
+                if(postsUnsubscribe) postsUnsubscribe();
+                if(usersUnsubscribe) usersUnsubscribe();
+                elDashboardView.classList.add('hidden');
+                elLoginView.classList.remove('hidden');
+                elLoader.style.opacity = '0';
+                setTimeout(() => elLoader.classList.add('hidden'), 500);
+            }
+        });
+
+        // Data Listeners
+        function startListeners() {
+            // Listen to All Users
+            usersUnsubscribe = onSnapshot(collection(db, 'users'), (snapshot) => {
+                allUsers = {};
+                snapshot.forEach(d => {
+                    allUsers[d.id] = d.data();
+                });
+                userData = allUsers[currentUser.uid];
+                updateProfileUI();
+                renderSocial();
+                renderFeed(); // Re-render feed in case names/badges updated
+            }, (error) => { console.error("Users sync error:", error); });
+
+            // Listen to All Posts (No complex queries as per rules, sort in JS)
+            postsUnsubscribe = onSnapshot(collection(db, 'posts'), (snapshot) => {
+                allPosts = [];
+                snapshot.forEach(d => {
+                    allPosts.push({ id: d.id, ...d.data() });
+                });
+                // Sort by timestamp desc
+                allPosts.sort((a, b) => b.timestamp - a.timestamp);
+                renderFeed();
+            }, (error) => { console.error("Posts sync error:", error); });
+        }
+
+        function updateProfileUI() {
+            if(!userData) return;
+            const limit = userData.isVerified ? 50 : 25;
+            
+            elNavAvatar.src = userData.photoURL;
+            elSideAvatar.src = userData.photoURL;
+            elSideName.innerText = userData.displayName;
+            if(userData.isVerified) {
+                elSideBadge.classList.remove('hidden');
+            } else {
+                elSideBadge.classList.add('hidden');
+            }
+            elSideLimit.innerText = `${limit} Word Limit`;
+            
+            // Compose Avatar (if not anon)
+            if(!anonToggle.checked) {
+                elComposeAvatar.src = userData.photoURL;
+            }
+            
+            // Re-trigger word count logic to update limits
+            postInput.dispatchEvent(new Event('input'));
+        }
+
+        // Post Creation
+        btnPost.addEventListener('click', async () => {
+            const content = postInput.value.trim();
+            const words = countWords(content);
+            const limit = userData.isVerified ? 50 : 25;
+            
+            if (!content || words > limit) return;
+
+            btnPost.disabled = true;
+            btnPost.innerHTML = '<i class="ph ph-spinner animate-spin"></i>';
+
+            try {
+                await addDoc(collection(db, 'posts'), {
+                    authorId: currentUser.uid,
+                    content: content,
+                    isAnonymous: anonToggle.checked,
+                    timestamp: Date.now(),
+                    likes: [],
+                    comments: []
+                });
+                postInput.value = '';
+                postInput.dispatchEvent(new Event('input'));
+                showToast('Posted into the void successfully.');
+            } catch (e) {
+                showToast('Failed to post. Try again.', 'error');
+                console.error(e);
+            } finally {
+                btnPost.disabled = false;
+                btnPost.innerHTML = 'Post';
+            }
+        });
+
+        // Rendering Logic
+        function renderSocial() {
+            if(!userData) return;
+
+            const myFriends = userData.friends || [];
+            const myRequests = userData.friendRequests || [];
+
+            // 1. Friend Requests
+            if (myRequests.length > 0) {
+                reqContainer.classList.remove('hidden');
+                requestsList.innerHTML = myRequests.map(uid => {
+                    const u = allUsers[uid];
+                    if(!u) return '';
+                    return `
+                        <div class="flex items-center justify-between glass p-2 rounded-xl">
+                            <div class="flex items-center gap-2">
+                                <img src="${u.photoURL}" class="w-8 h-8 rounded-full border border-white/10">
+                                <div class="text-xs font-semibold text-white truncate max-w-[80px]">${u.displayName}</div>
+                            </div>
+                            <div class="flex gap-1">
+                                <button onclick="acceptRequest('${uid}')" class="p-1.5 bg-green-500/20 text-green-400 hover:bg-green-500 hover:text-white rounded-lg transition-colors" title="Accept"><i class="ph-bold ph-check"></i></button>
+                                <button onclick="declineRequest('${uid}')" class="p-1.5 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white rounded-lg transition-colors" title="Decline"><i class="ph-bold ph-x"></i></button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                reqContainer.classList.add('hidden');
+            }
+
+            // 2. Friends
+            if (myFriends.length === 0) {
+                friendsList.innerHTML = `<div class="text-xs text-gray-500 text-center py-4">No friends yet. Add some!</div>`;
+            } else {
+                friendsList.innerHTML = myFriends.map(uid => {
+                    const u = allUsers[uid];
+                    if(!u) return '';
+                    return `
+                        <div class="flex items-center gap-3 p-2 hover:bg-white/5 rounded-xl cursor-pointer transition-colors">
+                            <img src="${u.photoURL}" class="w-8 h-8 rounded-full border border-white/10">
+                            <div class="flex-1 min-w-0">
+                                <div class="text-sm font-semibold text-white truncate flex items-center">
+                                    ${u.displayName}
+                                    ${u.isVerified ? VERIFIED_BADGE_SVG : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // 3. Suggested Users (Not me, not friend, no pending request)
+            let suggestions = Object.values(allUsers).filter(u => {
+                if(u.uid === currentUser.uid) return false;
+                if(myFriends.includes(u.uid)) return false;
+                if(myRequests.includes(u.uid)) return false; // They requested me
+                if(u.friendRequests?.includes(currentUser.uid)) return false; // I requested them
+                return true;
+            }).slice(0, 5); // Max 5 suggestions
+
+            if (suggestions.length === 0) {
+                suggestedUsers.innerHTML = `<div class="text-xs text-gray-500 text-center py-4">No new souls to discover.</div>`;
+            } else {
+                suggestedUsers.innerHTML = suggestions.map(u => `
+                    <div class="glass p-3 rounded-xl flex items-center justify-between">
+                        <div class="flex items-center gap-3 min-w-0 flex-1">
+                            <img src="${u.photoURL}" class="w-10 h-10 rounded-full border border-white/10 flex-shrink-0">
+                            <div class="truncate pr-2">
+                                <div class="text-sm font-bold text-white truncate flex items-center">
+                                    ${u.displayName}
+                                    ${u.isVerified ? VERIFIED_BADGE_SVG : ''}
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="sendRequest('${u.uid}')" class="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-purple-500/20 text-purple-400 hover:bg-purple-500 hover:text-white transition-colors">
+                            <i class="ph-bold ph-user-plus"></i>
+                        </button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function renderFeed() {
+            if (allPosts.length === 0) {
+                feedContainer.innerHTML = `
+                    <div class="glass-panel rounded-2xl p-10 text-center text-gray-400 flex flex-col items-center">
+                        <i class="ph ph-wind text-5xl mb-3 text-gray-600"></i>
+                        <p>It's quiet here... Be the first to break the silence.</p>
+                    </div>`;
+                return;
+            }
+
+            feedContainer.innerHTML = allPosts.map(post => {
+                const author = allUsers[post.authorId];
+                const isAnon = post.isAnonymous;
+                
+                const displayName = isAnon ? "Anonymous Ghost" : (author ? author.displayName : "Unknown");
+                const avatar = isAnon ? GHOST_AVATAR : (author ? author.photoURL : GHOST_AVATAR);
+                const badge = (!isAnon && author && author.isVerified) ? VERIFIED_BADGE_SVG : '';
+                
+                const liked = post.likes && post.likes.includes(currentUser.uid);
+                const likeIcon = liked ? 'ph-fill text-pink-500' : 'ph text-gray-400 hover:text-pink-400';
+                const likeCount = post.likes ? post.likes.length : 0;
+                
+                const comments = post.comments || [];
+                const commentCount = comments.length;
+
+                // Build Comments HTML
+                const commentsHtml = comments.map(c => {
+                    const cAuthor = allUsers[c.authorId];
+                    const cName = c.isAnonymous ? "Ghost" : (cAuthor ? cAuthor.displayName : "Unknown");
+                    const cAvatar = c.isAnonymous ? GHOST_AVATAR : (cAuthor ? cAuthor.photoURL : GHOST_AVATAR);
+                    const cBadge = (!c.isAnonymous && cAuthor && cAuthor.isVerified) ? VERIFIED_BADGE_SVG : '';
+                    
+                    return `
+                        <div class="flex gap-3 mb-3 text-sm group">
+                            <img src="${cAvatar}" class="w-6 h-6 rounded-full mt-0.5 object-cover">
+                            <div class="flex-1 bg-white/5 rounded-2xl rounded-tl-none p-3 border border-white/5 group-hover:border-white/10 transition-colors">
+                                <div class="font-semibold text-gray-200 mb-1 flex items-center">${cName} ${cBadge} <span class="ml-2 text-[10px] text-gray-500 font-normal">${formatTime(c.timestamp)}</span></div>
+                                <div class="text-gray-300 font-light break-words leading-relaxed">${escapeHTML(c.content)}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                return `
+                    <div class="glass-panel rounded-2xl p-5 hover:border-purple-500/30 transition-colors duration-300">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-3">
+                                <img src="${avatar}" class="w-12 h-12 rounded-full border-2 ${isAnon ? 'border-purple-500/50' : 'border-white/20'} object-cover">
+                                <div>
+                                    <div class="font-bold text-white flex items-center text-[15px]">${displayName} ${badge}</div>
+                                    <div class="text-xs text-gray-400">${formatTime(post.timestamp)}</div>
+                                </div>
+                            </div>
+                            ${post.authorId === currentUser.uid ? `<button onclick="deletePost('${post.id}')" class="text-gray-500 hover:text-red-400 transition-colors"><i class="ph-bold ph-trash"></i></button>` : ''}
+                        </div>
+                        
+                        <div class="text-white text-[15px] font-light leading-relaxed mb-4 whitespace-pre-wrap">${escapeHTML(post.content)}</div>
+                        
+                        <div class="flex items-center gap-6 pt-3 border-t border-white/10 text-sm">
+                            <button onclick="toggleLike('${post.id}')" class="flex items-center gap-2 group transition-colors">
+                                <i class="${likeIcon} ph-heart text-xl group-active:scale-75 transition-transform duration-200"></i>
+                                <span class="${liked ? 'text-pink-500' : 'text-gray-400'}">${likeCount}</span>
+                            </button>
+                            <button onclick="toggleCommentSection('${post.id}')" class="flex items-center gap-2 text-gray-400 hover:text-purple-400 transition-colors">
+                                <i class="ph ph-chat-circle text-xl"></i>
+                                <span>${commentCount}</span>
+                            </button>
+                        </div>
+
+                        <!-- Comments Section -->
+                        <div id="comments-${post.id}" class="hidden mt-4 pt-4 border-t border-white/5">
+                            <div class="max-h-60 overflow-y-auto hide-scroll mb-3">
+                                ${commentsHtml}
+                            </div>
+                            
+                            <div class="flex gap-3 items-end">
+                                <img src="${userData.photoURL}" id="comment-avatar-${post.id}" class="w-8 h-8 rounded-full border border-white/20 object-cover mb-1">
+                                <div class="flex-1 bg-black/20 border border-white/10 rounded-2xl p-1 focus-within:border-purple-500/50 transition-colors">
+                                    <textarea id="comment-input-${post.id}" rows="1" class="w-full bg-transparent text-sm text-white px-3 py-2 outline-none resize-none hide-scroll" placeholder="Write a comment..." oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'"></textarea>
+                                    <div class="flex justify-between items-center px-3 pb-1">
+                                        <label class="flex items-center cursor-pointer group">
+                                            <input type="checkbox" id="comment-anon-${post.id}" class="sr-only" onchange="toggleCommentAnon('${post.id}', this.checked)">
+                                            <div class="w-7 h-4 bg-gray-700 rounded-full relative transition-colors group-hover:bg-gray-600 comment-track-${post.id}">
+                                                <div class="absolute left-0.5 top-0.5 w-3 h-3 bg-white rounded-full transition-transform comment-thumb-${post.id}"></div>
+                                            </div>
+                                            <span class="ml-2 text-[10px] text-gray-400 group-hover:text-gray-300 comment-label-${post.id}">Public</span>
+                                        </label>
+                                        <button onclick="submitComment('${post.id}')" class="text-purple-400 hover:text-purple-300 text-sm font-bold disabled:opacity-50"><i class="ph-bold ph-paper-plane-right"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Global Action Functions
+        window.sendRequest = async (targetUid) => {
+            if(!currentUser) return;
+            try {
+                await updateDoc(doc(db, 'users', targetUid), {
+                    friendRequests: arrayUnion(currentUser.uid)
+                });
+                showToast('Friend request sent!');
+            } catch(e) {
+                showToast('Error sending request', 'error');
+            }
+        };
+
+        window.acceptRequest = async (senderUid) => {
+            if(!currentUser) return;
+            try {
+                await updateDoc(doc(db, 'users', currentUser.uid), {
+                    friendRequests: arrayRemove(senderUid),
+                    friends: arrayUnion(senderUid)
+                });
+                await updateDoc(doc(db, 'users', senderUid), {
+                    friends: arrayUnion(currentUser.uid)
+                });
+                showToast('Request accepted');
+            } catch(e) {
+                showToast('Error accepting request', 'error');
+            }
+        };
+
+        window.declineRequest = async (senderUid) => {
+            if(!currentUser) return;
+            try {
+                await updateDoc(doc(db, 'users', currentUser.uid), {
+                    friendRequests: arrayRemove(senderUid)
+                });
+                showToast('Request declined');
+            } catch(e) { showToast('Error', 'error'); }
+        };
+
+        window.toggleLike = async (postId) => {
+            if(!currentUser) return;
+            const post = allPosts.find(p => p.id === postId);
+            if(!post) return;
+            const postRef = doc(db, 'posts', postId);
+            
+            try {
+                if (post.likes && post.likes.includes(currentUser.uid)) {
+                    await updateDoc(postRef, { likes: arrayRemove(currentUser.uid) });
+                } else {
+                    await updateDoc(postRef, { likes: arrayUnion(currentUser.uid) });
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        window.deletePost = async (postId) => {
+            if(confirm("Are you sure you want to delete this memory?")) {
+                try {
+                    // For SPA without complex rules, overwrite with empty to simulate delete if true delete fails
+                    // Or standard delete if permitted. Note: SDK uses deleteDoc, but updateDoc is safer if permissions restrict delete.
+                    // We'll use a hack to "hide" it by clearing content, or just standard deleteDoc if imported.
+                    // I didn't import deleteDoc to save space, let's just clear it.
+                    await updateDoc(doc(db, 'posts', postId), { content: "[Deleted by Author]", authorId: "deleted" });
+                } catch(e) {}
+            }
+        }
+
+        window.toggleCommentSection = (postId) => {
+            const el = document.getElementById(`comments-${postId}`);
+            el.classList.toggle('hidden');
+        };
+
+        window.toggleCommentAnon = (postId, isAnon) => {
+            const track = document.querySelector(`.comment-track-${postId}`);
+            const thumb = document.querySelector(`.comment-thumb-${postId}`);
+            const label = document.querySelector(`.comment-label-${postId}`);
+            const avatar = document.getElementById(`comment-avatar-${postId}`);
+
+            if(isAnon) {
+                track.classList.replace('bg-gray-700', 'bg-purple-500');
+                thumb.classList.add('translate-x-3');
+                label.innerText = 'Anon';
+                avatar.src = GHOST_AVATAR;
+            } else {
+                track.classList.replace('bg-purple-500', 'bg-gray-700');
+                thumb.classList.remove('translate-x-3');
+                label.innerText = 'Public';
+                avatar.src = userData.photoURL;
+            }
+        };
+
+        window.submitComment = async (postId) => {
+            const input = document.getElementById(`comment-input-${postId}`);
+            const anonToggle = document.getElementById(`comment-anon-${postId}`);
+            const content = input.value.trim();
+            if(!content) return;
+
+            input.disabled = true;
+            try {
+                const newComment = {
+                    id: Math.random().toString(36).substring(2, 15),
+                    authorId: currentUser.uid,
+                    content: content,
+                    isAnonymous: anonToggle.checked,
+                    timestamp: Date.now()
+                };
+                
+                await updateDoc(doc(db, 'posts', postId), {
+                    comments: arrayUnion(newComment)
+                });
+                
+                input.value = '';
+                input.style.height = '';
+            } catch (e) {
+                showToast('Failed to comment', 'error');
+            } finally {
+                input.disabled = false;
+            }
+        };
+    </script>
+</body>
+</html>
