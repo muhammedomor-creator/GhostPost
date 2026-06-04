@@ -130,7 +130,6 @@
             </div>
             
             <div id="nav-auth-section" class="flex items-center gap-4">
-                <!-- Injected via JS -->
                 <div class="loader"></div>
             </div>
         </div>
@@ -177,7 +176,6 @@
 
             <!-- Feed Container -->
             <div id="feed-container" class="space-y-4">
-                <!-- Posts injected via JS -->
                 <div class="flex justify-center p-8"><div class="loader"></div></div>
             </div>
 
@@ -213,12 +211,11 @@
     </main>
 
     <!-- Modal for Toast Notifications -->
-    <div id="toast" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 glass px-6 py-3 rounded-full text-sm font-medium opacity-0 transition-opacity duration-300 pointer-events-none z-50 shadow-2xl">
+    <div id="toast" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 glass-panel border-indigo-500/50 px-6 py-4 rounded-xl text-sm font-medium opacity-0 transition-opacity duration-300 pointer-events-none z-50 shadow-2xl max-w-sm w-[90%] text-center">
         Notification message
     </div>
 
     <style>
-        /* CSS for the custom toggle inner dot movement */
         input:checked ~ .dot { transform: translateX(100%); }
         input:checked ~ .block { background-color: #6366f1; }
     </style>
@@ -227,11 +224,9 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, addDoc, updateDoc, deleteDoc, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, addDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // ==========================================
-        // 1. CONFIGURATION & INITIALIZATION
-        // ==========================================
+        // CONFIGURATION & INITIALIZATION
         const userProvidedConfig = {
             apiKey: "AIzaSyAWrYGIf6AuUAvxygSarKYR7LXlHSHQWi4",
             authDomain: "ghostpost25.firebaseapp.com",
@@ -242,7 +237,6 @@
             measurementId: "G-FJ5NESPVG3"
         };
         
-        // Environment fallback for Canvas compatibility
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : userProvidedConfig;
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'ghostpost25';
 
@@ -261,30 +255,38 @@
         let globalRequests = [];
         let unsubscribers = [];
 
-        // ==========================================
-        // 2. AUTHENTICATION FLOW
-        // ==========================================
+        // AUTHENTICATION FLOW
         const initAuth = async () => {
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await signInWithCustomToken(auth, __initial_auth_token);
                 } else {
-                    // Fallback to anonymous for immediate sandbox access if no custom token
                     await signInAnonymously(auth);
                 }
             } catch (e) {
-                console.error("Auth init error", e);
-                showToast("Authentication Error. Check console.");
+                console.error("Auth init error:", e);
+                // Extract error code to show clearly on mobile
+                const errorMsg = e.code ? e.code : e.message;
+                showToast(`Auth Failed: ${errorMsg}. Check Firebase settings.`);
+                
+                // Stop loaders so UI doesn't spin forever
+                document.getElementById('nav-auth-section').innerHTML = '<span class="text-red-400 text-xs">Auth Failed</span>';
+                document.getElementById('feed-container').innerHTML = '<div class="text-center text-red-400 p-5">Could not connect to Firebase database.</div>';
             }
         };
 
         onAuthStateChanged(auth, async (user) => {
             currentUser = user;
             if (user) {
-                await syncUserToDB(user);
-                setupRealtimeListeners();
-                updateNavUI();
-                document.getElementById('current-user-avatar').src = getUserAvatar(user.uid);
+                try {
+                    await syncUserToDB(user);
+                    setupRealtimeListeners();
+                    updateNavUI();
+                    document.getElementById('current-user-avatar').src = getUserAvatar(user.uid);
+                } catch (dbError) {
+                    console.error("DB Sync Error:", dbError);
+                    showToast(`Database Error: ${dbError.code || dbError.message}. Check Firestore rules.`);
+                }
             } else {
                 cleanupListeners();
                 updateNavUI();
@@ -298,15 +300,18 @@
                 showToast("Successfully logged in with Google!");
             } catch (error) {
                 console.error("Google Login Error:", error);
-                showToast("Login failed. Try again.");
+                showToast(`Login failed: ${error.code || error.message}`);
             }
         };
 
         window.logout = async () => {
             await signOut(auth);
             showToast("Logged out. Reconnecting anonymously...");
-            // Immediately re-auth anonymously to keep the app functional
-            await signInAnonymously(auth);
+            try {
+                await signInAnonymously(auth);
+            } catch (e) {
+                showToast(`Re-auth failed: ${e.code}`);
+            }
         };
 
         async function syncUserToDB(user) {
@@ -325,7 +330,6 @@
                     createdAt: Date.now()
                 });
             } else if (user.displayName && userSnap.data().displayName !== user.displayName) {
-                // Update profile if they linked a Google account later
                 await updateDoc(userRef, {
                     displayName: user.displayName,
                     photoURL: user.photoURL || userSnap.data().photoURL
@@ -333,9 +337,7 @@
             }
         }
 
-        // ==========================================
-        // 3. REALTIME DATA LISTENERS
-        // ==========================================
+        // REALTIME DATA LISTENERS
         function cleanupListeners() {
             unsubscribers.forEach(unsub => unsub());
             unsubscribers = [];
@@ -358,7 +360,6 @@
 
             const unsubPosts = onSnapshot(postsRef, (snap) => {
                 globalPosts = snap.docs.map(d => ({id: d.id, ...d.data()}));
-                // Sort descending in memory (avoiding complex queries)
                 globalPosts.sort((a, b) => b.timestamp - a.timestamp);
                 renderFeed();
             }, e => console.error("Posts sync err:", e));
@@ -371,11 +372,7 @@
             unsubscribers.push(unsubUsers, unsubPosts, unsubReqs);
         }
 
-        // ==========================================
-        // 4. CORE ACTIONS
-        // ==========================================
-        
-        // Post Logic & Word Counter
+        // CORE ACTIONS
         const postInput = document.getElementById('post-input');
         const wordCount = document.getElementById('word-count');
         const postBtn = document.getElementById('post-btn');
@@ -417,11 +414,11 @@
                     comments: []
                 });
                 postInput.value = '';
-                postInput.dispatchEvent(new Event('input')); // reset counter
+                postInput.dispatchEvent(new Event('input'));
                 showToast("GhostPost published.");
             } catch (error) {
                 console.error("Post error:", error);
-                showToast("Failed to post.");
+                showToast(`Failed to post: ${error.code || error.message}`);
             } finally {
                 postBtn.disabled = false;
                 postBtn.innerHTML = `Post <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>`;
@@ -494,7 +491,7 @@
                     timestamp: Date.now()
                 });
                 showToast("Friend request sent.");
-            } catch (error) { console.error("Friend req error:", error); }
+            } catch (error) { showToast(`Failed: ${error.code}`); }
         };
 
         window.acceptFriendRequest = async (reqId) => {
@@ -513,10 +510,7 @@
             } catch (e) { console.error(e); }
         };
 
-
-        // ==========================================
-        // 5. RENDERING & UI
-        // ==========================================
+        // RENDERING & UI
         function getUserName(uid, forceAnon = false) {
             if (forceAnon) return "Ghost User";
             const u = globalUsers[uid];
@@ -585,7 +579,6 @@
                 
                 return `
                 <div class="glass rounded-2xl p-5 transition-transform hover:-translate-y-1 duration-300">
-                    <!-- Post Header -->
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center gap-3">
                             <img src="${getUserAvatar(post.authorId, post.isAnonymous)}" class="w-10 h-10 rounded-full border border-white/10" alt="Avatar">
@@ -596,10 +589,8 @@
                         </div>
                     </div>
                     
-                    <!-- Post Content -->
                     <p class="text-gray-200 text-sm leading-relaxed mb-5 whitespace-pre-wrap">${post.text.replace(/</g, "&lt;")}</p>
                     
-                    <!-- Actions -->
                     <div class="flex items-center gap-6 border-t border-white/10 pt-3">
                         <button onclick="toggleLike('${post.id}')" class="flex items-center gap-2 text-sm ${isLiked ? 'text-pink-500' : 'text-gray-400 hover:text-pink-400'} transition-colors">
                             <svg class="w-5 h-5 ${isLiked ? 'fill-current' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
@@ -611,7 +602,6 @@
                         </button>
                     </div>
 
-                    <!-- Comments Section (Hidden by default) -->
                     <div id="comments-${post.id}" class="hidden mt-4 pt-4 border-t border-white/10">
                         <div class="space-y-3 mb-4 max-h-48 overflow-y-auto pr-2">
                             ${comments.map(c => `
@@ -644,7 +634,6 @@
         function renderSidebar() {
             if (!currentUser) return;
 
-            // Profile Snippet
             const me = globalUsers[currentUser.uid];
             if (me) {
                 document.getElementById('sidebar-profile').innerHTML = `
@@ -656,7 +645,6 @@
                 `;
             }
 
-            // Friend Requests (To Me)
             const myRequests = globalRequests.filter(r => r.toUserId === currentUser.uid && r.status === 'pending');
             const reqContainer = document.getElementById('requests-container');
             if (myRequests.length === 0) {
@@ -679,11 +667,9 @@
                 }).join('');
             }
 
-            // Global Users (Excluding Me)
             const otherUsers = Object.values(globalUsers).filter(u => u.uid !== currentUser.uid);
             const uContainer = document.getElementById('users-container');
             
-            // Helper to check relationship status
             const getRelation = (otherId) => {
                 const req = globalRequests.find(r => 
                     (r.fromUserId === currentUser.uid && r.toUserId === otherId) ||
@@ -721,7 +707,7 @@
             toast.innerText = msg;
             toast.classList.remove('opacity-0');
             clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => toast.classList.add('opacity-0'), 3000);
+            toastTimeout = setTimeout(() => toast.classList.add('opacity-0'), 4500);
         }
 
         // Initialize!
