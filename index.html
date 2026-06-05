@@ -1,24 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GhostPost | Modern Anonymous Social</title>
-    <!-- Tailwind CSS for ultra-modern, clean styling -->
+    <title>GhostPost | আধুনিক সোশ্যাল প্ল্যাটফর্ম</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Phosphor Icons for crisp, minimalist UI icons -->
+    <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f9fafb; /* Very light gray for contrast with white app container */
+            background-color: #f9fafb;
             color: #111827;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Smooth View Transitions */
+        /* ভিউ ট্রানজিশন - ডিফল্টভাবে লুকানো */
         .view-container {
             transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
             opacity: 0;
@@ -31,6 +31,7 @@
             display: none;
         }
 
+        /* অ্যাকটিভ ভিউ দেখানোর ক্লাস */
         .view-container.active {
             opacity: 1;
             transform: translateY(0);
@@ -39,7 +40,6 @@
             display: block;
         }
 
-        /* Minimalist Scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
         }
@@ -54,7 +54,6 @@
             background: #d1d5db;
         }
 
-        /* App Container Constraint (Mobile-first design) */
         #app {
             max-width: 480px;
             margin: 0 auto;
@@ -62,16 +61,14 @@
             min-height: 100vh;
             box-shadow: 0 0 40px rgba(0,0,0,0.05);
             position: relative;
-            padding-bottom: 70px; /* Space for bottom nav */
+            padding-bottom: 70px;
         }
 
-        /* Clean Inputs */
         textarea, input {
             outline: none !important;
             resize: none;
         }
         
-        /* Toast Notifications */
         #toast-container {
             position: fixed;
             bottom: 80px;
@@ -103,7 +100,7 @@
 <body>
 
     <div id="app">
-        <!-- HEADER -->
+        <!-- হেডার -->
         <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-100 px-4 py-3 flex justify-between items-center">
             <div class="flex items-center gap-2">
                 <i class="ph-fill ph-ghost text-2xl" style="color: #FF0050;"></i>
@@ -114,51 +111,52 @@
             </div>
         </header>
 
-        <!-- VIEWS -->
+        <!-- মেইন কন্টেন্ট এরিয়া -->
         <main class="p-4 relative">
             
-            <!-- 1. Home / Auth View -->
-            <section id="view-home" class="view-container">
+            <!-- 1. হোম / লগইন স্ক্রিন (এখন ডিফল্টভাবে 'active' ক্লাস দেওয়া আছে) -->
+            <section id="view-home" class="view-container active">
                 <div class="flex flex-col items-center justify-center pt-20 text-center">
                     <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
                         <i class="ph-fill ph-ghost text-5xl" style="color: #FF0050;"></i>
                     </div>
-                    <h2 class="text-2xl font-bold mb-2">Welcome to GhostPost</h2>
-                    <p class="text-gray-500 mb-10">Speak your mind freely. Stay anonymous or build your verified identity.</p>
+                    <h2 class="text-2xl font-bold mb-2">GhostPost-এ স্বাগতম</h2>
+                    <p class="text-gray-500 mb-10">মন খুলে কথা বলুন। সম্পূর্ণ বেনামে থাকুন অথবা নিজের ভেরিফায়েড পরিচয় গড়ুন।</p>
                     
                     <div id="auth-section" class="w-full max-w-xs space-y-4">
                         <button onclick="signInWithGoogle()" class="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 text-gray-800 font-semibold py-3 px-4 rounded-xl shadow-sm hover:bg-gray-50 transition-colors">
                             <i class="ph-fill ph-google-logo text-xl"></i>
-                            Continue with Google
+                            Google দিয়ে চালিয়ে যান
                         </button>
-                        <p class="text-xs text-gray-400 mt-4">By continuing, you agree to our Terms & Privacy Policy.</p>
+                        <p class="text-xs text-gray-400 mt-4">চালিয়ে যাওয়ার মাধ্যমে আপনি আমাদের শর্তাবলীতে সম্মত হচ্ছেন।</p>
                     </div>
 
+                    <!-- প্রোফাইল সেটআপ সেকশন -->
                     <div id="profile-setup-section" class="w-full max-w-xs hidden">
-                        <h3 class="text-lg font-semibold mb-4">Set your Avatar</h3>
+                        <h3 class="text-lg font-semibold mb-4">আপনার অ্যাভাটার সেট করুন</h3>
                         <div class="grid grid-cols-4 gap-3 mb-6" id="emoji-selector">
-                            <!-- Emojis populated by JS -->
+                            <!-- JS দ্বারা ইমোজি আসবে -->
                         </div>
-                        <input type="text" id="setup-username" placeholder="Choose a username" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 mb-4 focus:border-gray-400 transition-colors">
+                        <input type="text" id="setup-username" placeholder="একটি ইউজারনেম বেছে নিন" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 mb-4 focus:border-gray-400 transition-colors">
                         <button onclick="saveProfileSetup()" class="w-full bg-gray-900 text-white font-semibold py-3 px-4 rounded-xl hover:bg-gray-800 transition-colors">
-                            Complete Setup
+                            সেটআপ সম্পন্ন করুন
                         </button>
                     </div>
                 </div>
             </section>
 
-            <!-- 2. Feeds View -->
+            <!-- 2. ফিডস স্ক্রিন -->
             <section id="view-feeds" class="view-container">
-                <!-- Create Post Box -->
+                <!-- পোস্ট তৈরি করার বক্স -->
                 <div class="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm mb-6">
                     <div class="flex gap-3 mb-3">
                         <span id="compose-avatar" class="text-2xl">👤</span>
-                        <textarea id="post-content" rows="3" placeholder="What's on your mind?" class="w-full bg-transparent text-gray-800 placeholder-gray-400 text-lg leading-relaxed"></textarea>
+                        <textarea id="post-content" rows="3" placeholder="আপনার মনে কী চলছে?" class="w-full bg-transparent text-gray-800 placeholder-gray-400 text-lg leading-relaxed"></textarea>
                     </div>
                     
                     <div class="flex items-center justify-between border-t border-gray-50 pt-3">
                         <div class="flex items-center gap-4">
-                            <!-- Ghost Toggle -->
+                            <!-- বেনামী টগল বাটন -->
                             <label class="flex items-center gap-2 cursor-pointer group">
                                 <div class="relative">
                                     <input type="checkbox" id="ghost-toggle" class="sr-only">
@@ -166,7 +164,7 @@
                                     <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform" id="ghost-toggle-dot"></div>
                                 </div>
                                 <span class="text-sm font-medium text-gray-600 flex items-center gap-1">
-                                    <i class="ph-fill ph-ghost"></i> Ghost Mode
+                                    <i class="ph-fill ph-ghost"></i> ঘোস্ট মোড
                                 </span>
                             </label>
                         </div>
@@ -174,80 +172,79 @@
                         <div class="flex items-center gap-3">
                             <span id="word-count" class="text-xs text-gray-400 font-medium">0 / 25</span>
                             <button onclick="submitPost()" id="submit-post-btn" class="bg-gray-900 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-gray-800 transition-colors disabled:opacity-50">
-                                Post
+                                পোস্ট করুন
                             </button>
                         </div>
                     </div>
                     <div id="post-limit-warning" class="text-xs text-red-500 mt-2 hidden"></div>
                 </div>
 
-                <!-- Feed Container -->
+                <!-- পোস্ট কন্টেইনার -->
                 <div id="posts-container" class="space-y-4">
-                    <!-- Posts populated by JS -->
-                    <div class="text-center text-gray-400 py-10">Loading timeline...</div>
+                    <div class="text-center text-gray-400 py-10">টাইমলাইন লোড হচ্ছে...</div>
                 </div>
             </section>
 
-            <!-- 3. Profile View -->
+            <!-- 3. প্রোফাইল স্ক্রিন -->
             <section id="view-profile" class="view-container">
                 <div class="text-center py-6 border-b border-gray-100 mb-6">
                     <div class="text-6xl mb-3" id="profile-page-emoji">👤</div>
                     <h2 class="text-2xl font-bold flex items-center justify-center gap-1">
-                        <span id="profile-page-name">Username</span>
+                        <span id="profile-page-name">ইউজারনেম</span>
                         <span id="profile-page-badge" class="hidden">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20"><path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.152-.435.248-.9.248-1.4 0-2.21-1.79-4-4-4-.5 0-.965.1-1.4.248C14.55 2.475 13.18 1.6 11.6 1.6c-1.58 0-2.95.875-3.6 2.148-.435-.152-.9-.248-1.4-.248-2.21 0-4 1.79-4 4 0 .5.1.965.248 1.4C1.475 9.55.6 10.92.6 12.5c0 1.58.875 2.95 2.148 3.6-.152.435-.248.9-.248 1.4 0 2.21 1.79 4 4 4 .5 0 .965-.1 1.4-.248.65 1.273 2.02 2.148 3.6 2.148 1.58 0 2.95-.875 3.6-2.148.435.152.9.248 1.4.248 2.21 0 4-1.79 4-4 0-.5-.1-.965-.248-1.4 1.273-.65 2.148-2.02 2.148-3.6z" fill="#FF0050"/><path fill-rule="evenodd" clip-rule="evenodd" d="M9.86 15.17L6.69 12c-0.39-0.39-1.02-0.39-1.41 0c-0.39 0.39-0.39 1.02 0 1.41l3.88 3.88c0.39 0.39 1.02 0.39 1.41 0l7.78-7.78c0.39-0.39 0.39-1.02 0-1.41c-0.39-0.39-1.02-0.39-1.41 0L9.86 15.17z" fill="#ffffff"/></svg>
                         </span>
                     </h2>
-                    <p class="text-sm text-gray-500 mt-1" id="profile-page-stats">0 Posts • 0 Total Likes</p>
+                    <p class="text-sm text-gray-500 mt-1" id="profile-page-stats">০ পোস্ট • ০ মোট লাইক</p>
                 </div>
                 
-                <h3 class="font-bold text-gray-800 mb-4">Your History</h3>
+                <h3 class="font-bold text-gray-800 mb-4">আপনার হিস্ট্রি</h3>
                 <div id="profile-posts-container" class="space-y-4">
-                    <!-- User posts populated here -->
+                    <!-- ইউজারের পোস্টগুলো এখানে আসবে -->
                 </div>
             </section>
 
-            <!-- 4. Top Users View -->
+            <!-- 4. লিডারবোর্ড স্ক্রিন -->
             <section id="view-top" class="view-container">
                 <div class="mb-6 flex items-center justify-between">
-                    <h2 class="text-2xl font-bold">Leaderboard</h2>
+                    <h2 class="text-2xl font-bold">লিডারবোর্ড</h2>
                     <i class="ph-fill ph-trophy text-2xl text-yellow-500"></i>
                 </div>
                 <div class="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden" id="leaderboard-container">
-                    <!-- Leaderboard populated by JS -->
+                    <!-- লিডারবোর্ড JS দিয়ে রেন্ডার হবে -->
                 </div>
             </section>
 
-            <!-- 5. Settings View -->
+            <!-- 5. সেটিংস স্ক্রিন -->
             <section id="view-settings" class="view-container">
-                <h2 class="text-2xl font-bold mb-6">Settings</h2>
+                <h2 class="text-2xl font-bold mb-6">সেটিংস</h2>
                 
                 <div class="space-y-6">
-                    <!-- Verification Section -->
+                    <!-- ভেরিফিকেশন সেকশন -->
                     <div class="bg-gray-50 border border-gray-100 rounded-2xl p-5 relative overflow-hidden">
                         <div class="absolute -right-6 -top-6 text-9xl opacity-5">
                             <i class="ph-fill ph-seal-check"></i>
                         </div>
                         <h3 class="font-bold text-lg flex items-center gap-2 mb-2 relative z-10">
-                            Get Verified 
+                            ভেরিফায়েড হোন 
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18"><path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.152-.435.248-.9.248-1.4 0-2.21-1.79-4-4-4-.5 0-.965.1-1.4.248C14.55 2.475 13.18 1.6 11.6 1.6c-1.58 0-2.95.875-3.6 2.148-.435-.152-.9-.248-1.4-.248-2.21 0-4 1.79-4 4 0 .5.1.965.248 1.4C1.475 9.55.6 10.92.6 12.5c0 1.58.875 2.95 2.148 3.6-.152.435-.248.9-.248 1.4 0 2.21 1.79 4 4 4 .5 0 .965-.1 1.4-.248.65 1.273 2.02 2.148 3.6 2.148 1.58 0 2.95-.875 3.6-2.148.435.152.9.248 1.4.248 2.21 0 4-1.79 4-4 0-.5-.1-.965-.248-1.4 1.273-.65 2.148-2.02 2.148-3.6z" fill="#FF0050"/><path fill-rule="evenodd" clip-rule="evenodd" d="M9.86 15.17L6.69 12c-0.39-0.39-1.02-0.39-1.41 0c-0.39 0.39-0.39 1.02 0 1.41l3.88 3.88c0.39 0.39 1.02 0.39 1.41 0l7.78-7.78c0.39-0.39 0.39-1.02 0-1.41c-0.39-0.39-1.02-0.39-1.41 0L9.86 15.17z" fill="#ffffff"/></svg>
                         </h3>
-                        <p class="text-sm text-gray-600 mb-4 relative z-10">Unlock 50-word limits, unlimited ghost posts, and an exclusive profile badge.</p>
+                        <p class="text-sm text-gray-600 mb-4 relative z-10">৫০ শব্দের লিমিট, আনলিমিটেড ঘোস্ট পোস্ট এবং একটি এক্সক্লুসিভ প্রোফাইল ব্যাজ আনলক করুন।</p>
                         <button onclick="requestVerification()" class="bg-[#25D366] text-white font-semibold py-2.5 px-4 rounded-xl flex items-center gap-2 hover:bg-[#1ebd5b] transition-colors relative z-10 w-full justify-center">
-                            <i class="ph-fill ph-whatsapp-logo text-xl"></i> Apply via WhatsApp
+                            <i class="ph-fill ph-whatsapp-logo text-xl"></i> WhatsApp-এ আবেদন করুন
                         </button>
                     </div>
 
-                    <!-- Links -->
+                    <!-- অন্যান্য লিংক -->
                     <div class="bg-white border border-gray-100 rounded-2xl shadow-sm divide-y divide-gray-50">
                         <button class="w-full text-left px-5 py-4 text-sm font-medium text-gray-700 flex justify-between items-center hover:bg-gray-50 transition-colors">
-                            Terms & Conditions <i class="ph ph-caret-right text-gray-400"></i>
+                            শর্তাবলী <i class="ph ph-caret-right text-gray-400"></i>
                         </button>
                         <button class="w-full text-left px-5 py-4 text-sm font-medium text-gray-700 flex justify-between items-center hover:bg-gray-50 transition-colors">
-                            Privacy Policy <i class="ph ph-caret-right text-gray-400"></i>
+                            গোপনীয়তা নীতি <i class="ph ph-caret-right text-gray-400"></i>
                         </button>
                         <button onclick="signOutApp()" class="w-full text-left px-5 py-4 text-sm font-medium text-red-500 flex justify-between items-center hover:bg-red-50 transition-colors">
-                            Log Out <i class="ph ph-sign-out text-red-400"></i>
+                            লগ আউট <i class="ph ph-sign-out text-red-400"></i>
                         </button>
                     </div>
                 </div>
@@ -255,37 +252,35 @@
 
         </main>
 
-        <!-- BOTTOM NAVIGATION -->
+        <!-- নিচের নেভিগেশন বার -->
         <nav id="bottom-nav" class="fixed bottom-0 w-full max-w-[480px] bg-white border-t border-gray-100 flex justify-around items-center pb-safe hidden z-40">
             <a href="#feeds" class="nav-item flex flex-col items-center py-3 px-4 text-gray-400 hover:text-gray-900 transition-colors w-full">
                 <i class="ph-fill ph-house text-2xl mb-1"></i>
-                <span class="text-[10px] font-semibold">Feed</span>
+                <span class="text-[10px] font-semibold">ফিড</span>
             </a>
             <a href="#top" class="nav-item flex flex-col items-center py-3 px-4 text-gray-400 hover:text-gray-900 transition-colors w-full">
                 <i class="ph-fill ph-trend-up text-2xl mb-1"></i>
-                <span class="text-[10px] font-semibold">Top</span>
+                <span class="text-[10px] font-semibold">টপ</span>
             </a>
             <a href="#profile" class="nav-item flex flex-col items-center py-3 px-4 text-gray-400 hover:text-gray-900 transition-colors w-full">
                 <i class="ph-fill ph-user text-2xl mb-1"></i>
-                <span class="text-[10px] font-semibold">Profile</span>
+                <span class="text-[10px] font-semibold">প্রোফাইল</span>
             </a>
             <a href="#settings" class="nav-item flex flex-col items-center py-3 px-4 text-gray-400 hover:text-gray-900 transition-colors w-full">
                 <i class="ph-fill ph-gear text-2xl mb-1"></i>
-                <span class="text-[10px] font-semibold">Settings</span>
+                <span class="text-[10px] font-semibold">সেটিংস</span>
             </a>
         </nav>
 
         <div id="toast-container"></div>
     </div>
 
-    <!-- Firebase SDK Setup -->
+    <!-- Firebase SDK সেটাপ -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, addDoc, updateDoc, deleteDoc, serverTimestamp, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Firebase Configuration (User provided + Environment Safe-guards)
-        // Note: As an expert architect, I ensure this works securely via standard rules.
         const providedConfig = {
             apiKey: "AIzaSyAWrYGIf6AuUAvxygSarKYR7LXlHSHQWi4",
             authDomain: "ghostpost25.firebaseapp.com",
@@ -296,34 +291,31 @@
             measurementId: "G-FJ5NESPVG3"
         };
         
-        // Use environment config if embedded in a strict iframe (like Canvas), otherwise use provided.
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : providedConfig;
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'ghostpost25';
 
-        // Initialize Firebase
+        // Firebase ইনিশিয়ালাইজ
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        // Data State Management
+        // ডেটা স্টেট
         let currentUser = null;
         let currentUserData = null;
         let allUsers = {};
         let allPosts = [];
         
-        // Emojis for setup
         const emojis = ['👽', '👻', '🤖', '🦊', '🦉', '🐱', '🦄', '🦖', '😎', '🤠', '🤡', '🥸'];
         let selectedEmoji = emojis[0];
 
-        // System Constants
         const LIMITS = {
             FREE_WORDS: 25,
             VERIFIED_WORDS: 50,
             FREE_GHOST_POSTS_PER_DAY: 10
         };
 
-        // UI Helpers
+        // টোস্ট নোটিফিকেশন
         function showToast(message) {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -337,20 +329,20 @@
         }
 
         function formatTime(timestamp) {
-            if (!timestamp) return 'Just now';
+            if (!timestamp) return 'এইমাত্র';
             const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
             const now = new Date();
             const diffSeconds = Math.floor((now - date) / 1000);
             
-            if (diffSeconds < 60) return 'Just now';
-            if (diffSeconds < 3600) return `${Math.floor(diffSeconds/60)}m`;
-            if (diffSeconds < 86400) return `${Math.floor(diffSeconds/3600)}h`;
-            return `${Math.floor(diffSeconds/86400)}d`;
+            if (diffSeconds < 60) return 'এইমাত্র';
+            if (diffSeconds < 3600) return `${Math.floor(diffSeconds/60)} মিনিট আগে`;
+            if (diffSeconds < 86400) return `${Math.floor(diffSeconds/3600)} ঘণ্টা আগে`;
+            return `${Math.floor(diffSeconds/86400)} দিন আগে`;
         }
 
         const VERIFIED_BADGE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" class="inline ml-1"><path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.152-.435.248-.9.248-1.4 0-2.21-1.79-4-4-4-.5 0-.965.1-1.4.248C14.55 2.475 13.18 1.6 11.6 1.6c-1.58 0-2.95.875-3.6 2.148-.435-.152-.9-.248-1.4-.248-2.21 0-4 1.79-4 4 0 .5.1.965.248 1.4C1.475 9.55.6 10.92.6 12.5c0 1.58.875 2.95 2.148 3.6-.152.435-.248.9-.248 1.4 0 2.21 1.79 4 4 4 .5 0 .965-.1 1.4-.248.65 1.273 2.02 2.148 3.6 2.148 1.58 0 2.95-.875 3.6-2.148.435.152.9.248 1.4.248 2.21 0 4-1.79 4-4 0-.5-.1-.965-.248-1.4 1.273-.65 2.148-2.02 2.148-3.6z" fill="#FF0050"/><path fill-rule="evenodd" clip-rule="evenodd" d="M9.86 15.17L6.69 12c-0.39-0.39-1.02-0.39-1.41 0c-0.39 0.39-0.39 1.02 0 1.41l3.88 3.88c0.39 0.39 1.02 0.39 1.41 0l7.78-7.78c0.39-0.39 0.39-1.02 0-1.41c-0.39-0.39-1.02-0.39-1.41 0L9.86 15.17z" fill="#ffffff"/></svg>`;
 
-        // Router setup
+        // রাউটার: URL হ্যাশ অনুযায়ী ভিউ পরিবর্তন
         function navigate() {
             const hash = window.location.hash || '#home';
             document.querySelectorAll('.view-container').forEach(el => el.classList.remove('active'));
@@ -359,7 +351,7 @@
                 el.classList.add('text-gray-400');
             });
             
-            // Route protection
+            // রাউট প্রটেকশন (লগইন ছাড়া অন্য পেজে যেতে না দেওয়া)
             if (hash !== '#home' && (!currentUser || !currentUserData)) {
                 window.location.hash = '#home';
                 return;
@@ -384,18 +376,16 @@
         }
         window.addEventListener('hashchange', navigate);
 
-        // Core App Logic
+        // অ্যাপ ইনিশিয়ালাইজেশন
         async function initApp() {
-            // Mandatory Auth Requirement (Rule 3)
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await signInWithCustomToken(auth, __initial_auth_token);
                 } else if(!auth.currentUser) {
-                    // Fallback to anonymous so DB rules pass if token is missing
                     await signInAnonymously(auth);
                 }
             } catch (err) {
-                console.warn("Auth initialization note:", err);
+                console.warn("Auth warning:", err);
             }
 
             onAuthStateChanged(auth, async (user) => {
@@ -409,19 +399,16 @@
                 }
             });
 
-            // Input handlers
             setupWordCounter();
             setupGhostToggle();
             populateEmojiSelector();
         }
 
-        // Expose to window for inline HTML handlers
         window.signInWithGoogle = async () => {
             try {
                 await signInWithPopup(auth, provider);
             } catch (error) {
-                // If popup is blocked (e.g., inside an iframe canvas), fallback handled via anonymous auth gracefully.
-                showToast("Google Login popup blocked or failed. Using standard auth.");
+                showToast("Google লগইন ব্লক করা হয়েছে বা ব্যর্থ হয়েছে।");
                 console.error(error);
             }
         };
@@ -433,12 +420,11 @@
 
         window.requestVerification = () => {
             if(!currentUser) return;
-            const text = encodeURIComponent(`I want to get verified. My User ID is: ${currentUser.uid}`);
+            const text = encodeURIComponent(`আমি ভেরিফায়েড হতে চাই। আমার User ID হলো: ${currentUser.uid}`);
             window.open(`https://wa.me/8801949437370?text=${text}`, '_blank');
         }
 
         async function checkUserData(user) {
-            // Respecting STRICT Path Rules (Rule 1)
             const userDocRef = doc(db, 'artifacts', appId, 'public', 'users', user.uid);
             const userSnap = await getDoc(userDocRef);
 
@@ -449,7 +435,6 @@
                 document.getElementById('header-emoji').innerText = currentUserData.emojiAvatar || '👤';
                 document.getElementById('compose-avatar').innerText = currentUserData.emojiAvatar || '👤';
                 
-                // Start listening to global data only after authenticated and profile setup
                 listenToUsers();
                 listenToPosts();
 
@@ -457,7 +442,7 @@
                     window.location.hash = '#feeds';
                 }
             } else {
-                // Needs profile setup
+                // নতুন ইউজার, প্রোফাইল সেটআপ করতে হবে
                 document.getElementById('auth-section').classList.add('hidden');
                 document.getElementById('profile-setup-section').classList.remove('hidden');
             }
@@ -474,7 +459,7 @@
                 btn.innerText = emoji;
                 btn.onclick = () => {
                     selectedEmoji = emoji;
-                    populateEmojiSelector(); // re-render selection state
+                    populateEmojiSelector();
                 };
                 container.appendChild(btn);
             });
@@ -484,7 +469,7 @@
             if(!currentUser) return;
             const username = document.getElementById('setup-username').value.trim();
             if(!username) {
-                showToast("Please enter a username");
+                showToast("অনুগ্রহ করে একটি ইউজারনেম দিন");
                 return;
             }
 
@@ -502,17 +487,17 @@
             await setDoc(userDocRef, newUser);
             
             currentUserData = newUser;
-            showToast("Profile created successfully!");
+            showToast("প্রোফাইল সফলভাবে তৈরি হয়েছে!");
             checkUserData(currentUser);
         }
 
-        // Data Listeners
+        // রিয়েল-টাইম ডেটা লিসেনার
         let unsubUsers = null;
         let unsubPosts = null;
 
         function listenToUsers() {
             if(unsubUsers) unsubUsers();
-            if(!currentUser) return; // Rule 3
+            if(!currentUser) return;
 
             const usersRef = collection(db, 'artifacts', appId, 'public', 'users');
             unsubUsers = onSnapshot(usersRef, (snapshot) => {
@@ -521,10 +506,10 @@
                     allUsers[doc.id] = doc.data();
                 });
                 if(allUsers[currentUser.uid]) {
-                    currentUserData = allUsers[currentUser.uid]; // Keep local user data fresh
+                    currentUserData = allUsers[currentUser.uid];
                 }
                 if(window.location.hash === '#top') renderTopUsers();
-                if(window.location.hash === '#feeds') renderPosts(); // Re-render to update badges/names
+                if(window.location.hash === '#feeds') renderPosts();
             }, (error) => {
                 console.error("Users sync error:", error);
             });
@@ -532,16 +517,16 @@
 
         function listenToPosts() {
             if(unsubPosts) unsubPosts();
-            if(!currentUser) return; // Rule 3
+            if(!currentUser) return;
 
             const postsRef = collection(db, 'artifacts', appId, 'public', 'posts');
-            // Rule 2: NO orderBy or limit. Fetch all and handle in memory.
             unsubPosts = onSnapshot(postsRef, (snapshot) => {
                 allPosts = [];
                 snapshot.forEach(doc => {
                     allPosts.push({ id: doc.id, ...doc.data() });
                 });
-                // In-memory sort by timestamp (newest first)
+                
+                // নতুন পোস্ট উপরে দেখানোর জন্য সর্টিং
                 allPosts.sort((a, b) => {
                     const timeA = a.timestamp?.toMillis ? a.timestamp.toMillis() : 0;
                     const timeB = b.timestamp?.toMillis ? b.timestamp.toMillis() : 0;
@@ -555,7 +540,7 @@
             });
         }
 
-        // Composing Posts
+        // পোস্ট কাউন্টিং এবং লিমিট
         function setupWordCounter() {
             const textarea = document.getElementById('post-content');
             const wordCountSpan = document.getElementById('word-count');
@@ -591,13 +576,12 @@
                     dot.style.transform = 'translateX(16px)';
                     avatar.innerText = '👻';
                     
-                    // Check Limits for Free Users
                     if (currentUserData && !currentUserData.isVerified) {
                         const today = new Date().toLocaleDateString();
                         const isSameDay = currentUserData.lastGhostPostDate === today;
                         const count = isSameDay ? currentUserData.ghostPostsToday : 0;
                         
-                        warning.innerText = `Ghost posts remaining today: ${LIMITS.FREE_GHOST_POSTS_PER_DAY - count}`;
+                        warning.innerText = `আজকের ঘোস্ট পোস্ট বাকি: ${LIMITS.FREE_GHOST_POSTS_PER_DAY - count} টি`;
                         warning.classList.remove('hidden');
                         
                         if (count >= LIMITS.FREE_GHOST_POSTS_PER_DAY) {
@@ -610,8 +594,6 @@
                     avatar.innerText = currentUserData?.emojiAvatar || '👤';
                     warning.classList.add('hidden');
                     document.getElementById('submit-post-btn').disabled = false;
-                    
-                    // trigger word count check to ensure button state is correct
                     document.getElementById('post-content').dispatchEvent(new Event('input'));
                 }
             });
@@ -628,7 +610,7 @@
             const wordLimit = currentUserData.isVerified ? LIMITS.VERIFIED_WORDS : LIMITS.FREE_WORDS;
 
             if (words > wordLimit) {
-                showToast(`Word limit exceeded! Max: ${wordLimit}`);
+                showToast(`শব্দসীমা অতিক্রম করেছে! সর্বোচ্চ: ${wordLimit} শব্দ`);
                 return;
             }
 
@@ -640,7 +622,7 @@
                     newGhostCount = 0;
                 }
                 if (newGhostCount >= LIMITS.FREE_GHOST_POSTS_PER_DAY) {
-                    showToast("Daily Ghost Post limit reached. Get verified for unlimited.");
+                    showToast("আজকের ঘোস্ট পোস্ট লিমিট শেষ। আনলিমিটেড পেতে ভেরিফায়েড হোন।");
                     return;
                 }
                 newGhostCount++;
@@ -651,7 +633,6 @@
             btn.innerText = '...';
 
             try {
-                // 1. Save Post
                 const postRef = collection(db, 'artifacts', appId, 'public', 'posts');
                 await addDoc(postRef, {
                     authorId: currentUser.uid,
@@ -661,7 +642,6 @@
                     likes: []
                 });
 
-                // 2. Update User Limits
                 if (isGhost && !currentUserData.isVerified) {
                     const userRef = doc(db, 'artifacts', appId, 'public', 'users', currentUser.uid);
                     await updateDoc(userRef, {
@@ -670,23 +650,22 @@
                     });
                 }
 
-                // Reset UI
                 document.getElementById('post-content').value = '';
                 document.getElementById('word-count').innerText = `0 / ${wordLimit}`;
                 document.getElementById('ghost-toggle').checked = false;
                 document.getElementById('ghost-toggle').dispatchEvent(new Event('change'));
-                showToast("Post published!");
+                showToast("সাফল্যজনকভাবে পোস্ট করা হয়েছে!");
 
             } catch (error) {
                 console.error("Error posting:", error);
-                showToast("Failed to post.");
+                showToast("পোস্ট করতে সমস্যা হয়েছে।");
             } finally {
                 btn.disabled = false;
-                btn.innerText = 'Post';
+                btn.innerText = 'পোস্ট করুন';
             }
         }
 
-        // Render Functions
+        // লাইক এবং রেন্ডারিং
         window.toggleLike = async (postId) => {
             if(!currentUser) return;
             const post = allPosts.find(p => p.id === postId);
@@ -707,7 +686,7 @@
         }
 
         function createPostElement(post) {
-            const author = post.isAnonymous ? { username: 'Anonymous Ghost', emojiAvatar: '👻', isVerified: false } : (allUsers[post.authorId] || { username: 'Unknown User', emojiAvatar: '👤', isVerified: false });
+            const author = post.isAnonymous ? { username: 'অজ্ঞাত ঘোস্ট', emojiAvatar: '👻', isVerified: false } : (allUsers[post.authorId] || { username: 'অজানা ইউজার', emojiAvatar: '👤', isVerified: false });
             
             const isLiked = currentUser && post.likes.includes(currentUser.uid);
             
@@ -733,7 +712,7 @@
                         </button>
                         <button class="flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
                             <i class="ph ph-chat-circle text-xl"></i>
-                            Reply
+                            রিপ্লাই
                         </button>
                     </div>
                 </div>
@@ -743,7 +722,7 @@
         function renderPosts() {
             const container = document.getElementById('posts-container');
             if (allPosts.length === 0) {
-                container.innerHTML = `<div class="text-center text-gray-400 py-10">No posts yet. Be the first!</div>`;
+                container.innerHTML = `<div class="text-center text-gray-400 py-10">এখনো কোনো পোস্ট নেই। প্রথম পোস্টটি আপনিই করুন!</div>`;
                 return;
             }
             container.innerHTML = allPosts.map(post => createPostElement(post)).join('');
@@ -761,46 +740,41 @@
                 document.getElementById('profile-page-badge').classList.add('hidden');
             }
 
-            // Calculate stats (In-memory computation as per Rules)
             const userPosts = allPosts.filter(p => p.authorId === currentUser.uid);
             let totalLikes = 0;
             userPosts.forEach(p => totalLikes += p.likes.length);
 
-            document.getElementById('profile-page-stats').innerText = `${userPosts.length} Posts • ${totalLikes} Total Likes received`;
+            document.getElementById('profile-page-stats').innerText = `${userPosts.length} পোস্ট • ${totalLikes} সর্বমোট লাইক পেয়েছেন`;
 
             const container = document.getElementById('profile-posts-container');
             if(userPosts.length === 0) {
-                container.innerHTML = `<div class="text-center text-gray-400 py-6 bg-gray-50 rounded-xl border border-dashed border-gray-200">No history available.</div>`;
+                container.innerHTML = `<div class="text-center text-gray-400 py-6 bg-gray-50 rounded-xl border border-dashed border-gray-200">এখনো কোনো হিস্ট্রি নেই।</div>`;
             } else {
                 container.innerHTML = userPosts.map(post => createPostElement(post)).join('');
             }
         }
 
         function renderTopUsers() {
-            // Memory computation of Top Users (Rule 2 adherence)
             const userStats = {};
             
-            // Initialize stats
             Object.keys(allUsers).forEach(uid => {
                 userStats[uid] = { ...allUsers[uid], totalLikes: 0 };
             });
 
-            // Aggregate likes
             allPosts.forEach(post => {
                 if(userStats[post.authorId]) {
                     userStats[post.authorId].totalLikes += post.likes.length;
                 }
             });
 
-            // Sort by likes descending
             const sortedUsers = Object.values(userStats)
                 .sort((a, b) => b.totalLikes - a.totalLikes)
-                .slice(0, 10); // Top 10
+                .slice(0, 10);
 
             const container = document.getElementById('leaderboard-container');
             
             if(sortedUsers.length === 0 || sortedUsers[0].totalLikes === 0) {
-                container.innerHTML = `<div class="p-6 text-center text-gray-500">No likes given out yet. Start interacting!</div>`;
+                container.innerHTML = `<div class="p-6 text-center text-gray-500">এখনো কোনো লাইক দেওয়া হয়নি। ইন্টারেক্ট করা শুরু করুন!</div>`;
                 return;
             }
 
@@ -823,8 +797,11 @@
             `).join('');
         }
 
-        // Initialize application when DOM is ready
-        window.onload = initApp;
+        // পেজ লোড হলেই নেভিগেট ফাংশন কল করে UI দেখিয়ে দেওয়া হচ্ছে
+        window.onload = () => {
+            navigate(); 
+            initApp();
+        };
 
     </script>
 </body>
