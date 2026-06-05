@@ -314,7 +314,7 @@
     <!-- Firebase SDK সেটাপ -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, signInWithRedirect, GoogleAuthProvider, onAuthStateChanged, signOut, signInAnonymously, signInWithCustomToken, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, addDoc, updateDoc, deleteDoc, serverTimestamp, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const providedConfig = {
@@ -370,7 +370,6 @@
             document.getElementById('modal-title').innerText = title;
             modal.classList.remove('hidden');
             modal.classList.add('flex');
-            // একটু দেরি করে অপাসিটি বাড়ানো (অ্যানিমেশনের জন্য)
             setTimeout(() => {
                 modal.classList.remove('opacity-0');
                 modal.querySelector('div').classList.remove('scale-95');
@@ -443,6 +442,18 @@
 
         // অ্যাপ ইনিশিয়ালাইজেশন
         async function initApp() {
+            // রিডাইরেক্ট হওয়া লগইনের রেজাল্ট হ্যান্ডেল করা (মোবাইলের জন্য সবচেয়ে গুরুত্বপূর্ণ)
+            try {
+                const result = await getRedirectResult(auth);
+                if (result && result.user) {
+                    showToast("লগইন সফল হয়েছে!");
+                }
+            } catch (error) {
+                console.error("Redirect Auth Error: ", error);
+                // স্ক্রিনে সরাসরি লাল এরর কোড দেখানো (যেমন: auth/unauthorized-domain)
+                showToast("লগইন ত্রুটি: " + (error.code || error.message));
+            }
+
             try {
                 // ১. শুরুতে সবাইকে গেস্ট হিসেবে ঢুকানো হবে
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
@@ -497,12 +508,13 @@
             hideLoginModal();
         }
 
+        // মোবাইল রিডাইরেক্ট গুগল সাইন-ইন
         window.signInWithGoogle = async () => {
             try {
-                await signInWithPopup(auth, provider);
-                // সফল হলে onAuthStateChanged ট্রিগার হবে
+                showToast("Google-এ রিডাইরেক্ট করা হচ্ছে...");
+                await signInWithRedirect(auth, provider);
             } catch (error) {
-                showToast("লগইন বাতিল হয়েছে বা সমস্যা হয়েছে।");
+                showToast("লগইন ব্যর্থ: " + error.code);
                 console.error(error);
             }
         };
@@ -604,7 +616,7 @@
                 window.location.hash = '#feeds';
             } catch (error) {
                 console.error("Error saving profile:", error);
-                showToast("প্রোফাইল সেভ করতে সমস্যা হয়েছে।");
+                showToast("প্রোফাইল সেভ করতে সমস্যা হয়েছে: " + error.code);
             } finally {
                 btn.innerText = originalText;
                 btn.disabled = false;
@@ -617,7 +629,7 @@
 
         function listenToUsers() {
             if(unsubUsers) unsubUsers();
-            if(!currentUser) return; // Anonymous ইউজাররাও পারমিটেড
+            if(!currentUser) return; 
 
             const usersRef = collection(db, 'artifacts', appId, 'public', 'users');
             unsubUsers = onSnapshot(usersRef, (snapshot) => {
@@ -628,13 +640,14 @@
                 
                 if(currentUser && !currentUser.isAnonymous && allUsers[currentUser.uid]) {
                     currentUserData = allUsers[currentUser.uid];
-                    updateUILoggedInMode(currentUserData); // রিয়েল-টাইম আপডেট (যেমন ভেরিফিকেশন ব্যাজ পেলে)
+                    updateUILoggedInMode(currentUserData); 
                 }
 
                 if(window.location.hash === '#top') renderTopUsers();
                 if(window.location.hash === '#feeds') renderPosts();
             }, (error) => {
                 console.error("Users sync error:", error);
+                showToast("ব্যবহারকারী সিঙ্ক ত্রুটি: " + error.code);
             });
         }
 
@@ -660,6 +673,7 @@
                 if(window.location.hash === '#profile') renderProfile();
             }, (error) => {
                 console.error("Posts sync error:", error);
+                showToast("পোস্ট সিঙ্ক ত্রুটি: " + error.code);
             });
         }
 
@@ -790,7 +804,7 @@
 
             } catch (error) {
                 console.error("Error posting:", error);
-                showToast("পোস্ট করতে সমস্যা হয়েছে।");
+                showToast("পোস্ট করতে ব্যর্থ: " + error.code);
             } finally {
                 btn.disabled = false;
                 btn.innerText = 'পোস্ট করুন';
@@ -803,7 +817,7 @@
                 showLoginModal('লাইক দেওয়ার জন্য লগইন করুন');
                 return;
             }
-            if(!currentUserData) return; // প্রোফাইল সেটআপ না থাকলে
+            if(!currentUserData) return; 
 
             const post = allPosts.find(p => p.id === postId);
             if(!post) return;
@@ -819,6 +833,7 @@
                 }
             } catch (error) {
                 console.error("Like error:", error);
+                showToast("লাইক দিতে সমস্যা হয়েছে: " + error.code);
             }
         }
 
@@ -832,8 +847,6 @@
 
         function createPostElement(post) {
             const author = post.isAnonymous ? { username: 'অজ্ঞাত ঘোস্ট', emojiAvatar: '👻', isVerified: false } : (allUsers[post.authorId] || { username: 'অজানা ইউজার', emojiAvatar: '👤', isVerified: false });
-            
-            // গেস্ট হলে কারো লাইক সিলেক্টেড দেখাবে না
             const isLiked = (currentUser && !currentUser.isAnonymous) && post.likes.includes(currentUser.uid);
             
             return `
