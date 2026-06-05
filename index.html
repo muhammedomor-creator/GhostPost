@@ -143,7 +143,7 @@
                     <div class="w-full max-w-xs">
                         <h3 class="text-sm font-bold mb-3 text-left text-gray-700">আপনার অ্যাভাটার ইমোজি</h3>
                         <div class="grid grid-cols-6 gap-2 mb-6" id="emoji-selector">
-                            <!-- জেএস দিয়ে ইমোজি রেন্ডার হবে -->
+                            <!-- জেএস দিয়ে ইমোজি আসবে -->
                         </div>
                         <div class="relative mb-4">
                             <span class="absolute left-4 top-3.5 text-gray-400"><i class="ph ph-at"></i></span>
@@ -521,9 +521,9 @@
         }
         window.addEventListener('hashchange', navigate);
 
-        // অ্যাপ রুট ইনিশিয়ালাইজার (রিয়েল-টাইম সিঙ্ক সবার আগে ওপেন করা হলো)
+        // অ্যাপ রুট ইনিশিয়ালাইজার (লিসেনারদের ব্যাকগ্রাউন্ডে সর্বপ্রথমে অ্যাক্টিভ করা হয়েছে)
         async function initApp() {
-            // রিয়েল-টাইম ডাটা সিঙ্ক্রোনাইজেশন অ্যাপ স্টার্ট হওয়ার সাথে সাথেই ফায়ার হবে
+            // রিয়েল-টাইম ডাটা সিঙ্ক্রোনাইজেশন সাথে সাথেই স্টার্ট হবে
             listenToUsers();
             listenToPosts();
             listenToComments();
@@ -580,7 +580,7 @@
             hideLoginModal();
         }
 
-        // পপ-আপ বেইজড গুগল সাইন-ইন লজিক
+        // পপ-আপ গুগল সাইন-ইন লজিক (নিখুঁত ও অত্যন্ত ফাস্ট)
         window.signInWithGoogle = async () => {
             try {
                 showToast("Google অ্যাকাউন্ট ভেরিফিকেশন করা হচ্ছে...");
@@ -600,7 +600,7 @@
 
         window.signOutApp = async () => {
             await signOut(auth);
-            showToast("সাফল্যজনকভাবে লগ আউট হয়েছেন।");
+            showToast("আপনি সফলভাবে লগ আউট হয়েছেন।");
         }
 
         window.requestVerification = () => {
@@ -1136,20 +1136,21 @@
             renderPosts();
         }
 
-        // সিঙ্গেল পোস্ট কার্ড ক্রিয়েটর (রিয়্যাকশনস ইঞ্জিন ইন্টিগ্রেটেড)
+        // সিঙ্গেল পোস্ট কার্ড ক্রিয়েটর (নিখুঁত সেফগার্ড ইন্টিগ্রেশন)
         function createPostElement(post) {
             const author = post.isAnonymous ? { username: 'অজ্ঞাত ঘোস্ট', emojiAvatar: '👻', isVerified: false } : (allUsers[post.authorId] || { username: 'অজানা মেম্বার', emojiAvatar: '👤', isVerified: false });
             
-            const isLiked = (currentUser && !currentUser.isAnonymous) && (post.likes || []).includes(currentUser.uid);
-            const isLoved = (currentUser && !currentUser.isAnonymous) && (post.loveReacts || []).includes(currentUser.uid);
-            const isHaha = (currentUser && !currentUser.isAnonymous) && (post.hahaReacts || []).includes(currentUser.uid);
+            // ক্র্যাশ প্রোটেকশন - ডাটাবেজে রিয়্যাকশন ফিল্ড না থাকলেও ডিফল্ট এরে [] এসাইন করবে
+            const postLikes = post.likes || [];
+            const postLoves = post.loveReacts || [];
+            const postHahas = post.hahaReacts || [];
+
+            const isLiked = (currentUser && !currentUser.isAnonymous) && postLikes.includes(currentUser.uid);
+            const isLoved = (currentUser && !currentUser.isAnonymous) && postLoves.includes(currentUser.uid);
+            const isHaha = (currentUser && !currentUser.isAnonymous) && postHahas.includes(currentUser.uid);
             
             const isMyPost = (currentUser && !currentUser.isAnonymous) && post.authorId === currentUser.uid;
             const commentsCount = allComments.filter(c => c.postId === post.id).length;
-
-            const likesCount = (post.likes || []).length;
-            const lovesCount = (post.loveReacts || []).length;
-            const hahaCount = (post.hahaReacts || []).length;
 
             return `
                 <div class="bg-white border border-gray-100 rounded-3xl p-4.5 shadow-sm hover:shadow-md transition-all duration-300">
@@ -1166,7 +1167,7 @@
                         </div>
                         
                         <div class="flex gap-1.5">
-                            <button onclick="sharePost('${post.id}', '${post.content.replace(/'/g, "\\'")}')" class="text-gray-400 hover:text-blue-500 p-1.5 hover:bg-blue-50 rounded-lg transition-all" title="শেয়ার করুন">
+                            <button onclick="sharePost('${post.id}', '${(post.content || '').replace(/'/g, "\\'")}')" class="text-gray-400 hover:text-blue-500 p-1.5 hover:bg-blue-50 rounded-lg transition-all" title="শেয়ার করুন">
                                 <i class="ph ph-share-network text-lg"></i>
                             </button>
                             ${isMyPost ? `
@@ -1176,7 +1177,7 @@
                             ` : ''}
                         </div>
                     </div>
-                    <p class="text-gray-800 text-[14px] leading-relaxed mb-4 pl-1 font-medium">${post.content.replace(/\n/g, '<br>')}</p>
+                    <p class="text-gray-800 text-[14px] leading-relaxed mb-4 pl-1 font-medium">${(post.content || '').replace(/\n/g, '<br>')}</p>
                     
                     <!-- রিয়্যাকশন প্যানেল ও কমেন্ট সেকশন -->
                     <div class="flex flex-wrap items-center justify-between border-t border-gray-50 pt-3 select-none gap-3">
@@ -1184,19 +1185,19 @@
                             <!-- লাইক রিয়্যাকশন -->
                             <button onclick="toggleReaction('${post.id}', 'like')" class="flex items-center gap-1 text-xs font-bold transition-all ${isLiked ? 'text-blue-600' : 'text-gray-500 hover:text-blue-500'}">
                                 <i class="${isLiked ? 'ph-fill' : 'ph'} ph-thumbs-up text-lg"></i>
-                                <span>${likesCount}</span>
+                                <span>${postLikes.length}</span>
                             </button>
                             
                             <!-- লাভ রিয়্যাকশন -->
                             <button onclick="toggleReaction('${post.id}', 'love')" class="flex items-center gap-1 text-xs font-bold transition-all ${isLoved ? 'text-red-500' : 'text-gray-500 hover:text-red-500'}">
                                 <i class="${isLoved ? 'ph-fill' : 'ph'} ph-heart text-lg"></i>
-                                <span>${lovesCount}</span>
+                                <span>${postLoves.length}</span>
                             </button>
 
                             <!-- হাহা রিয়্যাকশন -->
                             <button onclick="toggleReaction('${post.id}', 'haha')" class="flex items-center gap-1 text-xs font-bold transition-all ${isHaha ? 'text-yellow-500' : 'text-gray-500 hover:text-yellow-500'}">
                                 <span class="text-lg">${isHaha ? '😂' : '😀'}</span>
-                                <span>${hahaCount}</span>
+                                <span>${postHahas.length}</span>
                             </button>
                         </div>
 
@@ -1230,7 +1231,7 @@
             if (searchQuery) {
                 filtered = filtered.filter(p => {
                     const postAuthor = p.isAnonymous ? { username: 'অজ্ঞাত ঘোস্ট' } : (allUsers[p.authorId] || { username: '' });
-                    return p.content.toLowerCase().includes(searchQuery) || postAuthor.username.toLowerCase().includes(searchQuery);
+                    return (p.content || '').toLowerCase().includes(searchQuery) || (postAuthor.username || '').toLowerCase().includes(searchQuery);
                 });
             }
 
@@ -1328,10 +1329,10 @@
                 <div class="flex items-center justify-between p-4 ${index !== sortedUsers.length -1 ? 'border-b border-gray-50' : ''} hover:bg-gray-50/50 transition-colors">
                     <div class="flex items-center gap-4">
                         <div class="text-base w-5 text-center ${rankColor}">${index + 1}</div>
-                        <span class="text-3xl bg-white shadow-inner w-10 h-10 flex items-center justify-center rounded-2xl border border-gray-100">${user.emojiAvatar}</span>
+                        <span class="text-3xl bg-white shadow-inner w-10 h-10 flex items-center justify-center rounded-2xl border border-gray-100">${user.emojiAvatar || '👤'}</span>
                         <div>
                             <div class="font-bold text-[14px] text-gray-900 flex items-center">
-                                ${user.username}
+                                ${user.username || 'অজানা ইউজার'}
                                 ${user.isVerified ? VERIFIED_BADGE_SVG : ''}
                                 ${rankIcon}
                             </div>
