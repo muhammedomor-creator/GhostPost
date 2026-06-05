@@ -62,13 +62,13 @@
             padding-bottom: 80px;
         }
 
-        /* বটম ড্রয়ার এনিমেশন */
+        /* বটম ড্রয়ার এনিমেশন (X এবং Y এক্সিস একসাথে ঠিক করা হয়েছে যাতে স্ক্রিনের বাইরে না যায়) */
         .drawer {
-            transform: translateY(100%);
+            transform: translate(-50%, 100%);
             transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .drawer.open {
-            transform: translateY(0);
+            transform: translate(-50%, 0);
         }
 
         textarea, input {
@@ -340,9 +340,9 @@
             </div>
         </div>
 
-        <!-- স্লাইডিং কমেন্ট ও রিপ্লাই ড্রয়ার (বটম ড্রয়ার) -->
+        <!-- স্লাইডিং কমেন্ট ও রিপ্লাই ড্রয়ার (বটম ড্রয়ার) - -translate-x-1/2 ক্লাসটি সিএসএস ট্রানজিশনের সুবিধার্থে রিমুভ করা হয়েছে -->
         <div id="comment-backdrop" class="fixed inset-0 bg-black/50 z-50 hidden opacity-0 backdrop-blur-xs transition-opacity duration-300" onclick="closeCommentDrawer()"></div>
-        <div id="comment-drawer" class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] bg-white rounded-t-[32px] shadow-2xl z-50 drawer flex flex-col max-h-[85vh]">
+        <div id="comment-drawer" class="fixed bottom-0 left-1/2 w-full max-w-[480px] bg-white rounded-t-[32px] shadow-2xl z-50 drawer flex flex-col max-h-[85vh]">
             <div class="w-12 h-1 bg-gray-200 rounded-full mx-auto my-3 cursor-pointer" onclick="closeCommentDrawer()"></div>
             
             <div class="px-5 pb-3 border-b border-gray-50 flex justify-between items-center">
@@ -384,7 +384,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, addDoc, updateDoc, deleteDoc, serverTimestamp, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        // স্কেলেবল কমেন্ট লোডিংসের জন্য query এবং where ইমপোর্ট করা হলো
+        import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, addDoc, updateDoc, deleteDoc, serverTimestamp, arrayUnion, arrayRemove, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         // ফায়ারবেস কনফিগারেশন
         const providedConfig = {
@@ -521,12 +522,11 @@
         }
         window.addEventListener('hashchange', navigate);
 
-        // অ্যাপ রুট ইনিশিয়ালাইজার (লিসেনারদের ব্যাকগ্রাউন্ডে সর্বপ্রথমে অ্যাক্টিভ করা হয়েছে)
+        // অ্যাপ রুট ইনিশিয়ালাইজার
         async function initApp() {
-            // রিয়েল-টাইম ডাটা সিঙ্ক্রোনাইজেশন সাথে সাথেই স্টার্ট হবে
             listenToUsers();
             listenToPosts();
-            listenToComments();
+            // স্কেলিং ঠিক করার জন্য listenToComments() গ্লোবাল কলটি এখান থেকে সরিয়ে কমেন্ট ড্রয়ার অ্যাকশনে শিফট করা হয়েছে।
 
             onAuthStateChanged(auth, async (user) => {
                 currentUser = user;
@@ -580,7 +580,7 @@
             hideLoginModal();
         }
 
-        // পপ-আপ গুগল সাইন-ইন লজিক (নিখুঁত ও অত্যন্ত ফাস্ট)
+        // পপ-আপ গুগল সাইন-ইন লজিক
         window.signInWithGoogle = async () => {
             try {
                 showToast("Google অ্যাকাউন্ট ভেরিফিকেশন করা হচ্ছে...");
@@ -807,11 +807,15 @@
             });
         }
 
-        function listenToComments() {
+        // ১০,০০০+ রিড অপ্টিমাইজড লিসেনার: এখন এটি নির্দিষ্ট পোস্টের আইডি রিড করে এবং রিড সংখ্যা কমায়
+        function listenToComments(postId) {
             if(unsubComments) unsubComments();
 
             const commentsRef = collection(db, 'artifacts', appId, 'public', 'data', 'comments');
-            unsubComments = onSnapshot(commentsRef, (snapshot) => {
+            // শুধুমাত্র সিলেক্ট করা পোস্ট আইডির কমেন্ট কুয়েরি করা হচ্ছে
+            const q = query(commentsRef, where('postId', '==', postId));
+
+            unsubComments = onSnapshot(q, (snapshot) => {
                 allComments = [];
                 snapshot.forEach(doc => {
                     allComments.push({ id: doc.id, ...doc.data() });
@@ -824,8 +828,8 @@
                     return timeA - timeB;
                 });
 
-                if (activePostIdForComments) {
-                    renderComments(activePostIdForComments);
+                if (activePostIdForComments === postId) {
+                    renderComments(postId);
                 }
             }, (error) => {
                 console.error("Comments sync failed:", error);
@@ -1044,7 +1048,8 @@
                 document.getElementById('comment-drawer').classList.add('open');
             }, 10);
 
-            renderComments(postId);
+            // ড্রয়ার খোলার পর এই নির্দিষ্ট পোস্টের রিয়েল-টাইম কমেন্ট লিসেন শুরু হচ্ছে
+            listenToComments(postId);
         }
 
         window.closeCommentDrawer = () => {
@@ -1055,6 +1060,12 @@
                 document.getElementById('comment-backdrop').classList.add('hidden');
                 document.getElementById('comment-drawer').classList.add('hidden');
                 activePostIdForComments = null;
+
+                // রিড লিমিট বাঁচাতে এবং ব্যাটারি ক্ষয় রোধে ক্লোজ করার সাথে সাথেই লিসেনার বন্ধ করে দেওয়া হচ্ছে
+                if (unsubComments) {
+                    unsubComments();
+                    unsubComments = null;
+                }
             }, 300);
         }
 
@@ -1136,11 +1147,10 @@
             renderPosts();
         }
 
-        // সিঙ্গেল পোস্ট কার্ড ক্রিয়েটর (নিখুঁত সেফগার্ড ইন্টিগ্রেশন)
+        // সিঙ্গেল পোস্ট কার্ড ক্রিয়েটর
         function createPostElement(post) {
             const author = post.isAnonymous ? { username: 'অজ্ঞাত ঘোস্ট', emojiAvatar: '👻', isVerified: false } : (allUsers[post.authorId] || { username: 'অজানা মেম্বার', emojiAvatar: '👤', isVerified: false });
             
-            // ক্র্যাশ প্রোটেকশন - ডাটাবেজে রিয়্যাকশন ফিল্ড না থাকলেও ডিফল্ট এরে [] এসাইন করবে
             const postLikes = post.likes || [];
             const postLoves = post.loveReacts || [];
             const postHahas = post.hahaReacts || [];
@@ -1150,6 +1160,7 @@
             const isHaha = (currentUser && !currentUser.isAnonymous) && postHahas.includes(currentUser.uid);
             
             const isMyPost = (currentUser && !currentUser.isAnonymous) && post.authorId === currentUser.uid;
+            // এটি রিয়েল টাইমে শুধুমাত্র পোস্ট আইডির সাথে ম্যাচ করা কমেন্টের সংখ্যা হিসাব করে প্রদর্শন করবে
             const commentsCount = allComments.filter(c => c.postId === post.id).length;
 
             return `
