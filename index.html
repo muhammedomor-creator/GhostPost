@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GhostPost | আধুনিক সোশ্যাল প্ল্যাটফর্ম</title>
+    <title>GhostPost | আধুনিক ও প্রিমিয়াম সোশ্যাল প্ল্যাটফর্ম</title>
     <!-- টেলউইন্ড সিএসএস (Tailwind CSS) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- ফসফর আইকনস (Phosphor Icons) -->
@@ -18,9 +18,9 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* মসৃণ ভিউ ট্রানজিশন */
+        /* মসৃণ ভিউ ট্রানজিশন এনিমেশন */
         .view-container {
-            transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             opacity: 0;
             transform: translateY(8px);
             pointer-events: none;
@@ -39,9 +39,9 @@
             display: block;
         }
 
-        /* স্ক্রলবার হাইড ও কাস্টমাইজেশন */
+        /* কাস্টম স্ক্রলবার */
         ::-webkit-scrollbar {
-            width: 5px;
+            width: 6px;
         }
         ::-webkit-scrollbar-track {
             background: transparent;
@@ -51,7 +51,7 @@
             border-radius: 9999px;
         }
 
-        /* মেইন মোবাইল ফ্রেম */
+        /* মেইন রেসপন্সিভ মোবাইল ফ্রেম */
         #app {
             max-width: 480px;
             margin: 0 auto;
@@ -62,22 +62,21 @@
             padding-bottom: 80px;
         }
 
-        /* বটম ড্রয়ার স্টাইল */
+        /* বটম ড্রয়ার এনিমেশন */
         .drawer {
             transform: translateY(100%);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .drawer.open {
             transform: translateY(0);
         }
 
-        /* ইনপুট ফোকাস রিং দূর করা */
         textarea, input {
             outline: none !important;
             resize: none;
         }
         
-        /* কাস্টম টোস্ট নোটিফিকেশন */
+        /* কাস্টম প্রিমিয়াম টোস্ট */
         #toast-container {
             position: fixed;
             bottom: 90px;
@@ -92,14 +91,14 @@
         }
         .toast {
             background: rgba(17, 24, 39, 0.95);
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(12px);
             color: white;
             padding: 12px 18px;
-            border-radius: 16px;
-            font-size: 14px;
-            font-weight: 500;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            animation: slideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+            animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -522,9 +521,13 @@
         }
         window.addEventListener('hashchange', navigate);
 
-        // অ্যাপ রুট ইনিশিয়ালাইজার
+        // অ্যাপ রুট ইনিশিয়ালাইজার (রিয়েল-টাইম সিঙ্ক সবার আগে ওপেন করা হলো)
         async function initApp() {
-            // সিকিউর প্রথম ধাপ: অথেন্টিকেশন আগে নিশ্চিত করা (RULE 3)
+            // রিয়েল-টাইম ডাটা সিঙ্ক্রোনাইজেশন অ্যাপ স্টার্ট হওয়ার সাথে সাথেই ফায়ার হবে
+            listenToUsers();
+            listenToPosts();
+            listenToComments();
+
             onAuthStateChanged(auth, async (user) => {
                 currentUser = user;
                 if (user) {
@@ -534,10 +537,6 @@
                     } else {
                         await checkUserData(user);
                     }
-                    // ডাটাবেজ সিঙ্ক চালু করা
-                    listenToUsers();
-                    listenToPosts();
-                    listenToComments();
                 } else {
                     try {
                         if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
@@ -610,7 +609,7 @@
             window.open(`https://wa.me/8801949437370?text=${text}`, '_blank');
         }
 
-        // ফায়ারস্টোরে ইউজারের ডাটাবেস পরীক্ষা করা (RULE 1 - public/data/{collectionName})
+        // ফায়ারস্টোরে ইউজারের ডাটাবেস পরীক্ষা করা
         async function checkUserData(user) {
             if (!user) return;
             try {
@@ -663,7 +662,7 @@
             });
         }
 
-        // প্রোফাইল সংরক্ষণ মেথড (RULE 1)
+        // প্রোফাইল সংরক্ষণ মেথড
         window.saveProfileSetup = async () => {
             if(!currentUser || currentUser.isAnonymous) return;
             
@@ -757,14 +756,13 @@
             }
         }
 
-        // রিয়েল-টাইম ডাটা সিঙ্ক্রোনাইজার (RULE 1, RULE 2 - sorting on client side)
+        // রিয়েল-টাইম ডাটা সিঙ্ক্রোনাইজার
         let unsubUsers = null;
         let unsubPosts = null;
         let unsubComments = null;
 
         function listenToUsers() {
             if(unsubUsers) unsubUsers();
-            if(!currentUser) return; 
 
             const usersRef = collection(db, 'artifacts', appId, 'public', 'data', 'users');
             unsubUsers = onSnapshot(usersRef, (snapshot) => {
@@ -787,7 +785,6 @@
 
         function listenToPosts() {
             if(unsubPosts) unsubPosts();
-            if(!currentUser) return;
 
             const postsRef = collection(db, 'artifacts', appId, 'public', 'data', 'posts');
             unsubPosts = onSnapshot(postsRef, (snapshot) => {
@@ -796,7 +793,7 @@
                     allPosts.push({ id: doc.id, ...doc.data() });
                 });
                 
-                // ক্লায়েন্ট সাইড সর্টিং (RULE 2 - No Complex Queries)
+                // ক্লায়েন্ট সাইড সর্টিং 
                 allPosts.sort((a, b) => {
                     const timeA = a.timestamp?.toMillis ? a.timestamp.toMillis() : 0;
                     const timeB = b.timestamp?.toMillis ? b.timestamp.toMillis() : 0;
@@ -812,7 +809,6 @@
 
         function listenToComments() {
             if(unsubComments) unsubComments();
-            if(!currentUser) return;
 
             const commentsRef = collection(db, 'artifacts', appId, 'public', 'data', 'comments');
             unsubComments = onSnapshot(commentsRef, (snapshot) => {
@@ -825,7 +821,7 @@
                 allComments.sort((a, b) => {
                     const timeA = a.timestamp?.toMillis ? a.timestamp.toMillis() : 0;
                     const timeB = b.timestamp?.toMillis ? b.timestamp.toMillis() : 0;
-                    return timeA - timeB; // ওল্ডেস্ট কমেন্ট উপরে থাকবে
+                    return timeA - timeB;
                 });
 
                 if (activePostIdForComments) {
@@ -902,7 +898,7 @@
             });
         }
 
-        // পোস্ট সাবমিট লজিক (RULE 1)
+        // পোস্ট সাবমিট লজিক
         window.submitPost = async () => {
             if(!currentUser || currentUser.isAnonymous || !currentUserData) {
                 showLoginModal('নতুন পোস্ট ক্রিয়েট করতে লগইন করুন');
@@ -946,7 +942,9 @@
                     content: content,
                     isAnonymous: isGhost,
                     timestamp: serverTimestamp(),
-                    likes: []
+                    likes: [],
+                    loveReacts: [],
+                    hahaReacts: []
                 });
 
                 if (isGhost && !currentUserData.isVerified) {
@@ -986,10 +984,10 @@
             }
         }
 
-        // পোস্ট লাইক সিস্টেম
-        window.toggleLike = async (postId) => {
+        // পোস্ট রিয়্যাকশন সিস্টেম (লাইক, লাভ এবং হাহা রিয়্যাক্ট)
+        window.toggleReaction = async (postId, reactionType) => {
             if(!currentUser || currentUser.isAnonymous) {
-                showLoginModal('পোস্টে রিয়্যাক্ট করতে প্রথমে লগইন করুন');
+                showLoginModal('রিয়্যাকশন দিতে প্রথমে লগইন করুন');
                 return;
             }
             if(!currentUserData) return; 
@@ -999,17 +997,39 @@
 
             triggerHaptic();
             const postRef = doc(db, 'artifacts', appId, 'public', 'data', 'posts', postId);
-            const isLiked = post.likes.includes(currentUser.uid);
+            
+            let arrayField = 'likes';
+            if(reactionType === 'love') arrayField = 'loveReacts';
+            if(reactionType === 'haha') arrayField = 'hahaReacts';
+
+            // নিশ্চিত করা যে রিয়্যাক্ট ফিল্ড আগে থেকেই এরে (Array) হিসেবে আছে
+            const currentReactors = post[arrayField] || [];
+            const hasReacted = currentReactors.includes(currentUser.uid);
 
             try {
-                if (isLiked) {
-                    await updateDoc(postRef, { likes: arrayRemove(currentUser.uid) });
+                if (hasReacted) {
+                    await updateDoc(postRef, { [arrayField]: arrayRemove(currentUser.uid) });
                 } else {
-                    await updateDoc(postRef, { likes: arrayUnion(currentUser.uid) });
+                    await updateDoc(postRef, { [arrayField]: arrayUnion(currentUser.uid) });
                 }
             } catch (error) {
-                console.error("Liking failed:", error);
+                console.error("Reaction failed:", error);
             }
+        }
+
+        // ক্লিপবোর্ডে পোস্ট শেয়ার করার প্রফেশনাল মেথড
+        window.sharePost = (postId, postText) => {
+            triggerHaptic();
+            const shareText = `GhostPost-এ বেনামী শেয়ার করা পোস্ট:\n\n"${postText}"\n\nঅ্যাপ লিংক: ${window.location.origin}${window.location.pathname}#feeds`;
+            
+            const el = document.createElement('textarea');
+            el.value = shareText;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            
+            showToast("পোস্ট লিংক ও টেক্সট ক্লিপবোর্ডে কপি করা হয়েছে!");
         }
 
         // রিয়েল-টাইম কমেন্ট ড্রয়ার ওপেন ও ক্লোজ লজিক
@@ -1038,7 +1058,7 @@
             }, 300);
         }
 
-        // কমেন্ট সাবমিট পদ্ধতি (RULE 1)
+        // কমেন্ট সাবমিট পদ্ধতি
         window.submitComment = async () => {
             if(!currentUser || currentUser.isAnonymous || !currentUserData) {
                 showLoginModal('মন্তব্য করতে লগইন আবশ্যক');
@@ -1116,13 +1136,20 @@
             renderPosts();
         }
 
-        // সিঙ্গেল পোস্ট কার্ড ক্রিয়েটর
+        // সিঙ্গেল পোস্ট কার্ড ক্রিয়েটর (রিয়্যাকশনস ইঞ্জিন ইন্টিগ্রেটেড)
         function createPostElement(post) {
             const author = post.isAnonymous ? { username: 'অজ্ঞাত ঘোস্ট', emojiAvatar: '👻', isVerified: false } : (allUsers[post.authorId] || { username: 'অজানা মেম্বার', emojiAvatar: '👤', isVerified: false });
-            const isLiked = (currentUser && !currentUser.isAnonymous) && post.likes.includes(currentUser.uid);
-            const isMyPost = (currentUser && !currentUser.isAnonymous) && post.authorId === currentUser.uid;
             
+            const isLiked = (currentUser && !currentUser.isAnonymous) && (post.likes || []).includes(currentUser.uid);
+            const isLoved = (currentUser && !currentUser.isAnonymous) && (post.loveReacts || []).includes(currentUser.uid);
+            const isHaha = (currentUser && !currentUser.isAnonymous) && (post.hahaReacts || []).includes(currentUser.uid);
+            
+            const isMyPost = (currentUser && !currentUser.isAnonymous) && post.authorId === currentUser.uid;
             const commentsCount = allComments.filter(c => c.postId === post.id).length;
+
+            const likesCount = (post.likes || []).length;
+            const lovesCount = (post.loveReacts || []).length;
+            const hahaCount = (post.hahaReacts || []).length;
 
             return `
                 <div class="bg-white border border-gray-100 rounded-3xl p-4.5 shadow-sm hover:shadow-md transition-all duration-300">
@@ -1138,22 +1165,45 @@
                             </div>
                         </div>
                         
-                        ${isMyPost ? `
-                            <button onclick="deletePost('${post.id}')" class="text-gray-400 hover:text-red-500 p-1.5 hover:bg-red-50 rounded-lg transition-all" title="পোস্ট মুছুন">
-                                <i class="ph ph-trash text-lg"></i>
+                        <div class="flex gap-1.5">
+                            <button onclick="sharePost('${post.id}', '${post.content.replace(/'/g, "\\'")}')" class="text-gray-400 hover:text-blue-500 p-1.5 hover:bg-blue-50 rounded-lg transition-all" title="শেয়ার করুন">
+                                <i class="ph ph-share-network text-lg"></i>
                             </button>
-                        ` : ''}
+                            ${isMyPost ? `
+                                <button onclick="deletePost('${post.id}')" class="text-gray-400 hover:text-red-500 p-1.5 hover:bg-red-50 rounded-lg transition-all" title="পোস্ট মুছুন">
+                                    <i class="ph ph-trash text-lg"></i>
+                                </button>
+                            ` : ''}
+                        </div>
                     </div>
                     <p class="text-gray-800 text-[14px] leading-relaxed mb-4 pl-1 font-medium">${post.content.replace(/\n/g, '<br>')}</p>
                     
-                    <div class="flex items-center gap-6 border-t border-gray-50 pt-3 select-none">
-                        <button onclick="toggleLike('${post.id}')" class="flex items-center gap-1.5 text-xs font-bold transition-all ${isLiked ? 'text-[#FF0050]' : 'text-gray-500 hover:text-[#FF0050]'}">
-                            <i class="${isLiked ? 'ph-fill' : 'ph'} ph-heart text-xl ${isLiked ? 'scale-110' : ''} transition-transform"></i>
-                            ${post.likes.length > 0 ? post.likes.length : 'লাইক'}
-                        </button>
+                    <!-- রিয়্যাকশন প্যানেল ও কমেন্ট সেকশন -->
+                    <div class="flex flex-wrap items-center justify-between border-t border-gray-50 pt-3 select-none gap-3">
+                        <div class="flex items-center gap-4">
+                            <!-- লাইক রিয়্যাকশন -->
+                            <button onclick="toggleReaction('${post.id}', 'like')" class="flex items-center gap-1 text-xs font-bold transition-all ${isLiked ? 'text-blue-600' : 'text-gray-500 hover:text-blue-500'}">
+                                <i class="${isLiked ? 'ph-fill' : 'ph'} ph-thumbs-up text-lg"></i>
+                                <span>${likesCount}</span>
+                            </button>
+                            
+                            <!-- লাভ রিয়্যাকশন -->
+                            <button onclick="toggleReaction('${post.id}', 'love')" class="flex items-center gap-1 text-xs font-bold transition-all ${isLoved ? 'text-red-500' : 'text-gray-500 hover:text-red-500'}">
+                                <i class="${isLoved ? 'ph-fill' : 'ph'} ph-heart text-lg"></i>
+                                <span>${lovesCount}</span>
+                            </button>
+
+                            <!-- হাহা রিয়্যাকশন -->
+                            <button onclick="toggleReaction('${post.id}', 'haha')" class="flex items-center gap-1 text-xs font-bold transition-all ${isHaha ? 'text-yellow-500' : 'text-gray-500 hover:text-yellow-500'}">
+                                <span class="text-lg">${isHaha ? '😂' : '😀'}</span>
+                                <span>${hahaCount}</span>
+                            </button>
+                        </div>
+
+                        <!-- কমেন্ট ওপেনার বাটন -->
                         <button onclick="openCommentDrawer('${post.id}')" class="flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-indigo-500 transition-colors">
-                            <i class="ph ph-chat-circle text-xl"></i>
-                            ${commentsCount > 0 ? `${commentsCount} টি মন্তব্য` : 'কমেন্ট'}
+                            <i class="ph ph-chat-circle text-lg"></i>
+                            <span>${commentsCount > 0 ? `${commentsCount} টি মন্তব্য` : 'কমেন্ট'}</span>
                         </button>
                     </div>
                 </div>
@@ -1187,8 +1237,8 @@
             if (filtered.length === 0) {
                 container.innerHTML = `
                     <div class="text-center text-gray-400 py-14 flex flex-col items-center bg-white rounded-3xl border border-dashed border-gray-100 shadow-sm">
-                        <i class="ph ph-ghost text-4xl mb-2.5 opacity-40"></i>
-                        কোনো পোস্ট পাওয়া যায়নি। প্রথম ক্রিয়েটিভ পোস্টটি আপনিই করুন!
+                        <i class="ph ph-ghost text-4xl mb-2.5 opacity-40 animate-pulse"></i>
+                        কোনো পোস্ট পাওয়া যায়নি। প্রথম চমৎকার পোস্টটি আপনিই করুন!
                     </div>
                 `;
                 return;
@@ -1213,9 +1263,11 @@
 
             const userPosts = allPosts.filter(p => p.authorId === currentUser.uid);
             let totalLikes = 0;
-            userPosts.forEach(p => totalLikes += p.likes.length);
+            userPosts.forEach(p => {
+                totalLikes += ((p.likes || []).length + (p.loveReacts || []).length + (p.hahaReacts || []).length);
+            });
 
-            document.getElementById('profile-page-stats').innerText = `${userPosts.length} পোস্ট • ${totalLikes} সর্বমোট লাইক`;
+            document.getElementById('profile-page-stats').innerText = `${userPosts.length} পোস্ট • ${totalLikes} সর্বমোট রিয়্যাকশন`;
 
             const container = document.getElementById('profile-posts-container');
             if(userPosts.length === 0) {
@@ -1240,7 +1292,7 @@
 
             allPosts.forEach(post => {
                 if(userStats[post.authorId]) {
-                    userStats[post.authorId].totalLikes += post.likes.length;
+                    userStats[post.authorId].totalLikes += ((post.likes || []).length + (post.loveReacts || []).length + (post.hahaReacts || []).length);
                 }
             });
 
