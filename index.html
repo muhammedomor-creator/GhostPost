@@ -144,6 +144,24 @@
         .animate-spin-slow {
             animation: spin-slow 10s linear infinite;
         }
+
+        /* গ্লোয়িং ইফেক্টস */
+        @keyframes gold-glow-pulse {
+            0%, 100% {
+                box-shadow: 0 0 8px rgba(245, 158, 11, 0.4), 0 0 15px rgba(245, 158, 11, 0.2);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(245, 158, 11, 0.8), 0 0 35px rgba(251, 191, 36, 0.5);
+                transform: scale(1.02);
+            }
+        }
+        .glowing-gold-btn {
+            animation: gold-glow-pulse 2.5s infinite ease-in-out;
+            transition: all 0.3s ease;
+        }
+        .glowing-gold-btn:active {
+            transform: scale(0.98);
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -316,6 +334,31 @@
                 <h2 class="text-xl font-black mb-6 px-1 text-gray-950">সেটিংস</h2>
                 
                 <div class="space-y-4">
+                    
+                    <!-- গ্লোয়িং প্রমো বাটন (শুধুমাত্র নন-প্রিমিয়াম ইউজারদের দেখাবে) -->
+                    <div id="premium-promo-banner" class="hidden">
+                        <button onclick="openPremiumPromoModal()" class="glowing-gold-btn w-full bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500 text-white rounded-3xl p-5 text-left flex items-center justify-between shadow-lg relative overflow-hidden select-none">
+                            <!-- ব্যাকগ্রাউন্ড সলিড ওয়াটারমার্ক আইকন -->
+                            <div class="absolute -right-4 -bottom-4 text-7xl opacity-15 text-white">
+                                <i class="ph-fill ph-crown"></i>
+                            </div>
+                            <div class="flex items-center gap-3.5 relative z-10">
+                                <div class="w-11 h-11 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-2xl shadow-inner">
+                                    👑
+                                </div>
+                                <div>
+                                    <h4 class="font-black text-sm tracking-tight flex items-center gap-1.5">
+                                        প্রিমিয়াম সাবস্ক্রিপশন পান
+                                    </h4>
+                                    <p class="text-[10px] text-amber-100 font-bold mt-0.5">সবগুলো এক্সক্লুসিভ ফিচার আনলক করুন এখনই!</p>
+                                </div>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-white/15 flex items-center justify-center text-white text-sm relative z-10 border border-white/20 shadow-sm">
+                                <i class="ph-bold ph-caret-right"></i>
+                            </div>
+                        </button>
+                    </div>
+
                     <!-- কাস্টমাইজ প্রোফাইল সেকশন -->
                     <div class="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm">
                         <h3 class="font-bold text-sm text-gray-900 mb-3 flex items-center gap-1.5"><i class="ph ph-user-gear"></i> প্রোফাইল কাস্টমাইজ করুন</h3>
@@ -328,7 +371,7 @@
                         </div>
                     </div>
 
-                    <!-- প্রিমিয়াম কাস্টমাইজেশন প্যানেল (লকিং মেকানিজম যুক্ত করা হয়েছে) -->
+                    <!-- প্রিমিয়াম কাস্টমাইজেশন প্যানেল (লকিং মেকানিজম সহ) -->
                     <div class="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm relative overflow-hidden" id="premium-panel">
                         <h3 class="font-bold text-sm text-gray-900 mb-3.5 flex items-center gap-1.5">
                             <i class="ph-fill ph-crown text-amber-500 text-base"></i> প্রিমিয়াম কাস্টমাইজেশন
@@ -377,8 +420,8 @@
                             </div>
                             <h4 class="font-bold text-xs text-gray-900 mb-1">প্রিমিয়াম সেটিংস লক করা আছে</h4>
                             <p class="text-[10px] text-gray-500 max-w-[240px] leading-relaxed mb-3">কাস্টম ব্যাজ কালার, ফ্যান্টাসি বর্ডার ফ্রেম এবং আকর্ষণীয় ফন্ট আনলক করতে এখনই ভেরিফাইড মেম্বার হন!</p>
-                            <button onclick="window.location.hash='#settings'; document.getElementById('whatsapp-verify-box').scrollIntoView({behavior: 'smooth'});" class="bg-amber-500 text-white text-[10px] font-bold py-2.5 px-4 rounded-xl shadow-md hover:bg-amber-600 active:scale-95 transition-all">
-                                ভেরিফিকেশন আবেদন করুন
+                            <button onclick="openPremiumPromoModal()" class="bg-amber-500 text-white text-[10px] font-bold py-2.5 px-4 rounded-xl shadow-md hover:bg-amber-600 active:scale-95 transition-all">
+                                প্রিমিয়াম ফিচারসমূহ দেখুন
                             </button>
                         </div>
                     </div>
@@ -401,22 +444,7 @@
                         </div>
                     </div>
 
-                    <!-- ভেরিফিকেশন সেকশন -->
-                    <div id="whatsapp-verify-box" class="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-950 rounded-3xl p-6 relative overflow-hidden shadow-lg">
-                        <div class="absolute -right-8 -top-8 text-9xl opacity-10 text-white">
-                            <i class="ph-fill ph-seal-check"></i>
-                        </div>
-                        <h3 class="font-black text-base text-white flex items-center gap-2 mb-2 relative z-10">
-                            ভেরিফায়েড অ্যাকাউন্ট পান 
-                            <span class="inline-block" id="verification-badge-sample"></span>
-                        </h3>
-                        <p class="text-xs text-gray-400 mb-5 relative z-10 leading-relaxed">মাত্র ৫০ টাকা ওয়ান-টাইম চার্জের বিনিময়ে ভেরিফায়েড ব্যাজ আনলক করুন! এর সাথে পাবেন ৫০ শব্দের বর্ধিত শব্দসীমা, আনলিমিটেড ফ্রি ঘোস্ট পোস্ট এবং একটি আকর্ষনীয় গোল্ডেন/প্রিমিয়াম লুকিং এক্সক্লুসিভ ব্যাজ ও সেটিংস প্যানেল।</p>
-                        <button onclick="requestVerification()" class="bg-[#25D366] text-white text-xs font-bold py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-[#1ebd5b] active:scale-95 transition-all relative z-10 w-full shadow-lg shadow-[#25D366]/10">
-                            <i class="ph-fill ph-whatsapp-logo text-lg"></i> ৫০৳ পেমেন্ট করে WhatsApp-এ আবেদন করুন
-                        </button>
-                    </div>
-
-                    <!-- কন্ট্যাক্ট ও ডেভলপার লিংকস -->
+                    <!-- ভেরিফিকেশন বাটনস ও কন্টাক্ট লিঙ্কস -->
                     <div class="bg-white border border-gray-100 rounded-3xl shadow-sm divide-y divide-gray-50 overflow-hidden">
                         <a href="https://hikmah.net/@muhammedomor_official" target="_blank" class="w-full text-left px-5 py-4 text-xs font-bold text-gray-700 flex justify-between items-center hover:bg-gray-50 transition-colors">
                             ডেভলপার প্রোফাইল (ওমর) <i class="ph ph-arrow-square-out text-gray-400"></i>
@@ -473,6 +501,91 @@
                 <button onclick="signInWithGoogle()" class="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-100 text-gray-800 font-bold py-3.5 px-4 rounded-2xl shadow-sm hover:bg-gray-50 hover:border-gray-200 active:scale-95 transition-all text-xs">
                     <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-4 h-5" alt="Google">
                     Google অ্যাকাউন্ট দিয়ে চালিয়ে যান
+                </button>
+            </div>
+        </div>
+
+        <!-- প্রফেশনাল প্রিমিয়াম ফিচার পপ-আপ মডাল (রয়েল ব্ল্যাক অ্যান্ড গোল্ড থিম) -->
+        <div id="premium-features-modal" class="fixed inset-0 bg-black/75 z-50 hidden flex-col items-center justify-center p-4 backdrop-blur-md opacity-0 transition-opacity duration-350">
+            <div class="bg-gradient-to-b from-zinc-900 via-gray-950 to-black w-full max-w-sm rounded-[32px] border border-amber-500/25 p-6 text-center shadow-2xl transform scale-95 transition-transform duration-350 relative max-h-[85vh] flex flex-col">
+                
+                <!-- ক্লোজ বাটন -->
+                <button onclick="closePremiumPromoModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 p-2.5 rounded-2xl transition-all">
+                    <i class="ph text-base ph-x"></i>
+                </button>
+                
+                <!-- হেডার আইকন -->
+                <div class="w-16 h-16 bg-gradient-to-tr from-amber-500 to-yellow-400 rounded-3xl flex items-center justify-center mx-auto mb-4 text-zinc-950 shadow-lg shadow-amber-500/15">
+                    <i class="ph-fill ph-crown text-3xl"></i>
+                </div>
+                
+                <h3 class="text-xl font-black text-white tracking-tight flex items-center justify-center gap-1.5 mb-1">
+                    GhostPost <span class="bg-gradient-to-r from-amber-400 to-yellow-200 bg-clip-text text-transparent font-black">PREMIUM</span>
+                </h3>
+                <p class="text-[11px] text-zinc-400 font-medium mb-5">সীমিত সময়ের অফার! আজই আপগ্রেড করুন মাত্র ৫০৳ ওয়ান-টাইম চার্জে</p>
+                
+                <!-- প্রফেশনাল ফিচারস স্ক্রল এরিয়া -->
+                <div class="flex-1 overflow-y-auto space-y-3.5 pr-1.5 text-left mb-6">
+                    
+                    <!-- আইটেম ১ -->
+                    <div class="flex gap-3 bg-zinc-900/50 p-3.5 rounded-2xl border border-zinc-800/60 items-start">
+                        <div class="text-amber-400 text-xl mt-0.5"><i class="ph-fill ph-text-aa"></i></div>
+                        <div>
+                            <h4 class="font-extrabold text-xs text-white">৫০ শব্দের বর্ধিত শব্দসীমা</h4>
+                            <p class="text-[10px] text-zinc-400 mt-0.5 leading-relaxed">ফ্রি লিমিটের দ্বিগুণ শব্দে আরও বিস্তারিত ও আকর্ষণীয় মনের কথা প্রকাশ করুন।</p>
+                        </div>
+                    </div>
+
+                    <!-- আইটেম ২ -->
+                    <div class="flex gap-3 bg-zinc-900/50 p-3.5 rounded-2xl border border-zinc-800/60 items-start">
+                        <div class="text-amber-400 text-xl mt-0.5"><i class="ph-fill ph-ghost"></i></div>
+                        <div>
+                            <h4 class="font-extrabold text-xs text-white">আনলিমিটেড ঘোস্ট পোস্ট</h4>
+                            <p class="text-[10px] text-zinc-400 mt-0.5 leading-relaxed">কোনো দৈনিক লিমিটেশন ছাড়াই সম্পূর্ণ বেনামে যত খুশি পোস্ট করুন।</p>
+                        </div>
+                    </div>
+
+                    <!-- আইটেম ৩ -->
+                    <div class="flex gap-3 bg-zinc-900/50 p-3.5 rounded-2xl border border-zinc-800/60 items-start">
+                        <div class="text-amber-400 text-xl mt-0.5"><i class="ph-fill ph-seal-check"></i></div>
+                        <div>
+                            <h4 class="font-extrabold text-xs text-white">কাস্টম ব্যাজ কালার</h4>
+                            <p class="text-[10px] text-zinc-400 mt-0.5 leading-relaxed">পছন্দমতো নিয়ন সায়ান, রয়েল গোল্ডেন বা ইলেকট্রিক গ্রিন কালারের কাস্টম ব্যাজ।</p>
+                        </div>
+                    </div>
+
+                    <!-- আইটেম ৪ -->
+                    <div class="flex gap-3 bg-zinc-900/50 p-3.5 rounded-2xl border border-zinc-800/60 items-start">
+                        <div class="text-amber-400 text-xl mt-0.5"><i class="ph-fill ph-circles-three-three-cell"></i></div>
+                        <div>
+                            <h4 class="font-extrabold text-xs text-white">প্রিমিয়াম স্পিনিং অ্যাভাটার ফ্রেম</h4>
+                            <p class="text-[10px] text-zinc-400 mt-0.5 leading-relaxed">প্রোফাইল পিকচারের চারপাশে রেইনবো স্পিন বা রয়্যাল গোল্ডেন শাইন বর্ডার ফ্রেম।</p>
+                        </div>
+                    </div>
+
+                    <!-- আইটেম ৫ -->
+                    <div class="flex gap-3 bg-zinc-900/50 p-3.5 rounded-2xl border border-zinc-800/60 items-start">
+                        <div class="text-amber-400 text-xl mt-0.5"><i class="ph-fill ph-scribble-loop"></i></div>
+                        <div>
+                            <h4 class="font-extrabold text-xs text-white">৪টি এক্সক্লুসিভ স্টাইলিশ ফন্ট</h4>
+                            <p class="text-[10px] text-zinc-400 mt-0.5 leading-relaxed">পোস্ট কার্ডের ফন্ট স্টাইল পরিবর্তন করে লেখাগুলোকে অনন্য রূপ দিন।</p>
+                        </div>
+                    </div>
+
+                    <!-- আইটেম ৬ -->
+                    <div class="flex gap-3 bg-zinc-900/50 p-3.5 rounded-2xl border border-zinc-800/60 items-start">
+                        <div class="text-amber-400 text-xl mt-0.5"><i class="ph-fill ph-image"></i></div>
+                        <div>
+                            <h4 class="font-extrabold text-xs text-white">আল্ট্রা এইচডি ৪X ডাউনলোড</h4>
+                            <p class="text-[10px] text-zinc-400 mt-0.5 leading-relaxed">ডাউনলোড করা পোস্ট কার্ডগুলো হবে বহুগুণ বেশি শার্প, ক্লিয়ার এবং ক্রিস্প!</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- হোয়াটসঅ্যাপ অ্যাকশন বাটন -->
+                <button onclick="requestVerification()" class="w-full bg-[#25D366] text-white text-xs font-bold py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-[#1ebd5b] active:scale-95 transition-all shadow-lg shadow-[#25D366]/20">
+                    <i class="ph-fill ph-whatsapp-logo text-lg"></i> এখনই নিন (৫০৳ পেমেন্ট করে একটিভ করুন)
                 </button>
             </div>
         </div>
@@ -677,6 +790,28 @@
 
         window.hideLoginModal = () => {
             const modal = document.getElementById('login-modal');
+            modal.classList.add('opacity-0');
+            modal.querySelector('div').classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        // প্রিমিয়াম প্রমো পপ-আপ মডাল হ্যান্ডলার
+        window.openPremiumPromoModal = () => {
+            triggerHaptic();
+            const modal = document.getElementById('premium-features-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.querySelector('div').classList.remove('scale-95');
+            }, 10);
+        }
+
+        window.closePremiumPromoModal = () => {
+            const modal = document.getElementById('premium-features-modal');
             modal.classList.add('opacity-0');
             modal.querySelector('div').classList.add('scale-95');
             setTimeout(() => {
@@ -894,7 +1029,7 @@
             }
         }
 
-        // ২. উন্নত ও শ্রেণীবদ্ধ ইমোজি রেন্ডারিং লজিক (Male, Female, Fantasy, Animals)
+        // ২. উন্নত ও শ্রেণীবদ্ধ ইমোজি রেন্ডারিং লজিক
         window.changeSetupEmojiTab = (tabName) => {
             activeSetupTab = tabName;
             document.querySelectorAll('.setup-tab-btn').forEach(btn => {
@@ -1056,7 +1191,6 @@
             const previewFrameDiv = document.getElementById('profile-frame-div');
             
             if (previewFrameDiv) {
-                // প্রিভিউ রিসেট
                 previewFrameDiv.className = "absolute inset-0 rounded-3xl transition-all";
                 if(frameVal === 'gold') {
                     previewFrameDiv.classList.add('bg-gradient-to-tr', 'from-amber-400', 'via-yellow-500', 'to-orange-500', 'p-[3px]', 'animate-spin-slow');
@@ -1068,19 +1202,22 @@
             }
         }
 
-        // সেটিংস পেজের প্রোফাইল এডিট ও প্রিমিয়াম লক হ্যান্ডলার
+        // সেটিংস পেজের প্রোফাইল এডিট ও প্রিমিয়াম লক/প্রমো হ্যান্ডলার
         function syncSettingsFields() {
             if(!currentUserData) return;
             document.getElementById('settings-avatar-preview').innerText = currentUserData.emojiAvatar || '👤';
             document.getElementById('settings-username-input').value = currentUserData.username || '';
             selectedEmoji = currentUserData.emojiAvatar || emojiCategories.female[0];
 
-            // প্রিমিয়াম লকিং কন্ট্রোল
+            // প্রমো বাটন ও প্রিমিয়াম লকিং কন্ট্রোল
+            const promoBanner = document.getElementById('premium-promo-banner');
             const lockOverlay = document.getElementById('premium-lock-overlay');
+            
             if (currentUserData.isVerified) {
+                // প্রিমিয়াম ইউজার হলে প্রমো বাটন এবং লক স্ক্রিন সম্পূর্ণ লুকিয়ে যাবে
+                promoBanner.classList.add('hidden');
                 lockOverlay.classList.add('hidden');
                 
-                // এক্সিস্টিং প্রিমিয়াম ভ্যালুস লোড করা
                 localSelectedBadgeColor = currentUserData.badgeColor || '#FF0050';
                 document.getElementById('settings-frame-select').value = currentUserData.avatarFrame || 'none';
                 document.getElementById('settings-font-select').value = currentUserData.customFont || 'Hind Siliguri';
@@ -1088,6 +1225,8 @@
                 renderBadgeColorPicker();
                 previewPremiumSettings();
             } else {
+                // সাধারণ ইউজার হলে গ্লোয়িং প্রমো বাটন ও লক স্ক্রিন চালু থাকবে
+                promoBanner.classList.remove('hidden');
                 lockOverlay.classList.remove('hidden');
             }
         }
@@ -1335,7 +1474,6 @@
                 newGhostCount++;
             }
 
-            // টেক্সট স্ট্রিং হ্যাক: যদি থিম সিলেক্ট করা থাকে, লেখার শুরুতে গোপন ট্যাগ এম্বেড করে দেওয়া হচ্ছে
             if (selectedThemeId > 0) {
                 content = `[T:${selectedThemeId}]${content}`;
             }
@@ -1369,7 +1507,6 @@
                 document.getElementById('ghost-toggle').checked = false;
                 document.getElementById('ghost-toggle').dispatchEvent(new Event('change'));
                 
-                // থিম সিলেক্টর রিসেট
                 selectedThemeId = 0;
                 renderThemeSelector();
                 
@@ -1404,7 +1541,6 @@
             const cardElement = document.getElementById(`card-${postId}`);
             if (!cardElement) return;
 
-            // ডাউনলোডের সময় ব্যাকগ্রাউন্ড বাটন এবং কন্ট্রোল প্যানেল হাইড করা হচ্ছে
             const controlBar = cardElement.querySelector('.card-controls-panel');
             const actionHeader = cardElement.querySelector('.card-action-header');
             
@@ -1413,9 +1549,7 @@
 
             showToast("কার্ড ইমেজ এইচডি ফরম্যাটে রূপান্তর করা হচ্ছে...");
 
-            // যদি কার্ডের রেন্ডার করা ফন্ট Google fonts হয়, তাহলে ডাউনলোডের সময় সেটা যাতে মিস না হয় তার জন্য সামান্য প্রিপারেশন
             document.fonts.ready.then(() => {
-                // প্রিমিয়াম ইউজারদের জন্য ৪ গুণ আল্ট্রা-এইচডি এবং সাধারণদের জন্য ৩ গুণ এইচডি স্কেল
                 const optimalScale = isAuthorPremium ? 4 : 3;
 
                 html2canvas(cardElement, {
@@ -1426,7 +1560,6 @@
                     borderRadius: 32,
                     logging: false,
                     onclone: (clonedDoc) => {
-                        // ক্লোনড ডকুমেন্টে ডাউনলোডের সময় কার্ড সাইজকে শতভাগ রেসপন্সিভ রাখা
                         const clonedCard = clonedDoc.getElementById(`card-${postId}`);
                         if (clonedCard) {
                             clonedCard.style.transform = 'none';
@@ -1439,7 +1572,6 @@
                     link.href = canvas.toDataURL('image/png');
                     link.click();
                     
-                    // সাকসেসফুলি রিস্টোর করা হচ্ছে ইন্টারফেস
                     if (controlBar) controlBar.style.opacity = '1';
                     if (actionHeader) actionHeader.style.opacity = '1';
                     showToast("হাই-কোয়ালিটি কার্ড ইমেজ ডাউনলোড সম্পন্ন হয়েছে!");
@@ -1499,7 +1631,7 @@
             showToast("পোস্ট লিংক ও টেক্সট ক্লিপবোর্ডে কপি করা হয়েছে!");
         }
 
-        // রিয়েল-টাইম কমেন্ট ড্রয়ার ওপেন ও ক্লোজ লজিক
+        // কমেন্ট ড্রয়ার ওপেন ও ক্লোজ লজিক
         window.openCommentDrawer = (postId) => {
             activePostIdForComments = postId;
             
@@ -1608,12 +1740,11 @@
             renderPosts();
         }
 
-        // সিঙ্গেল পোস্ট কার্ড ক্রিয়েটর (প্রিমিয়াম ফ্রেম, কাস্টম ব্যাজ কালার ও ফন্ট সাপোর্ট সহ)
+        // সিঙ্গেল পোস্ট কার্ড ক্রিয়েটর
         function createPostElement(post) {
             let originalContent = post.content || '';
             let themeId = 0; 
 
-            // টেক্সট স্ট্রিং হ্যাক থিম আইডি পার্সিং
             const themeMatch = originalContent.match(/^\[T:(\d+)\]/);
             if (themeMatch) {
                 themeId = parseInt(themeMatch[1]);
@@ -1656,7 +1787,6 @@
             const currentTheme = PREMIUM_THEMES[themeId] || PREMIUM_THEMES[0];
             const cleanPostContent = originalContent.replace(/'/g, "\\'").replace(/\n/g, ' ');
 
-            // কাস্টম প্রিমিয়াম বর্ডার ফ্রেম ডম স্ট্রাকচার জেনারেশন
             let frameClasses = '';
             if (!isGhost && authorVerified) {
                 if (authorFrame === 'gold') {
@@ -1675,7 +1805,6 @@
                         <!-- কার্ড হেডার -->
                         <div class="flex justify-between items-start mb-4">
                             <div class="flex items-center gap-3">
-                                <!-- প্রফেশনাল ফ্রেম ইমপ্লিমেন্টেশন -->
                                 <div class="relative w-11 h-11 rounded-2xl flex items-center justify-center overflow-hidden ${frameClasses ? frameClasses : ''}">
                                     <div class="w-full h-full bg-white rounded-[14px] flex items-center justify-center">
                                         <span class="text-3xl select-none">${authorEmoji}</span>
@@ -1707,7 +1836,7 @@
                             </div>
                         </div>
 
-                        <!-- কার্ড বডি (মূল কন্টেন্ট - কাস্টম ফন্ট সিঙ্ক সহ) -->
+                        <!-- কার্ড বডি -->
                         <div class="min-h-[80px] flex flex-col justify-center">
                             <p class="text-[15px] leading-relaxed mb-4 pl-1 whitespace-pre-line tracking-wide font-medium" style="font-family: '${!isGhost && authorVerified ? authorFont : 'Hind Siliguri'}', sans-serif;">${originalContent}</p>
                         </div>
@@ -1787,14 +1916,13 @@
             container.innerHTML = filtered.map(post => createPostElement(post)).join('');
         }
 
-        // প্রোফাইল পেজ রেন্ডারার (প্রিমিয়াম ফ্রেম প্রিভিউ সহ)
+        // প্রোফাইল পেজ রেন্ডারার
         function renderProfile() {
             if(!currentUserData || currentUser.isAnonymous) return;
             
             document.getElementById('profile-page-emoji').innerText = currentUserData.emojiAvatar;
             document.getElementById('profile-page-name').innerText = currentUserData.username;
             
-            // কাস্টম রেন্ডারিং ফ্রেম
             const profileFrame = document.getElementById('profile-frame-div');
             if (profileFrame) {
                 profileFrame.className = "absolute inset-0 rounded-3xl transition-all";
