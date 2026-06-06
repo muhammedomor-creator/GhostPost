@@ -8,11 +8,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- ফসফর আইকনস (Phosphor Icons) -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- html2canvas 라이ব্রেরি সিডিএন (কার্ড ইমেজ ডাউনলোডের জন্য অত্যন্ত জরুরি) -->
+    <!-- html2canvas লাইব্রেরি সিডিএন (কার্ড ইমেজ ডাউনলোডের জন্য অত্যন্ত জরুরি) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+        /* গুগল ফন্টস থেকে প্রিমিয়াম বাংলা ও ইংরেজি ফন্টসমূহ ইমপোর্ট */
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Atma:wght@400;600;700&family=Galada&family=Noto+Serif+Bengali:wght@400;700&display=swap');
         
         body {
             font-family: 'Hind Siliguri', 'Inter', sans-serif;
@@ -65,7 +66,7 @@
             padding-bottom: 80px;
         }
 
-        /* bottom drawer slide transition setup */
+        /* বটম ড্রয়ার স্লাইড ট্রানজিশন সেটাপ */
         .drawer {
             transform: translate(-50%, 100%);
             transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -116,14 +117,32 @@
             scroll-snap-type: y mandatory;
             overflow-y: auto;
             max-height: calc(100vh - 280px);
-            scrollbar-width: none; /* Firefox */
+            scrollbar-width: none;
         }
         .snap-container::-webkit-scrollbar {
-            display: none; /* Safari & Chrome */
+            display: none;
         }
         .snap-item {
             scroll-snap-align: center;
             scroll-snap-stop: always;
+        }
+
+        /* প্রিমিয়াম কাস্টম এনিমেশনস */
+        @keyframes rotate-gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .animate-rainbow {
+            background-size: 200% auto;
+            animation: rotate-gradient 3s linear infinite;
+        }
+        @keyframes spin-slow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+            animation: spin-slow 10s linear infinite;
         }
     </style>
 </head>
@@ -193,11 +212,11 @@
                         <textarea id="post-content" rows="3" placeholder="বেনামে আপনার মনে কী চলছে শেয়ার করুন..." class="w-full bg-transparent text-gray-800 placeholder-gray-400 text-[15px] leading-relaxed pt-1.5"></textarea>
                     </div>
                     
-                    <!-- প্রিমিয়াম কার্ড থিম সিলেক্টর (The Text String Hack) -->
+                    <!-- প্রিমিয়াম কার্ড থিম সিলেক্টর -->
                     <div class="mb-3 border-t border-gray-50 pt-2">
                         <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 block">কার্ড থিম কাস্টমাইজ করুন:</span>
                         <div class="flex gap-2" id="theme-selector-container">
-                            <!-- থিম ডায়নামিক বাটন -->
+                            <!-- থিম ডায়নামিক বাটন আসবে -->
                         </div>
                     </div>
                     
@@ -243,7 +262,7 @@
                     </div>
                 </div>
 
-                <!-- পোস্ট কন্টেইনার - স্ন্যাপিং এবং কার্ড সোয়াইপ ভিউ যুক্ত করা হয়েছে -->
+                <!-- পোস্ট কন্টেইনার -->
                 <div id="posts-container" class="space-y-6 pb-12 snap-container">
                     <div class="text-center text-gray-400 py-12 flex flex-col items-center">
                         <i class="ph ph-spinner-gap animate-spin text-3xl mb-3 text-gray-300"></i>
@@ -254,8 +273,15 @@
 
             <!-- ৩. প্রোফাইল স্ক্রিন -->
             <section id="view-profile" class="view-container">
-                <div class="text-center py-6 border-b border-gray-100 mb-6 bg-gradient-to-b from-gray-50 to-white rounded-3xl p-4 border">
-                    <div class="text-5xl mb-3 inline-block bg-white shadow-sm border border-gray-100 rounded-3xl p-3" id="profile-page-emoji">👤</div>
+                <div class="text-center py-6 border-b border-gray-100 mb-6 bg-gradient-to-b from-gray-50 to-white rounded-3xl p-4 border relative">
+                    <!-- প্রোফাইল কার্ডে প্রিমিয়াম স্পিনিং ফ্রেম অ্যাটাচমেন্ট -->
+                    <div class="relative w-24 h-24 mx-auto mb-3">
+                        <div id="profile-frame-div" class="absolute inset-0 rounded-3xl transition-all"></div>
+                        <div class="absolute inset-[3px] bg-white rounded-[21px] flex items-center justify-center border border-gray-100">
+                            <div class="text-4xl select-none" id="profile-page-emoji">👤</div>
+                        </div>
+                    </div>
+                    
                     <h2 class="text-2xl font-black text-gray-950 flex items-center justify-center gap-1">
                         <span id="profile-page-name">ইউজারনেম</span>
                         <span id="profile-page-badge" class="hidden">
@@ -302,6 +328,61 @@
                         </div>
                     </div>
 
+                    <!-- প্রিমিয়াম কাস্টমাইজেশন প্যানেল (লকিং মেকানিজম যুক্ত করা হয়েছে) -->
+                    <div class="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm relative overflow-hidden" id="premium-panel">
+                        <h3 class="font-bold text-sm text-gray-900 mb-3.5 flex items-center gap-1.5">
+                            <i class="ph-fill ph-crown text-amber-500 text-base"></i> প্রিমিয়াম কাস্টমাইজেশন
+                        </h3>
+                        
+                        <div class="space-y-4" id="premium-controls">
+                            <!-- কাস্টম ভেরিফাইড ব্যাজ কালার সিলেক্টর -->
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 mb-2 block">ভেরিফাইড ব্যাজ কালার:</label>
+                                <div class="flex gap-2.5 flex-wrap" id="badge-color-picker">
+                                    <!-- ডায়নামিক কালার সার্কেলস আসবে -->
+                                </div>
+                            </div>
+
+                            <!-- প্রিমিয়াম অ্যাভাটার ফ্রেম সিলেক্টর -->
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 mb-2 block">অ্যাভাটার ফ্রেম স্টাইল:</label>
+                                <select id="settings-frame-select" onchange="previewPremiumSettings()" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-3.5 py-3 text-xs font-bold text-gray-700 transition-all">
+                                    <option value="none">কোনো ফ্রেম নেই (ডিফল্ট)</option>
+                                    <option value="gold">রয়্যাল গোল্ডেন শাইন (Shiny Gold)</option>
+                                    <option value="neon">সাইবার পাঙ্ক নিয়ন (Cyan Glow)</option>
+                                    <option value="rainbow">কসমিক স্পিন রেইনবো (Rainbow Spin)</option>
+                                </select>
+                            </div>
+
+                            <!-- পোস্ট কার্ডের ফন্ট স্টাইল সিলেকশন -->
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 mb-2 block">পোস্ট কার্ডের ফন্ট স্টাইল:</label>
+                                <select id="settings-font-select" onchange="previewPremiumSettings()" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-3.5 py-3 text-xs font-bold text-gray-700 transition-all">
+                                    <option value="Hind Siliguri">হিন্দ শিলিগুড়ি (ডিফল্ট)</option>
+                                    <option value="Noto Serif Bengali">নোটো শেরিফ বেঙ্গলি (ক্লাসিক)</option>
+                                    <option value="Atma">আতাঁ ফন্ট (স্মার্ট ও কার্ভি)</option>
+                                    <option value="Galada">গালাদা ফন্ট (স্বাক্ষর স্টাইল)</option>
+                                </select>
+                            </div>
+
+                            <button onclick="savePremiumCustomization()" class="w-full bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold py-3.5 rounded-2xl transition-all shadow-md shadow-amber-500/10">
+                                প্রিমিয়াম ফিচার সেভ করুন
+                            </button>
+                        </div>
+
+                        <!-- লক ওভারলে স্ক্রিন (সাধারণ ইউজারদের জন্য) -->
+                        <div id="premium-lock-overlay" class="absolute inset-0 bg-white/95 backdrop-blur-xs flex flex-col items-center justify-center text-center p-6 hidden">
+                            <div class="w-11 h-11 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-500 border border-amber-100 mb-2">
+                                <i class="ph-fill ph-lock text-xl"></i>
+                            </div>
+                            <h4 class="font-bold text-xs text-gray-900 mb-1">প্রিমিয়াম সেটিংস লক করা আছে</h4>
+                            <p class="text-[10px] text-gray-500 max-w-[240px] leading-relaxed mb-3">কাস্টম ব্যাজ কালার, ফ্যান্টাসি বর্ডার ফ্রেম এবং আকর্ষণীয় ফন্ট আনলক করতে এখনই ভেরিফাইড মেম্বার হন!</p>
+                            <button onclick="window.location.hash='#settings'; document.getElementById('whatsapp-verify-box').scrollIntoView({behavior: 'smooth'});" class="bg-amber-500 text-white text-[10px] font-bold py-2.5 px-4 rounded-xl shadow-md hover:bg-amber-600 active:scale-95 transition-all">
+                                ভেরিফিকেশন আবেদন করুন
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- অ্যাপ নির্দেশিকা ও ব্যবহারের নিয়মাবলী -->
                     <div class="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm">
                         <h3 class="font-bold text-sm text-gray-900 mb-3 flex items-center gap-1.5"><i class="ph ph-info"></i> GhostPost নির্দেশিকা ও নীতি</h3>
@@ -310,7 +391,7 @@
                             <p>GhostPost একটি আধুনিক ও প্রিমিয়াম সোশ্যাল নেটওয়ার্কিং প্ল্যাটফর্ম। এর মূল উদ্দেশ্য হলো ব্যবহারকারীদের সম্পূর্ণ স্বাধীন এবং নিরাপদভাবে মতামত প্রকাশের সুযোগ দেওয়া। এখানে আপনি নিজের সামাজিক পরিচয় শতভাগ গোপন রেখে মন খুলে লিখতে পারেন।</p>
                             
                             <p class="font-bold text-gray-800">২. ২৫ শব্দের লিমিটেশন:</p>
-                            <p>ডিফল্ট বা সাধারণ ব্যবহারকারী হিসেবে আপনার প্রতিটি পোস্ট সর্বোচ্চ ২৫ শব্দের মধ্যে হতে হবে। কম শব্দের মধ্যে দারুণ ও টু-দ্য-পয়েন্ট পোস্ট লেখার অভ্যাস তৈরি করতে এবং প্ল্যাটফর্মকে আকর্ষণীয় রাখতে এই সুন্দর লিমিটটি দেওয়া হয়েছে।</p>
+                            <p>ডিফল্ট বা সাধারণ ব্যবহারকারী হিসেবে আপনার প্রতিটি পোস্ট সর্বোচ্চ ২৫ শব্দের মধ্যে হতে হবে। কম শব্দের মধ্যে দারুণ ও টু-দ্য-পয়েন্ট পোস্ট লেখার অভ্যাস তৈরি করতে এই লিমিটটি দেওয়া হয়েছে।</p>
                             
                             <p class="font-bold text-gray-800">৩. বেনামী (Anonymous) বনাম উন্মুক্ত প্রকাশ:</p>
                             <p>পোস্ট করার সময় 'ঘোস্ট মোড' অন রাখলে সম্পূর্ণ বেনামে (👻) পোস্ট সাবমিট হবে, এবং অফ রাখলে আপনার কাস্টমাইজড প্রোফাইলের নাম ও ইমোজি অ্যাভাটার সকলের কাছে দৃশ্যমান হবে।</p>
@@ -320,8 +401,8 @@
                         </div>
                     </div>
 
-                    <!-- ভেরিফিকেশন সেকশন (৫০ টাকা পেমেন্ট শর্তযুক্ত) -->
-                    <div class="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-950 rounded-3xl p-6 relative overflow-hidden shadow-lg">
+                    <!-- ভেরিফিকেশন সেকশন -->
+                    <div id="whatsapp-verify-box" class="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-950 rounded-3xl p-6 relative overflow-hidden shadow-lg">
                         <div class="absolute -right-8 -top-8 text-9xl opacity-10 text-white">
                             <i class="ph-fill ph-seal-check"></i>
                         </div>
@@ -329,7 +410,7 @@
                             ভেরিফায়েড অ্যাকাউন্ট পান 
                             <span class="inline-block" id="verification-badge-sample"></span>
                         </h3>
-                        <p class="text-xs text-gray-400 mb-5 relative z-10 leading-relaxed">মাত্র ৫০ টাকা ওয়ান-টাইম চার্জের বিনিময়ে ভেরিফায়েড ব্যাজ আনলক করুন! এর সাথে পাবেন ৫০ শব্দের বর্ধিত শব্দসীমা, আনলিমিটেড ফ্রি ঘোস্ট পোস্ট এবং একটি আকর্ষনীয় গোল্ডেন/প্রিমিয়াম লুকিং এক্সক্লুসিভ ব্যাজ।</p>
+                        <p class="text-xs text-gray-400 mb-5 relative z-10 leading-relaxed">মাত্র ৫০ টাকা ওয়ান-টাইম চার্জের বিনিময়ে ভেরিফায়েড ব্যাজ আনলক করুন! এর সাথে পাবেন ৫০ শব্দের বর্ধিত শব্দসীমা, আনলিমিটেড ফ্রি ঘোস্ট পোস্ট এবং একটি আকর্ষনীয় গোল্ডেন/প্রিমিয়াম লুকিং এক্সক্লুসিভ ব্যাজ ও সেটিংস প্যানেল।</p>
                         <button onclick="requestVerification()" class="bg-[#25D366] text-white text-xs font-bold py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-[#1ebd5b] active:scale-95 transition-all relative z-10 w-full shadow-lg shadow-[#25D366]/10">
                             <i class="ph-fill ph-whatsapp-logo text-lg"></i> ৫০৳ পেমেন্ট করে WhatsApp-এ আবেদন করুন
                         </button>
@@ -337,11 +418,9 @@
 
                     <!-- কন্ট্যাক্ট ও ডেভলপার লিংকস -->
                     <div class="bg-white border border-gray-100 rounded-3xl shadow-sm divide-y divide-gray-50 overflow-hidden">
-                        <!-- ডেভলপার ক্লিক অ্যাকশন হিকমাহ লিংকে রিরুট করা হয়েছে -->
                         <a href="https://hikmah.net/@muhammedomor_official" target="_blank" class="w-full text-left px-5 py-4 text-xs font-bold text-gray-700 flex justify-between items-center hover:bg-gray-50 transition-colors">
                             ডেভলপার প্রোফাইল (ওমর) <i class="ph ph-arrow-square-out text-gray-400"></i>
                         </a>
-                        <!-- প্রাইভেসি পলিসি ও টার্মস পপআপ ট্রিগার -->
                         <button onclick="togglePrivacyModal(true)" class="w-full text-left px-5 py-4 text-xs font-bold text-gray-700 flex justify-between items-center hover:bg-gray-50 transition-colors">
                             প্রাইভেসি পলিসি ও শর্তাবলী <i class="ph ph-shield-check text-gray-400"></i>
                         </button>
@@ -422,7 +501,7 @@
                     </div>
                     <div>
                         <h4 class="font-bold text-gray-800 mb-1">৪. নীতি পরিবর্তন:</h4>
-                        <p>アプリの環境保護の観点から、必要に応じて任意のルールを変更することがあります。</p>
+                        <p>অ্যাপের পরিবেশ রক্ষার স্বার্থে ডেভলপার যেকোনো মুহূর্তে এই নীতিমালা পরিবর্তন বা পরিবর্ধন করার পূর্ণ ক্ষমতা রাখেন।</p>
                     </div>
                 </div>
                 
@@ -432,7 +511,7 @@
             </div>
         </div>
 
-        <!-- স্লাইডিং কমেন্ট ও রিপ্লাই ড্রয়ার (বটম ড্রয়ার) -->
+        <!-- স্লাইডিং কমেন্ট ও রিপ্লাই ড্রয়ার -->
         <div id="comment-backdrop" class="fixed inset-0 bg-black/50 z-50 hidden opacity-0 backdrop-blur-xs transition-opacity duration-300" onclick="closeCommentDrawer()"></div>
         <div id="comment-drawer" class="fixed bottom-0 left-1/2 w-full max-w-[480px] bg-white rounded-t-[32px] shadow-2xl z-50 drawer flex flex-col max-h-[85vh]">
             <div class="w-12 h-1 bg-gray-200 rounded-full mx-auto my-3 cursor-pointer" onclick="closeCommentDrawer()"></div>
@@ -457,7 +536,7 @@
             </div>
         </div>
 
-        <!-- অ্যাভাটার সিলেকশন মডাল (ফর সেটিংস) - ক্যাটাগরি ট্যাব যুক্ত করা হয়েছে -->
+        <!-- অ্যাভাটার সিলেকশন মডাল -->
         <div id="avatar-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex-col items-center justify-center p-4 backdrop-blur-sm opacity-0 transition-opacity duration-300">
             <div class="bg-white w-full max-w-sm rounded-3xl p-6 text-center shadow-2xl transform scale-95 transition-transform duration-300 relative max-h-[85vh] flex flex-col">
                 <button onclick="closeAvatarSelectorModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 bg-gray-50 hover:bg-gray-100 p-2 rounded-2xl transition-all">
@@ -474,7 +553,7 @@
                 </div>
 
                 <div class="grid grid-cols-6 gap-2 overflow-y-auto max-h-[250px] p-1 bg-gray-50 rounded-2xl" id="settings-emoji-selector">
-                    <!-- জেএস দিয়ে ইমোজি আসবে -->
+                    <!-- জেএস দিয়ে আসবে -->
                 </div>
             </div>
         </div>
@@ -514,7 +593,7 @@
         let allPosts = [];
         let allComments = [];
         let activePostIdForComments = null;
-        let activeFeedFilter = 'all'; // 'all', 'ghost', 'verified'
+        let activeFeedFilter = 'all'; 
         let searchQuery = '';
         
         // উন্নত ইমোজি কালেকশন (Categorized for selection)
@@ -539,7 +618,7 @@
             { id: 5, name: "রয়েল গোল্ড", class: "bg-gradient-to-b from-stone-900 to-black border-2 border-yellow-600/40 text-yellow-50 shadow-lg shadow-yellow-600/5", textAccent: "text-yellow-400", tagColor: "text-yellow-300/60", bgDot: "bg-yellow-500/10", activeClass: "border-yellow-500" }
         ];
 
-        let selectedThemeId = 0; // ডিফল্ট ক্লাসিক লাইট থিম
+        let selectedThemeId = 0; 
 
         const LIMITS = {
             FREE_WORDS: 25,
@@ -547,7 +626,22 @@
             FREE_GHOST_POSTS_PER_DAY: 10
         };
 
-        const VERIFIED_BADGE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" class="inline ml-1"><path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.152-.435.248-.9.248-1.4 0-2.21-1.79-4-4-4-.5 0-.965.1-1.4.248C14.55 2.475 13.18 1.6 11.6 1.6c-1.58 0-2.95.875-3.6 2.148-.435-.152-.9-.248-1.4-.248-2.21 0-4 1.79-4 4 0 .5.1.965.248 1.4C1.475 9.55.6 10.92.6 12.5c0 1.58.875 2.95 2.148 3.6-.152.435-.248.9-.248 1.4 0 2.21 1.79 4 4 4 .5 0 .965-.1 1.4-.248.65 1.273 2.02 2.148 3.6 2.148 1.58 0 2.95-.875 3.6-2.148.435 1.52.9.248 1.4.248 2.21 0 4-1.79 4-4 0-.5-.1-.965-.248-1.4 1.273-.65 2.148-2.02 2.148-3.6z" fill="#FF0050"/><path fill-rule="evenodd" clip-rule="evenodd" d="M9.86 15.17L6.69 12c-0.39-0.39-1.02-0.39-1.41 0c-0.39 0.39-0.39 1.02 0 1.41l3.88 3.88c0.39 0.39 1.02 0.39 1.41 0l7.78-7.78c0.39-0.39 0.39-1.02 0-1.41c-0.39-0.39-1.02-0.39-1.41 0L9.86 15.17z" fill="#ffffff"/></svg>`;
+        // প্রিমিয়াম কাস্টম কালার প্যালেট
+        const PRESETS_BADGE_COLORS = [
+            { name: "সুপার রেড", value: "#FF0050" },
+            { name: "নিয়ন সায়ান", value: "#00F0FF" },
+            { name: "রয়্যাল গোল্ড", value: "#FFD700" },
+            { name: "ফেয়ারী পার্পল", value: "#A855F7" },
+            { name: "ইলেকট্রিক গ্রিন", value: "#39FF14" },
+            { name: "সফট ব্লু", value: "#2563EB" }
+        ];
+
+        let localSelectedBadgeColor = "#FF0050"; // ডিফল্ট কালার
+
+        // ডায়নামিক ব্যাজ জেনারেটর SVG (Custom Color Support)
+        function getVerifiedBadgeSVG(color = '#FF0050') {
+            return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" class="inline ml-1"><path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.152-.435.248-.9.248-1.4 0-2.21-1.79-4-4-4-.5 0-.965.1-1.4.248C14.55 2.475 13.18 1.6 11.6 1.6c-1.58 0-2.95.875-3.6 2.148-.435-.152-.9-.248-1.4-.248-2.21 0-4 1.79-4 4 0 .5.1.965.248 1.4C1.475 9.55.6 10.92.6 12.5c0 1.58.875 2.95 2.148 3.6-.152.435-.248.9-.248 1.4 0 2.21 1.79 4 4 4 .5 0 .965-.1 1.4-.248.65 1.273 2.02 2.148 3.6 2.148 1.58 0 2.95-.875 3.6-2.148.435 1.52.9.248 1.4.248 2.21 0 4-1.79 4-4 0-.5-.1-.965-.248-1.4 1.273-.65 2.148-2.02 2.148-3.6z" fill="${color}"/><path fill-rule="evenodd" clip-rule="evenodd" d="M9.86 15.17L6.69 12c-0.39-0.39-1.02-0.39-1.41 0c-0.39 0.39-0.39 1.02 0 1.41l3.88 3.88c0.39 0.39 1.02 0.39 1.41 0l7.78-7.78c0.39-0.39 0.39-1.02 0-1.41c-0.39-0.39-1.02-0.39-1.41 0L9.86 15.17z" fill="#ffffff"/></svg>`;
+        }
 
         // কাস্টম ভাইব্রেশন সাপোর্ট
         function triggerHaptic() {
@@ -628,7 +722,6 @@
         function generateGhostCodename(postId) {
             if (!postId) return { name: "অজ্ঞাত ঘোস্ট", emoji: "👻" };
             
-            // পোস্টের ইউনিক আইডি থেকে হ্যাশ তৈরি করার ক্রিপ্টোগ্রাফিক লজিক
             let hash = 0;
             for (let i = 0; i < postId.length; i++) {
                 hash = postId.charCodeAt(i) + ((hash << 5) - hash);
@@ -721,7 +814,7 @@
             
             // প্রোফাইল সেটআপ ইমোজি রেন্ডারিং
             populateSetupEmojis();
-            document.getElementById('verification-badge-sample').innerHTML = VERIFIED_BADGE_SVG;
+            document.getElementById('verification-badge-sample').innerHTML = getVerifiedBadgeSVG('#FF0050');
         }
 
         // গেস্ট ইউজারের ইন্টারফেস আপডেট
@@ -863,12 +956,11 @@
             });
         }
 
-        // ৩. থিম সিলেক্টর বাটন রেন্ডারিং (Text String Hack Interface)
+        // ৩. থিম সিলেক্টর বাটন রেন্ডারিং
         function renderThemeSelector() {
             const container = document.getElementById('theme-selector-container');
             container.innerHTML = PREMIUM_THEMES.map(theme => {
                 const isSelected = theme.id === selectedThemeId;
-                // গোলাকার রঙীন নির্দেশক বাটন
                 const colorBlob = theme.id === 0 ? 'bg-gray-200' : 
                                   theme.id === 1 ? 'bg-pink-500' :
                                   theme.id === 2 ? 'bg-rose-400' :
@@ -909,7 +1001,10 @@
                 isVerified: false,
                 ghostPostsToday: 0,
                 lastGhostPostDate: new Date().toLocaleDateString(),
-                createdAt: serverTimestamp()
+                createdAt: serverTimestamp(),
+                badgeColor: "#FF0050",
+                avatarFrame: "none",
+                customFont: "Hind Siliguri"
             };
 
             const btn = document.querySelector('#view-setup button');
@@ -933,12 +1028,68 @@
             }
         }
 
-        // সেটিংস পেজের প্রোফাইল এডিট লজিক
+        // প্রিমিয়াম কাস্টমাইজেশন কালার বাটন রেন্ডারার
+        function renderBadgeColorPicker() {
+            const container = document.getElementById('badge-color-picker');
+            if(!container) return;
+            
+            container.innerHTML = PRESETS_BADGE_COLORS.map(colorObj => {
+                const isSelected = colorObj.value === localSelectedBadgeColor;
+                return `
+                    <button onclick="selectLocalBadgeColor('${colorObj.value}')" class="w-8 h-8 rounded-full flex items-center justify-center transition-all border-2 ${isSelected ? 'scale-110 border-gray-950 ring-2 ring-gray-200' : 'border-gray-100'}" style="background-color: ${colorObj.value}" title="${colorObj.name}">
+                        ${isSelected ? '<i class="ph-bold ph-check text-xs text-white"></i>' : ''}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        window.selectLocalBadgeColor = (colorHex) => {
+            triggerHaptic();
+            localSelectedBadgeColor = colorHex;
+            renderBadgeColorPicker();
+            previewPremiumSettings();
+        }
+
+        // প্রিমিয়াম সেটিংস প্রিভিউ দেখার মেকানিজম
+        window.previewPremiumSettings = () => {
+            const frameVal = document.getElementById('settings-frame-select').value;
+            const previewFrameDiv = document.getElementById('profile-frame-div');
+            
+            if (previewFrameDiv) {
+                // প্রিভিউ রিসেট
+                previewFrameDiv.className = "absolute inset-0 rounded-3xl transition-all";
+                if(frameVal === 'gold') {
+                    previewFrameDiv.classList.add('bg-gradient-to-tr', 'from-amber-400', 'via-yellow-500', 'to-orange-500', 'p-[3px]', 'animate-spin-slow');
+                } else if(frameVal === 'neon') {
+                    previewFrameDiv.classList.add('bg-cyan-400', 'shadow-[0_0_12px_rgba(34,211,238,0.6)]', 'p-[3px]');
+                } else if(frameVal === 'rainbow') {
+                    previewFrameDiv.classList.add('bg-gradient-to-r', 'from-red-500', 'via-yellow-500', 'via-green-500', 'via-blue-500', 'to-purple-500', 'p-[3px]', 'animate-rainbow', 'animate-spin-slow');
+                }
+            }
+        }
+
+        // সেটিংস পেজের প্রোফাইল এডিট ও প্রিমিয়াম লক হ্যান্ডলার
         function syncSettingsFields() {
             if(!currentUserData) return;
             document.getElementById('settings-avatar-preview').innerText = currentUserData.emojiAvatar || '👤';
             document.getElementById('settings-username-input').value = currentUserData.username || '';
             selectedEmoji = currentUserData.emojiAvatar || emojiCategories.female[0];
+
+            // প্রিমিয়াম লকিং কন্ট্রোল
+            const lockOverlay = document.getElementById('premium-lock-overlay');
+            if (currentUserData.isVerified) {
+                lockOverlay.classList.add('hidden');
+                
+                // এক্সিস্টিং প্রিমিয়াম ভ্যালুস লোড করা
+                localSelectedBadgeColor = currentUserData.badgeColor || '#FF0050';
+                document.getElementById('settings-frame-select').value = currentUserData.avatarFrame || 'none';
+                document.getElementById('settings-font-select').value = currentUserData.customFont || 'Hind Siliguri';
+                
+                renderBadgeColorPicker();
+                previewPremiumSettings();
+            } else {
+                lockOverlay.classList.remove('hidden');
+            }
         }
 
         window.openAvatarSelectorModal = () => {
@@ -982,6 +1133,30 @@
             }
         }
 
+        // প্রিমিয়াম কনফিগারেশন ফায়ারস্টোরে সেভ করা
+        window.savePremiumCustomization = async () => {
+            if(!currentUser || currentUser.isAnonymous || !currentUserData || !currentUserData.isVerified) {
+                showToast("আপনার প্রিমিয়াম লাইসেন্স নেই!", false);
+                return;
+            }
+
+            const frameVal = document.getElementById('settings-frame-select').value;
+            const fontVal = document.getElementById('settings-font-select').value;
+
+            try {
+                const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', currentUser.uid);
+                await updateDoc(userDocRef, {
+                    badgeColor: localSelectedBadgeColor,
+                    avatarFrame: frameVal,
+                    customFont: fontVal
+                });
+                showToast("প্রিমিয়াম কাস্টমাইজেশন সফলভাবে সেভ হয়েছে!");
+                renderPosts();
+            } catch (err) {
+                showToast("সেভ করতে সমস্যা হয়েছে: " + err.message, false);
+            }
+        }
+
         // রিয়েল-টাইম ডাটা সিঙ্ক্রোনাইজার
         let unsubUsers = null;
         let unsubPosts = null;
@@ -1003,6 +1178,7 @@
                 }
 
                 if(window.location.hash === '#top') renderTopUsers();
+                if(window.location.hash === '#settings') syncSettingsFields();
                 renderPosts();
             }, (error) => {
                 console.error("Users sync failed:", error);
@@ -1222,42 +1398,57 @@
             }
         }
 
-        // ৪. ওয়ান-ক্লিক "Download Card as Image" (html2canvas হ্যাক)
-        window.downloadCardImage = (postId) => {
+        // ৪. ওয়ান-ক্লিক "Download Card as Image" (html2canvas UHD হ্যাক)
+        window.downloadCardImage = (postId, isAuthorPremium = false) => {
             triggerHaptic();
             const cardElement = document.getElementById(`card-${postId}`);
             if (!cardElement) return;
 
-            // ছবি সুন্দর করতে সাময়িকভাবে ইন্টারঅ্যাকশন কন্ট্রোল প্যানেল এবং অ্যাকশন বাটন হাইড করা হচ্ছে
+            // ডাউনলোডের সময় ব্যাকগ্রাউন্ড বাটন এবং কন্ট্রোল প্যানেল হাইড করা হচ্ছে
             const controlBar = cardElement.querySelector('.card-controls-panel');
             const actionHeader = cardElement.querySelector('.card-action-header');
             
             if (controlBar) controlBar.style.opacity = '0';
             if (actionHeader) actionHeader.style.opacity = '0';
 
-            showToast("কার্ড ইমেজ রূপান্তর করা হচ্ছে...");
+            showToast("কার্ড ইমেজ এইচডি ফরম্যাটে রূপান্তর করা হচ্ছে...");
 
-            // html2canvas দিয়ে পুরো পোস্ট কার্ড অবজেক্টকে নিখুঁত ইমেজে রূপান্তর করা হচ্ছে
-            html2canvas(cardElement, {
-                useCORS: true,
-                scale: 3, // হাই রেজোলিউশন ৩x স্কেল যাতে স্ক্রিনশট ক্রিস্প দেখায়
-                backgroundColor: null,
-                borderRadius: 32
-            }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `GhostPost-${postId}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-                
-                // ডাউনলোডের পর পুনরায় লুকানো কন্ট্রোল বাটনগুলো ফিরিয়ে আনা হলো
-                if (controlBar) controlBar.style.opacity = '1';
-                if (actionHeader) actionHeader.style.opacity = '1';
-                showToast("হাই-কোয়ালিটি কার্ড ইমেজ ডাউনলোড সম্পন্ন হয়েছে!");
-            }).catch(error => {
-                console.error("Image generation failed:", error);
-                if (controlBar) controlBar.style.opacity = '1';
-                if (actionHeader) actionHeader.style.opacity = '1';
-                showToast("ডাউনলোড করতে ব্যর্থ হয়েছে", false);
+            // যদি কার্ডের রেন্ডার করা ফন্ট Google fonts হয়, তাহলে ডাউনলোডের সময় সেটা যাতে মিস না হয় তার জন্য সামান্য প্রিপারেশন
+            document.fonts.ready.then(() => {
+                // প্রিমিয়াম ইউজারদের জন্য ৪ গুণ আল্ট্রা-এইচডি এবং সাধারণদের জন্য ৩ গুণ এইচডি স্কেল
+                const optimalScale = isAuthorPremium ? 4 : 3;
+
+                html2canvas(cardElement, {
+                    useCORS: true,
+                    allowTaint: false,
+                    scale: optimalScale, 
+                    backgroundColor: null,
+                    borderRadius: 32,
+                    logging: false,
+                    onclone: (clonedDoc) => {
+                        // ক্লোনড ডকুমেন্টে ডাউনলোডের সময় কার্ড সাইজকে শতভাগ রেসপন্সিভ রাখা
+                        const clonedCard = clonedDoc.getElementById(`card-${postId}`);
+                        if (clonedCard) {
+                            clonedCard.style.transform = 'none';
+                            clonedCard.style.boxShadow = 'none';
+                        }
+                    }
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = `GhostPost-${postId}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    
+                    // সাকসেসফুলি রিস্টোর করা হচ্ছে ইন্টারফেস
+                    if (controlBar) controlBar.style.opacity = '1';
+                    if (actionHeader) actionHeader.style.opacity = '1';
+                    showToast("হাই-কোয়ালিটি কার্ড ইমেজ ডাউনলোড সম্পন্ন হয়েছে!");
+                }).catch(error => {
+                    console.error("Image generation failed:", error);
+                    if (controlBar) controlBar.style.opacity = '1';
+                    if (actionHeader) actionHeader.style.opacity = '1';
+                    showToast("ডাউনলোড করতে ব্যর্থ হয়েছে", false);
+                });
             });
         }
 
@@ -1380,7 +1571,7 @@
             }
 
             container.innerHTML = filteredComments.map(comment => {
-                const author = allUsers[comment.authorId] || { username: 'অজানা ইউজার', emojiAvatar: '👤', isVerified: false };
+                const author = allUsers[comment.authorId] || { username: 'অজানা ইউজার', emojiAvatar: '👤', isVerified: false, badgeColor: '#FF0050' };
                 return `
                     <div class="flex gap-3 bg-gray-50/50 p-3.5 rounded-2xl border border-gray-100/50">
                         <span class="text-2xl">${author.emojiAvatar}</span>
@@ -1388,7 +1579,7 @@
                             <div class="flex justify-between items-center mb-1">
                                 <h5 class="text-xs font-bold text-gray-950 flex items-center gap-1">
                                     ${author.username}
-                                    ${author.isVerified ? VERIFIED_BADGE_SVG : ''}
+                                    ${author.isVerified ? getVerifiedBadgeSVG(author.badgeColor || '#FF0050') : ''}
                                 </h5>
                                 <span class="text-[9px] text-gray-400 font-bold">${formatTime(comment.timestamp)}</span>
                             </div>
@@ -1417,33 +1608,38 @@
             renderPosts();
         }
 
-        // সিঙ্গেল পোস্ট কার্ড ক্রিয়েটর (ক্রিপ্টোগ্রাফিক কোডনেম এবং থিম ডায়নামিকলি জেনারেট করে)
+        // সিঙ্গেল পোস্ট কার্ড ক্রিয়েটর (প্রিমিয়াম ফ্রেম, কাস্টম ব্যাজ কালার ও ফন্ট সাপোর্ট সহ)
         function createPostElement(post) {
             let originalContent = post.content || '';
-            let themeId = 0; // ডিফল্ট থিম
+            let themeId = 0; 
 
-            // টেক্সট স্ট্রিং হ্যাক: পোস্টের লেখার শুরু থেকে এম্বেডেড থিম আইডি রিড এবং রিমুভ করা হচ্ছে
+            // টেক্সট স্ট্রিং হ্যাক থিম আইডি পার্সিং
             const themeMatch = originalContent.match(/^\[T:(\d+)\]/);
             if (themeMatch) {
                 themeId = parseInt(themeMatch[1]);
-                originalContent = originalContent.replace(/^\[T:\d+\]/, ''); // থিম ট্যাগটি রিডার থেকে মুছে ফেলা হলো
+                originalContent = originalContent.replace(/^\[T:\d+\]/, ''); 
             }
 
             const isGhost = post.isAnonymous;
             let authorName = '';
             let authorEmoji = '';
             let authorVerified = false;
+            let authorBadgeColor = '#FF0050';
+            let authorFrame = 'none';
+            let authorFont = 'Hind Siliguri';
 
             if (isGhost) {
-                // ১. Cryptographic Ghost Codename: প্রতিটির জন্য আলাদা কিন্তু ফিক্সড নাম এবং ফ্যান্টাসি ইমোজি
                 const ghostIdData = generateGhostCodename(post.id);
                 authorName = ghostIdData.name;
                 authorEmoji = ghostIdData.emoji;
             } else {
-                const userObj = allUsers[post.authorId] || { username: 'অজানা মেম্বার', emojiAvatar: '👤', isVerified: false };
+                const userObj = allUsers[post.authorId] || { username: 'অজানা মেম্বার', emojiAvatar: '👤', isVerified: false, badgeColor: '#FF0050', avatarFrame: 'none', customFont: 'Hind Siliguri' };
                 authorName = userObj.username;
                 authorEmoji = userObj.emojiAvatar;
                 authorVerified = userObj.isVerified;
+                authorBadgeColor = userObj.badgeColor || '#FF0050';
+                authorFrame = userObj.avatarFrame || 'none';
+                authorFont = userObj.customFont || 'Hind Siliguri';
             }
             
             const postLikes = post.likes || [];
@@ -1457,9 +1653,20 @@
             const isMyPost = (currentUser && !currentUser.isAnonymous) && post.authorId === currentUser.uid;
             const commentsCount = allComments.filter(c => c.postId === post.id).length;
 
-            // থিম স্ট্রাকচার সিঙ্ক
             const currentTheme = PREMIUM_THEMES[themeId] || PREMIUM_THEMES[0];
             const cleanPostContent = originalContent.replace(/'/g, "\\'").replace(/\n/g, ' ');
+
+            // কাস্টম প্রিমিয়াম বর্ডার ফ্রেম ডম স্ট্রাকচার জেনারেশন
+            let frameClasses = '';
+            if (!isGhost && authorVerified) {
+                if (authorFrame === 'gold') {
+                    frameClasses = 'bg-gradient-to-tr from-amber-400 via-yellow-500 to-orange-500 p-[2px] animate-spin-slow';
+                } else if (authorFrame === 'neon') {
+                    frameClasses = 'bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.5)] p-[2px]';
+                } else if (authorFrame === 'rainbow') {
+                    frameClasses = 'bg-gradient-to-r from-red-500 via-yellow-400 via-green-400 via-blue-500 to-purple-500 p-[2px] animate-rainbow animate-spin-slow';
+                }
+            }
 
             return `
                 <div class="snap-item w-full p-1">
@@ -1468,11 +1675,16 @@
                         <!-- কার্ড হেডার -->
                         <div class="flex justify-between items-start mb-4">
                             <div class="flex items-center gap-3">
-                                <span class="text-3xl ${currentTheme.bgDot} border border-white/10 rounded-2xl w-11 h-11 flex items-center justify-center shadow-inner select-none">${authorEmoji}</span>
+                                <!-- প্রফেশনাল ফ্রেম ইমপ্লিমেন্টেশন -->
+                                <div class="relative w-11 h-11 rounded-2xl flex items-center justify-center overflow-hidden ${frameClasses ? frameClasses : ''}">
+                                    <div class="w-full h-full bg-white rounded-[14px] flex items-center justify-center">
+                                        <span class="text-3xl select-none">${authorEmoji}</span>
+                                    </div>
+                                </div>
                                 <div>
                                     <h4 class="font-bold text-[14px] ${currentTheme.textAccent} flex items-center gap-1">
                                         ${authorName}
-                                        ${authorVerified && !isGhost ? VERIFIED_BADGE_SVG : ''}
+                                        ${authorVerified && !isGhost ? getVerifiedBadgeSVG(authorBadgeColor) : ''}
                                         ${isGhost ? `<span class="text-[9px] bg-pink-500/10 text-pink-500 px-1.5 py-0.5 rounded-md font-black uppercase tracking-widest ml-1">ঘোস্ট</span>` : ''}
                                     </h4>
                                     <span class="text-[10px] font-bold ${currentTheme.tagColor}">${formatTime(post.timestamp)}</span>
@@ -1481,7 +1693,7 @@
                             
                             <!-- অ্যাকশন বাটনস -->
                             <div class="flex gap-1.5 card-action-header transition-opacity duration-200">
-                                <button onclick="downloadCardImage('${post.id}')" class="${currentTheme.tagColor} hover:text-[#FF0050] p-1.5 hover:bg-white/5 rounded-xl transition-all" title="কার্ড ইমেজ ডাউনলোড">
+                                <button onclick="downloadCardImage('${post.id}', ${authorVerified})" class="${currentTheme.tagColor} hover:text-[#FF0050] p-1.5 hover:bg-white/5 rounded-xl transition-all" title="কার্ড ইমেজ ডাউনলোড">
                                     <i class="ph ph-download-simple text-lg"></i>
                                 </button>
                                 <button onclick="sharePost('${post.id}', '${cleanPostContent}')" class="${currentTheme.tagColor} hover:text-blue-400 p-1.5 hover:bg-white/5 rounded-xl transition-all" title="লিংক শেয়ার">
@@ -1495,12 +1707,12 @@
                             </div>
                         </div>
 
-                        <!-- কার্ড বডি (মূল কন্টেন্ট) -->
+                        <!-- কার্ড বডি (মূল কন্টেন্ট - কাস্টম ফন্ট সিঙ্ক সহ) -->
                         <div class="min-h-[80px] flex flex-col justify-center">
-                            <p class="text-[15px] leading-relaxed mb-4 pl-1 whitespace-pre-line tracking-wide font-medium">${originalContent}</p>
+                            <p class="text-[15px] leading-relaxed mb-4 pl-1 whitespace-pre-line tracking-wide font-medium" style="font-family: '${!isGhost && authorVerified ? authorFont : 'Hind Siliguri'}', sans-serif;">${originalContent}</p>
                         </div>
                         
-                        <!-- ব্র্যান্ডিং ওয়াটারমার্ক (স্ক্রিনশটের মাধ্যমে ভাইরালিটির জন্য অত্যন্ত গুরুত্বপূর্ণ!) -->
+                        <!-- ব্র্যান্ডিং ওয়াটারমার্ক -->
                         <div class="flex items-center justify-between border-t border-white/10 pt-2 pb-2 mb-1.5 text-[10px] font-bold tracking-wider ${currentTheme.tagColor} select-none">
                             <span class="flex items-center gap-1">
                                 <i class="ph-fill ph-ghost text-xs text-[#FF0050]"></i> GhostPost
@@ -1575,16 +1787,31 @@
             container.innerHTML = filtered.map(post => createPostElement(post)).join('');
         }
 
-        // প্রোফাইল পেজ রেন্ডারার
+        // প্রোফাইল পেজ রেন্ডারার (প্রিমিয়াম ফ্রেম প্রিভিউ সহ)
         function renderProfile() {
             if(!currentUserData || currentUser.isAnonymous) return;
             
             document.getElementById('profile-page-emoji').innerText = currentUserData.emojiAvatar;
             document.getElementById('profile-page-name').innerText = currentUserData.username;
             
+            // কাস্টম রেন্ডারিং ফ্রেম
+            const profileFrame = document.getElementById('profile-frame-div');
+            if (profileFrame) {
+                profileFrame.className = "absolute inset-0 rounded-3xl transition-all";
+                if(currentUserData.isVerified && currentUserData.avatarFrame) {
+                    if (currentUserData.avatarFrame === 'gold') {
+                        profileFrame.classList.add('bg-gradient-to-tr', 'from-amber-400', 'via-yellow-500', 'to-orange-500', 'p-[3px]', 'animate-spin-slow');
+                    } else if (currentUserData.avatarFrame === 'neon') {
+                        profileFrame.classList.add('bg-cyan-400', 'shadow-[0_0_12px_rgba(34,211,238,0.6)]', 'p-[3px]');
+                    } else if (currentUserData.avatarFrame === 'rainbow') {
+                        profileFrame.classList.add('bg-gradient-to-r', 'from-red-500', 'via-yellow-500', 'via-green-500', 'via-blue-500', 'to-purple-500', 'p-[3px]', 'animate-rainbow', 'animate-spin-slow');
+                    }
+                }
+            }
+
             const badgeContainer = document.getElementById('profile-page-badge');
             if(currentUserData.isVerified) {
-                badgeContainer.innerHTML = VERIFIED_BADGE_SVG;
+                badgeContainer.innerHTML = getVerifiedBadgeSVG(currentUserData.badgeColor || '#FF0050');
                 badgeContainer.classList.remove('hidden');
             } else {
                 badgeContainer.classList.add('hidden');
@@ -1661,7 +1888,7 @@
                         <div>
                             <div class="font-bold text-[14px] text-gray-900 flex items-center">
                                 ${user.username || 'অজানা ইউজার'}
-                                ${user.isVerified ? VERIFIED_BADGE_SVG : ''}
+                                ${user.isVerified ? getVerifiedBadgeSVG(user.badgeColor || '#FF0050') : ''}
                                 ${rankIcon}
                             </div>
                         </div>
