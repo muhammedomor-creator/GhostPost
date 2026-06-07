@@ -161,7 +161,13 @@
                 <button id="header-login-btn" onclick="showLoginModal('কন্টিনিউ করতে লগইন করুন')" class="bg-gray-900 text-white px-4 py-2 rounded-2xl text-xs font-bold hover:bg-gray-800 active:scale-95 transition-all">
                     লগইন করুন
                 </button>
-                <span id="header-emoji" class="text-xl hidden bg-gray-50 hover:bg-gray-100 border border-gray-100 w-9 h-9 flex items-center justify-center rounded-2xl cursor-pointer transition-all active:scale-90" onclick="window.location.hash='#profile'"></span>
+                <div class="flex items-center gap-2.5">
+                    <!-- কুইক ভেরিফাই বাটন (শুধুমাত্র আন-ভেরিফাইড ইউজারদের জন্য হেডারে চমৎকার গ্লোয়িং ব্যাজ বাটন) -->
+                    <button id="header-verify-badge-btn" onclick="showPremiumPromoModal('এক্সক্লুসিভ অফার')" class="hidden animate-pulse bg-gradient-to-r from-amber-500 to-yellow-400 text-gray-950 p-1.5 rounded-xl text-xs font-black shadow-md shadow-amber-500/15 flex items-center gap-1 active:scale-95 transition-all">
+                        <i class="ph-fill ph-seal-check text-sm text-[#FF0050]"></i> ভেরিফাই
+                    </button>
+                    <span id="header-emoji" class="text-xl hidden bg-gray-50 hover:bg-gray-100 border border-gray-100 w-9 h-9 flex items-center justify-center rounded-2xl cursor-pointer transition-all active:scale-90" onclick="window.location.hash='#profile'"></span>
+                </div>
             </div>
         </header>
 
@@ -234,7 +240,7 @@
                                 </span>
                             </label>
 
-                            <!-- অপ্টিমাইজড ও রিস্পন্সিভ ড্রাফট ডিলিট/ক্লিয়ার বাটন -->
+                            <!-- ড্রাফট ডিলিট/ক্লিয়ার বাটন -->
                             <button onclick="clearDraft()" class="flex items-center gap-1 text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-95 border border-red-100" title="ড্রাফট মুছুন">
                                 <i class="ph-bold ph-trash-simple text-sm"></i> মুছুন
                             </button>
@@ -335,7 +341,7 @@
                         </div>
                     </div>
 
-                    <!-- প্রিমিয়াম কাস্টমাইজেশন প্যানেল (আপগ্রেডেড এবং গ্লোয়িং ইফেক্টস) -->
+                    <!-- প্রিমিয়াম কাস্টমাইজেশন প্যানেল -->
                     <div class="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm relative overflow-hidden" id="premium-panel">
                         <h3 class="font-bold text-sm text-gray-900 mb-4 flex items-center gap-1.5">
                             <i class="ph-fill ph-crown text-amber-500 text-base animate-pulse"></i> প্রিমিয়াম কাস্টমাইজেশন
@@ -396,7 +402,7 @@
                             </div>
                             <h4 class="font-bold text-xs text-gray-900 mb-1">প্রিমিয়াম সেটিংস লক করা আছে</h4>
                             <p class="text-[10px] text-gray-500 max-w-[240px] leading-relaxed mb-3">কাস্টম ব্যাজ কালার, ফ্যান্টাসি বর্ডার ফ্রেম এবং আকর্ষণীয় ফন্ট আনলক করতে এখনই ভেরিফাইড মেম্বার হন!</p>
-                            <button onclick="window.location.hash='#settings'; document.getElementById('whatsapp-verify-box').scrollIntoView({behavior: 'smooth'});" class="bg-amber-500 text-white text-[10px] font-bold py-2.5 px-4 rounded-xl shadow-md hover:bg-amber-600 active:scale-95 transition-all">
+                            <button onclick="showPremiumPromoModal('প্রিমিয়াম প্যাকেজ')" class="bg-amber-500 text-white text-[10px] font-bold py-2.5 px-4 rounded-xl shadow-md hover:bg-amber-600 active:scale-95 transition-all">
                                 ভেরিফিকেশন আবেদন করুন
                             </button>
                         </div>
@@ -420,8 +426,8 @@
                         </div>
                     </div>
 
-                    <!-- ভেরিফিকেশন সেকশন -->
-                    <div id="whatsapp-verify-box" class="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-950 rounded-3xl p-6 relative overflow-hidden shadow-lg">
+                    <!-- ভেরিফিকেশন সেকশন (এটি ডায়নামিকলি শুধুমাত্র আন-ভেরিফাইড ইউজারদের দেখানো হবে) -->
+                    <div id="whatsapp-verify-box" class="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-950 rounded-3xl p-6 relative overflow-hidden shadow-lg hidden">
                         <div class="absolute -right-8 -top-8 text-9xl opacity-10 text-white">
                             <i class="ph-fill ph-seal-check"></i>
                         </div>
@@ -496,6 +502,87 @@
             </div>
         </div>
 
+        <!-- প্রিমিয়াম বেনিফিটস এবং ফিচার লিস্ট পপ-আপ মডাল (The Gold/Neon Ultra Luxury Popup) -->
+        <div id="premium-promo-modal" class="fixed inset-0 bg-black/75 z-50 hidden flex-col items-center justify-center p-4 backdrop-blur-md opacity-0 transition-opacity duration-300">
+            <div class="bg-gradient-to-b from-gray-900 via-zinc-950 to-black w-full max-w-sm rounded-3xl p-6 text-center border border-amber-500/30 shadow-2xl shadow-amber-500/10 transform scale-95 transition-transform duration-300 relative">
+                
+                <!-- ক্লোজ বাটন -->
+                <button onclick="hidePremiumPromoModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 p-2 rounded-2xl transition-all">
+                    <i class="ph text-base ph-x"></i>
+                </button>
+                
+                <!-- গ্লোয়িং ক্রাউন অ্যানিমেশন আইকন -->
+                <div class="w-16 h-16 bg-gradient-to-tr from-amber-500 to-yellow-400 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-amber-500/20 relative">
+                    <i class="ph-fill ph-crown text-gray-950 text-3xl animate-bounce"></i>
+                    <div class="absolute inset-0 rounded-3xl border-2 border-white/20 animate-ping opacity-30"></div>
+                </div>
+                
+                <h3 id="promo-modal-title" class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-400 to-orange-400 mb-1">প্রিমিয়াম ভেরিফাইড লাইসেন্স!</h3>
+                <p class="text-[11px] text-gray-400 mb-5">মাত্র ৫০৳ ওয়ান-টাইম পেমেন্টে নিজেকে সবার চেয়ে একধাপ এগিয়ে রাখুন</p>
+                
+                <!-- বেনিফিট সমূহের লিস্ট (আইকনসহ অত্যন্ত প্রিমিয়াম গ্রিড/লিস্ট) -->
+                <div class="text-left space-y-3.5 mb-6 max-h-[250px] overflow-y-auto pr-1">
+                    <div class="flex items-start gap-3.5 bg-white/5 p-3 rounded-2xl border border-white/5">
+                        <div class="w-7 h-7 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 flex-shrink-0">
+                            <i class="ph-fill ph-seal-check text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-white leading-none mb-1 flex items-center gap-1">এক্সক্লুসিভ ভেরিফাইড ব্যাজ</h4>
+                            <p class="text-[10px] text-gray-400 leading-relaxed">আপনার নামের পাশে থাকবে একটি জমকালো ভেরিফায়েড টিক চিহ্ন।</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3.5 bg-white/5 p-3 rounded-2xl border border-white/5">
+                        <div class="w-7 h-7 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-400 flex-shrink-0">
+                            <i class="ph-fill ph-text-t text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-white leading-none mb-1">৫০ শব্দের বর্ধিত শব্দসীমা</h4>
+                            <p class="text-[10px] text-gray-400 leading-relaxed">২৫ শব্দের বদলে আপনার প্রতি পোস্টে সর্বোচ্চ ৫০ শব্দ পর্যন্ত লিখতে পারবেন।</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3.5 bg-white/5 p-3 rounded-2xl border border-white/5">
+                        <div class="w-7 h-7 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 flex-shrink-0">
+                            <i class="ph-fill ph-ghost text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-white leading-none mb-1">আনলিমিটেড ফ্রি ঘোস্ট পোস্ট</h4>
+                            <p class="text-[10px] text-gray-400 leading-relaxed">কোনো দৈনিক লিমিট ছাড়াই যত খুশি বেনামে ঘোস্ট পোস্ট শেয়ার করতে পারবেন।</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3.5 bg-white/5 p-3 rounded-2xl border border-white/5">
+                        <div class="w-7 h-7 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 flex-shrink-0">
+                            <i class="ph-fill ph-palette text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-white leading-none mb-1">রিয়েল-টাইম কাস্টমাইজেশন প্যানেল</h4>
+                            <p class="text-[10px] text-gray-400 leading-relaxed">ব্যাজের কাস্টম কালার, প্রিমিয়াম অ্যাভাটার বর্ডার ফ্রেম এবং পোস্ট কার্ডের ফন্ট পরিবর্তন করতে পারবেন।</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3.5 bg-white/5 p-3 rounded-2xl border border-white/5">
+                        <div class="w-7 h-7 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 flex-shrink-0">
+                            <i class="ph-fill ph-image text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-white leading-none mb-1">UHD কার্ড ডাউনলোড সুবিধা</h4>
+                            <p class="text-[10px] text-gray-400 leading-relaxed">৪ গুণ আল্ট্রা-এইচডি কোয়ালিটিতে নিজের পোস্টের ছবি ডাউনলোড ও শেয়ার করুন।</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- হোয়াটসঅ্যাপ পেমেন্ট বাটন এবং অ্যাকশন -->
+                <button onclick="requestVerification()" class="w-full bg-gradient-to-r from-amber-500 via-yellow-400 to-orange-500 text-gray-950 text-xs font-black py-4 px-4 rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-amber-500/15 hover:scale-[1.02] active:scale-95 transition-all mb-3">
+                    <i class="ph-fill ph-whatsapp-logo text-lg"></i> মাত্র ৫০৳ পেমেন্ট করে একটিভ করুন
+                </button>
+                <button onclick="hidePremiumPromoModal()" class="w-full text-[10px] text-gray-500 hover:text-gray-300 font-bold transition-colors">
+                    না, পরে চেষ্টা করব
+                </button>
+            </div>
+        </div>
+
         <!-- প্রাইভেসি পলিসি ও টার্মস কন্ডিশন মডাল -->
         <div id="privacy-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex-col items-center justify-center p-4 backdrop-blur-sm opacity-0 transition-opacity duration-300">
             <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl transform scale-95 transition-transform duration-300 relative max-h-[80vh] flex flex-col">
@@ -516,11 +603,11 @@
                     </div>
                     <div>
                         <h4 class="font-bold text-gray-800 mb-1">৩. ভেরিফিকেশন পেমেন্ট পলিসি:</h4>
-                        <p>ভেরিফাইড ইউজার ব্যাজ পাওয়ার ৫০ টাকা চার্জটি একবারই পরিশোধ করতে হয় এবং এটি অফেরতযোগ্য (Non-refundable)। পেমেন্ট পাওয়ার পর ১২-২৪ ঘণ্টার মধ্যে ব্যাজ অ্যাক্টিভেট করে দেওয়া হবে।</p>
+                        <p>ভেরিফাইড ইউজার ব্যাজ পাওয়ার ৫০ টাকা চার্জটি একবারই পরিশোধ করতে হয় এবং এটি অফেরতযোগ্য (Non-refundable)। পেমেন্ট পাওয়ার পর ১২-২৪ ঘণ্টার মধ্যে ব্যাজ্যাক্টিভেট করে দেওয়া হবে।</p>
                     </div>
                     <div>
                         <h4 class="font-bold text-gray-800 mb-1">৪. নীতি পরিবর্তন:</h4>
-                        <p>অ্যাপের পরিবেশ রক্ষার স্বার্থে ডেভলপার যেকোনো মুহূর্তে এই নীতিমালা পরিবর্তন বা পরিবর্ধন করার পূর্ণ ক্ষমতা রাখেন।</p>
+                        <p>앱ের পরিবেশ রক্ষার স্বার্থে ডেভলপার যেকোনো মুহূর্তে এই নীতিমালা পরিবর্তন বা পরিবর্ধন করার পূর্ণ ক্ষমতা রাখেন।</p>
                     </div>
                 </div>
                 
@@ -545,7 +632,7 @@
                 <!-- কমেন্টস ডায়নামিকলি আসবে -->
             </div>
 
-            <!-- কমেন্ট ইনপুট BOX -->
+            <!-- কমেন্ট ইনপুট বক্স -->
             <div class="p-4 border-t border-gray-50 bg-gray-50/50 rounded-t-2xl flex gap-3 items-center">
                 <span id="comment-box-avatar" class="text-2xl">👤</span>
                 <input type="text" id="comment-input-field" placeholder="একটি ইতিবাচক মন্তব্য লিখুন..." class="flex-1 bg-white border border-gray-200 rounded-2xl px-4 py-3.5 text-xs font-semibold focus:border-gray-400 transition-all shadow-sm">
@@ -614,6 +701,9 @@
         let activePostIdForComments = null;
         let activeFeedFilter = 'all'; 
         let searchQuery = '';
+        
+        // টাইমার কালেকশন (মেমোরি ফিক্সের জন্য)
+        let promoTimeouts = [];
         
         // উন্নত ইমোজি কালেকশন (Categorized for selection)
         const emojiCategories = {
@@ -702,6 +792,52 @@
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
             }, 300);
+        }
+
+        // লাক্সারি প্রিমিয়াম বেনিফিটস পপ-আপ কন্ট্রোলস
+        window.showPremiumPromoModal = (subtitleText = 'প্রিমিয়াম প্যাকেজ') => {
+            const modal = document.getElementById('premium-promo-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.querySelector('div').classList.remove('scale-95');
+            }, 10);
+        }
+
+        window.hidePremiumPromoModal = () => {
+            const modal = document.getElementById('premium-promo-modal');
+            modal.classList.add('opacity-0');
+            modal.querySelector('div').classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        // স্মার্ট এবং সিকোয়েন্সিয়াল পপ-আপ টাইমার সেটিংস (OMAR'S REQUEST: ৩০ সেকেন্ড, ১ মিনিট, ২ মিনিট পর পর পপ-আপ আসবে)
+        function startPromoTimers() {
+            clearPromoTimers();
+            // ইউজার ভেরিফাইড হলে টাইমার সেট করার প্রয়োজন নেই
+            if (currentUserData && currentUserData.isVerified) return;
+
+            // ওমরের চাহিদা অনুযায়ী সময় নির্ধারণ: ৩০ সেকেন্ড, ১.৫ মিনিট (৯০ সেকেন্ড) এবং ৩ মিনিট (১৮০ সেকেন্ড)
+            const delays = [30000, 90000, 180000]; 
+
+            delays.forEach((delay, idx) => {
+                const timeoutId = setTimeout(() => {
+                    // ইউজার এখনো সাধারণ (Unverified) থাকা সাপেক্ষে এবং অন্য বড় কোনো ডায়ালগ খোলা না থাকলে দেখাবে
+                    if (currentUserData && !currentUserData.isVerified && !activePostIdForComments) {
+                        showPremiumPromoModal('বিশেষ অফার! ভেরিফাইড মেম্বার হোন');
+                    }
+                }, delay);
+                promoTimeouts.push(timeoutId);
+            });
+        }
+
+        function clearPromoTimers() {
+            promoTimeouts.forEach(clearTimeout);
+            promoTimeouts = [];
         }
 
         // ড্রাফট টেক্সট ও সিলেক্টেড থিম সম্পূর্ণভাবে মুছে ফেলার ফাংশন
@@ -829,6 +965,7 @@
                     if (user.isAnonymous) {
                         currentUserData = null;
                         updateUIGuestMode();
+                        clearPromoTimers();
                     } else {
                         await checkUserData(user);
                     }
@@ -859,6 +996,7 @@
         function updateUIGuestMode() {
             document.getElementById('header-login-btn').classList.remove('hidden');
             document.getElementById('header-emoji').classList.add('hidden');
+            document.getElementById('header-verify-badge-btn').classList.add('hidden');
             document.getElementById('compose-overlay').classList.remove('hidden');
             document.getElementById('compose-avatar').innerText = '👤';
             document.getElementById('view-setup').classList.remove('active');
@@ -872,6 +1010,16 @@
             document.getElementById('compose-avatar').innerText = userData.emojiAvatar || '👤';
             document.getElementById('comment-box-avatar').innerText = userData.emojiAvatar || '👤';
             document.getElementById('compose-overlay').classList.add('hidden');
+            
+            // OMAR'S REQUEST: ভেরিফাইড হলে ভেরিফাই বাটন লুকানো থাকবে, না হলে চমৎকার ব্যাজ বাটন দেখা যাবে
+            const verifyBtn = document.getElementById('header-verify-badge-btn');
+            if(userData.isVerified) {
+                verifyBtn.classList.add('hidden');
+                clearPromoTimers(); // ভেরিফাইডদের জন্য টাইমার বাতিল
+            } else {
+                verifyBtn.classList.remove('hidden');
+                startPromoTimers(); // সাধারণ মেম্বারদের জন্য টাইমার চালু
+            }
             hideLoginModal();
         }
 
@@ -894,6 +1042,7 @@
         };
 
         window.signOutApp = async () => {
+            clearPromoTimers();
             await signOut(auth);
             showToast("আপনি সফলভাবে লগ আউট হয়েছেন।");
         }
@@ -1143,10 +1292,13 @@
             document.getElementById('settings-username-input').value = currentUserData.username || '';
             selectedEmoji = currentUserData.emojiAvatar || emojiCategories.female[0];
 
-            // প্রিমিয়াম লকিং কন্ট্রোল
+            // প্রিমিয়াম লকিং কন্ট্রোল ও ওমরের রিকোয়েস্ট অনুযায়ী WhatsApp বক্স কন্ডিশনাল শো
             const lockOverlay = document.getElementById('premium-lock-overlay');
+            const whatsappVerifyBox = document.getElementById('whatsapp-verify-box');
+            
             if (currentUserData.isVerified) {
                 lockOverlay.classList.add('hidden');
+                whatsappVerifyBox.classList.add('hidden'); // OMAR'S REQUEST: ভেরিফাইড হলে ভেরিফাই বাটন ও বক্সটি লুকিয়ে যাবে
                 
                 // এক্সিস্টিং প্রিমিয়াম ভ্যালুস লোড করা
                 localSelectedBadgeColor = currentUserData.badgeColor || '#FF0050';
@@ -1157,6 +1309,7 @@
                 previewPremiumSettings();
             } else {
                 lockOverlay.classList.remove('hidden');
+                whatsappVerifyBox.classList.remove('hidden'); // আন-ভেরিফাইড হলে দেখাবে
             }
         }
 
@@ -1371,7 +1524,7 @@
             });
         }
 
-        // পোস্ট সাবমিট লজিক (The Text String Hack)
+        // পোস্ট সাবমিট লজিক
         window.submitPost = async () => {
             if(!currentUser || currentUser.isAnonymous || !currentUserData) {
                 showLoginModal('নতুন পোস্ট ক্রিয়েট করতে লগইন করুন');
@@ -1646,7 +1799,6 @@
 
             container.innerHTML = filteredComments.map(comment => {
                 const author = allUsers[comment.authorId] || { username: 'অজানা ইউজার', emojiAvatar: '👤', isVerified: false, badgeColor: '#FF0050' };
-                // কমেন্টেও ডায়নামিক শ্রিঙ্ক-টু-ফিট
                 const nameLength = author.username.length;
                 const dynamicFontSize = nameLength > 12 ? Math.max(9, Math.floor(150 / nameLength)) : 12;
                 return `
@@ -1748,7 +1900,6 @@
             }
 
             // ডায়নামিক ফন্ট সাইজ ক্যালকুলেশন (শ্রিঙ্ক-টু-ফিট)
-            // সাধারণ অবস্থায় ইউজারনেমের ফন্ট সাইজ ১৪পিএক্স। যদি ইউজারনেম বড় হয় তবে এটি স্বয়ংক্রিয়ভাবে ছোট হয়ে যাবে যাতে রেপ বা কেটে না যায়।
             const nameLength = authorName.length;
             const dynamicFontSize = nameLength > 12 ? Math.max(9, Math.floor(180 / nameLength)) : 14;
 
@@ -1766,7 +1917,6 @@
                                     </div>
                                 </div>
                                 <div class="overflow-hidden flex-1">
-                                    <!-- ডায়নামিক ফন্ট সাইজ ও নো-রেপ সুরক্ষার জন্য ফ্লেক্স র‍্যাপ ও ফিট ব্যবহার -->
                                     <div class="flex items-center gap-1 flex-nowrap w-full overflow-hidden">
                                         <h4 class="font-bold text-gray-900 leading-none align-middle inline-block whitespace-nowrap overflow-hidden ${currentTheme.textAccent}" style="font-size: ${dynamicFontSize}px;">
                                             ${authorName}
@@ -1794,7 +1944,7 @@
                             </div>
                         </div>
 
-                        <!-- কার্ড বডি (মূল কন্টেন্ট - কাস্টম ফন্ট সিঙ্ক সহ) -->
+                        <!-- কার্ড বডি -->
                         <div class="min-h-[80px] flex flex-col justify-center">
                             <p class="text-[15px] leading-relaxed mb-4 pl-1 whitespace-pre-line tracking-wide font-medium break-words" style="font-family: '${!isGhost && authorVerified ? authorFont : 'Hind Siliguri'}', sans-serif;">${originalContent}</p>
                         </div>
@@ -1883,7 +2033,6 @@
             const profilePageName = document.getElementById('profile-page-name');
             profilePageName.innerText = currentUserData.username;
             
-            // শ্রিঙ্ক-টু-ফিট ফন্ট সাইজ ক্যালকুলেশন প্রোফাইল পেজের জন্য
             const nameLength = currentUserData.username.length;
             const dynamicFontSize = nameLength > 10 ? Math.max(12, Math.floor(240 / nameLength)) : 24;
             profilePageName.style.fontSize = `${dynamicFontSize}px`;
