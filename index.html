@@ -3,30 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GhostPost | আধুনিক ও প্রিমিয়াম সোশ্যাল প্ল্যাটফর্ম</title>
-    <!-- টেলউইন্ড সিএসএস (Tailwind CSS) -->
+    <title>GhostPost | গ্লোবাল প্রিমিয়াম সোশ্যাল নেটওয়ার্ক</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- ফসফর আইকনস (Phosphor Icons) -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- html2canvas লাইব্রেরি সিডিএন -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
+        /* গুগল ফন্টস থেকে প্রিমিয়াম বাংলা ও ইংরেজি ফন্টসমূহ ইমপোর্ট */
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Atma:wght@400;600;700&family=Galada&family=Noto+Serif+Bengali:wght@400;700&display=swap');
         
         body {
             font-family: 'Hind Siliguri', 'Inter', sans-serif;
-            background-color: #f3f4f6;
-            color: #111827;
+            background-color: #f8fafc;
+            color: #0f172a;
             -webkit-tap-highlight-color: transparent;
-            /* মসৃণ স্ক্রোলিংয়ের জন্য */
-            scroll-behavior: smooth; 
+            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-x: hidden;
         }
 
+        /* OLED ট্রু ডার্ক থিম */
+        body.oled-dark {
+            background-color: #000000 !important;
+            color: #f1f5f9 !important;
+        }
+        body.oled-dark #app {
+            background-color: #000000 !important;
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.01);
+            border-left: 1px solid #111827;
+            border-right: 1px solid #111827;
+        }
+        body.oled-dark header, body.oled-dark #bottom-nav {
+            background-color: rgba(0, 0, 0, 0.9) !important;
+            border-color: #111827 !important;
+        }
+        body.oled-dark .bg-white {
+            background-color: #030712 !important;
+            border-color: #1f2937 !important;
+        }
+        body.oled-dark textarea, body.oled-dark input, body.oled-dark select {
+            background-color: #111827 !important;
+            color: #f1f5f9 !important;
+            border-color: #1f2937 !important;
+        }
+
+        /* অটো প্রাইভেসি স্ক্রিন ব্লার (ফিড কার্ড লুকাতে) */
+        .privacy-blur-active .tilt-card {
+            filter: blur(25px) grayscale(80%);
+            pointer-events: none;
+            transition: filter 0.5s ease;
+        }
+
+        /* মসৃণ ভিউ ট্রানজিশন এনিমেশন */
         .view-container {
-            transition: opacity 0.3s ease, transform 0.3s ease;
+            transition: opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             opacity: 0;
-            transform: translateY(10px);
+            transform: translateY(12px) scale(0.98);
             pointer-events: none;
             position: absolute;
             top: 0;
@@ -37,36 +68,34 @@
 
         .view-container.active {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
             pointer-events: auto;
             position: relative;
             display: block;
         }
 
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
-
-        /* মেইন রেসপন্সিভ কন্টেইনার */
+        /* মেইন রেসপন্সিভ মোবাইল ফ্রেম (ইন্টারন্যাশনাল স্ট্যান্ডার্ড ৪৪০px ম্যাক্স উইডথ) */
         #app {
-            max-width: 480px;
+            max-width: 440px;
             margin: 0 auto;
             background-color: #ffffff;
             min-height: 100vh;
-            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.05);
             position: relative;
-            padding-bottom: 90px;
+            padding-bottom: 95px;
+            transition: background-color 0.4s ease;
         }
 
+        /* ড্রয়ার স্লাইডিং ইফেক্টস */
         .drawer {
             transform: translate(-50%, 100%);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        .drawer.open { transform: translate(-50%, 0); }
+        .drawer.open {
+            transform: translate(-50%, 0);
+        }
 
-        textarea, input { outline: none !important; resize: none; }
-        
-        /* টোস্ট নোটিফিকেশন */
+        /* কাস্টম টোস্ট এনিমেশন */
         #toast-container {
             position: fixed;
             bottom: 100px;
@@ -77,112 +106,229 @@
             flex-direction: column;
             gap: 8px;
             width: 90%;
-            max-width: 400px;
+            max-width: 380px;
         }
         .toast {
-            background: rgba(17, 24, 39, 0.95);
-            backdrop-filter: blur(12px);
-            color: white;
-            padding: 12px 18px;
-            border-radius: 20px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(16px);
+            color: #ffffff;
+            padding: 14px 20px;
+            border-radius: 24px;
             font-size: 13px;
             font-weight: 600;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
-            animation: slideUp 0.3s ease forwards;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+            animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* অ্যানিমেশনস (Feature 1, 2, 3) */
+        /* পোস্ট কার্ড এনিমেশন (টিল্ট বাতিলকৃত রূপ) */
+        .tilt-card {
+            transition: box-shadow 0.2s ease, filter 0.4s ease;
+        }
+
         @keyframes rotate-gradient {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-        .animate-rainbow { background-size: 200% auto; animation: rotate-gradient 3s linear infinite; }
-        
-        @keyframes spin-slow { 100% { transform: rotate(360deg); } }
-        .animate-spin-slow { animation: spin-slow 8s linear infinite; }
-
-        @keyframes shimmer-name {
-            0% { background-position: -200% center; }
-            100% { background-position: 200% center; }
-        }
-        .premium-shimmer-text {
-            background: linear-gradient(90deg, #d97706 0%, #fbbf24 50%, #d97706 100%);
+        .animate-rainbow {
             background-size: 200% auto;
-            color: transparent;
-            -webkit-background-clip: text;
-            background-clip: text;
-            animation: shimmer-name 3s linear infinite;
+            animation: rotate-gradient 4s linear infinite;
         }
 
-        /* Confetti Effect (Feature 17) */
+        @keyframes spin-slow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+            animation: spin-slow 12s linear infinite;
+        }
+
+        /* গোল্ডেন পালস ও নিয়ন শাইন */
+        @keyframes gold-pulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(245, 158, 11, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(245, 158, 11, 0.6); }
+        }
+        .glowing-gold-btn {
+            animation: gold-pulse 3s infinite ease-in-out;
+        }
+
+        .neon-glow-text {
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.5), 0 0 15px rgba(0, 240, 255, 0.2);
+        }
+
+        .rainbow-text {
+            background: linear-gradient(to right, #ff0050, #00f0ff, #a855f7, #39ff14, #ffd700, #ff0050);
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: rotate-gradient 5s linear infinite;
+        }
+
+        .metallic-gold-text {
+            background: linear-gradient(135deg, #f59e0b 0%, #fef08a 50%, #d97706 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+
+        /* ইমোজি বিস্ফোরণ এবং কনফেটি কণা */
+        .emoji-burst {
+            position: absolute;
+            pointer-events: none;
+            z-index: 99;
+            animation: emojiExplode 0.7s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+        }
+        @keyframes emojiExplode {
+            0% { transform: translate(-50%, -50%) scale(0.2); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(1.3); opacity: 0; }
+        }
+
         .confetti-piece {
             position: absolute;
             width: 8px;
             height: 8px;
-            background-color: #FF0050;
             border-radius: 50%;
-            pointer-events: none;
-            animation: fall 1s ease-out forwards;
+            z-index: 100;
+            animation: confettiFall 2.2s ease-out forwards;
         }
-        @keyframes fall {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(50px) scale(0); opacity: 0; }
+        @keyframes confettiFall {
+            0% { transform: translateY(-30px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(105vh) rotate(540deg); opacity: 0; }
+        }
+
+        /* জেন মুড ইন্টারফেস ব্ল্যাকআউট */
+        .zen-mode-active {
+            background-color: #030712 !important;
+        }
+        .zen-mode-active header, .zen-mode-active #bottom-nav, .zen-mode-active #posts-container, .zen-mode-active #compose-box ~ * {
+            display: none !important;
+        }
+
+        /* প্রিমিয়াম ক্যান্ডি প্রোগ্রেস বার */
+        #reading-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3.5px;
+            background: linear-gradient(to right, #ff0050, #00f0ff, #a855f7, #39ff14);
+            z-index: 50;
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+
+        /* কাস্টম স্ক্রল স্ন্যাপিং */
+        .snap-container {
+            scroll-snap-type: y mandatory;
+            overflow-y: auto;
+            max-height: calc(100vh - 270px);
+            scrollbar-width: none;
+        }
+        .snap-container::-webkit-scrollbar {
+            display: none;
+        }
+        .snap-item {
+            scroll-snap-align: center;
+            scroll-snap-stop: always;
+        }
+
+        /* হাইলাইট মার্কআপ স্টাইল */
+        .highlight-yellow { background-color: rgba(254, 240, 138, 0.7); border-radius: 4px; padding: 0 4px; }
+        .highlight-green { background-color: rgba(187, 247, 208, 0.7); border-radius: 4px; padding: 0 4px; }
+        .highlight-pink { background-color: rgba(fbcfe8, 0.7); border-radius: 4px; padding: 0 4px; }
+        
+        /* কাস্টম স্ক্রলবার হাইড */
+        .scrollbar-none::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-none {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* আল্টিমেট ভেরিফাইড ব্যাজ পালস অ্যানিমেশন */
+        .anim-pulse {
+            transform-origin: center;
+            animation: pulse-effect 2s infinite ease-in-out;
+        }
+        @keyframes pulse-effect { 
+            0%, 100% { transform: scale(1); } 
+            50% { transform: scale(1.08); } 
+        }
+
+        /* ফেসবুক স্টাইল হাইড/শো হেডার ট্রানজিশন কাস্টমাইজেশন */
+        header {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.4s ease, border-color 0.4s ease !important;
+        }
+        .header-hidden {
+            transform: translateY(-100%);
         }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="transition-colors duration-300">
 
-    <div id="app" class="flex flex-col">
-        <!-- 
-            শিক্ষকের নোট: আপনি চেয়েছিলেন হেডার যেন স্ক্রোল করার সময় ফিক্সড না থাকে। 
-            তাই 'sticky top-0 z-40' সরিয়ে 'relative' ব্যবহার করা হয়েছে। 
-        -->
-        <header class="relative w-full border-b border-gray-100 bg-white transition-all">
-            <div class="px-4 py-3.5 flex justify-between items-center">
-                <div class="flex items-center gap-2.5 cursor-pointer" onclick="window.location.hash='#feeds'">
-                    <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-[#FF0050] to-[#ff4081] flex items-center justify-center text-white shadow-md shadow-[#FF0050]/20">
-                        <i class="ph-fill ph-ghost text-xl"></i>
-                    </div>
-                    <h1 class="text-xl font-bold tracking-tight text-gray-900">GhostPost</h1>
+    <div id="reading-progress"></div>
+
+    <div id="offline-banner" class="fixed top-0 left-0 right-0 z-50 bg-red-600/95 backdrop-blur-md text-white text-xs font-bold text-center py-2.5 shadow-md transform -translate-y-full transition-transform duration-350">
+        ⚠️ আপনার deviceটি বর্তমানে অফলাইনে রয়েছে। কিছু ফিচার সাময়িকভাবে সীমাবদ্ধ হতে পারে।
+    </div>
+
+    <button id="scroll-to-top" onclick="scrollToTop()" class="fixed bottom-24 right-4 z-40 bg-gray-900 text-white w-11 h-11 rounded-full shadow-2xl flex items-center justify-center opacity-0 pointer-events-none transition-all hover:scale-110 active:scale-95">
+        <i class="ph-bold ph-arrow-up text-lg"></i>
+    </button>
+
+    <div id="app" class="flex flex-col transition-colors">
+        <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-100 px-4 py-3 flex justify-between items-center transition-colors">
+            <div class="flex items-center gap-2.5 cursor-pointer" onclick="window.location.hash='#feeds'">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#FF0050] to-[#ff4081] flex items-center justify-center text-white shadow-lg shadow-[#FF0050]/20" id="header-logo-icon">
+                    <i class="ph-fill ph-ghost text-2xl"></i>
                 </div>
-                <div id="header-user-info" class="flex items-center gap-2">
-                    <button id="header-login-btn" onclick="showLoginModal('কন্টিনিউ করতে লগইন করুন')" class="bg-gray-900 text-white px-4 py-2 rounded-2xl text-xs font-bold hover:bg-gray-800 active:scale-95 transition-all">
-                        লগইন করুন
-                    </button>
-                    <span id="header-emoji" class="text-xl hidden bg-gray-50 hover:bg-gray-100 border border-gray-100 w-9 h-9 flex items-center justify-center rounded-2xl cursor-pointer transition-all active:scale-90" onclick="window.location.hash='#profile'"></span>
+                <div>
+                    <h1 class="text-lg font-black tracking-tight bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent" id="app-title">GhostPost</h1>
+                    <span id="ambient-state-txt" class="text-[8px] font-bold text-gray-400 block -mt-1"><i class="ph ph-circle-notch animate-spin"></i> ক্লায়েন্ট ইঞ্জিন রেডি</span>
                 </div>
+            </div>
+            <div id="header-user-info" class="flex items-center gap-2">
+                <button id="header-login-btn" onclick="showLoginModal('কন্টিনিউ করতে লগইন করুন')" class="bg-gray-950 text-white px-4 py-2.5 rounded-2xl text-xs font-bold hover:bg-gray-800 active:scale-95 transition-all">
+                    লগইন করুন
+                </button>
+                <div id="session-timer" class="text-[10px] font-bold text-gray-400 bg-gray-50 border border-gray-100 px-2 py-1 rounded-xl hidden">00:00</div>
+                <span id="header-emoji" class="text-xl hidden bg-gray-50 hover:bg-gray-100 border border-gray-150 w-10 h-10 flex items-center justify-center rounded-2xl cursor-pointer transition-all active:scale-90" onclick="window.location.hash='#profile'"></span>
             </div>
         </header>
 
-        <!-- মূল কন্টেন্ট সেকশন -->
-        <main class="p-4 flex-1 relative">
+        <main class="p-4 flex-1 relative min-h-[calc(100vh-140px)]">
             
-            <!-- ১. প্রোফাইল সেটআপ স্ক্রিন -->
             <section id="view-setup" class="view-container">
-                <!-- ... (পূর্বের মতোই থাকবে) ... -->
                 <div class="flex flex-col items-center justify-center pt-6 text-center">
                     <div class="w-16 h-16 bg-[#FF0050]/5 rounded-3xl flex items-center justify-center mb-2 border border-[#FF0050]/10">
                         <i class="ph-fill ph-user-circle-plus text-3xl text-[#FF0050]"></i>
                     </div>
-                    <h2 class="text-xl font-black text-gray-900 mb-0.5">প্রোফাইল সেটআপ</h2>
+                    <h2 class="text-xl font-black text-gray-900 mb-0.5" id="setup-title-txt">প্রোফাইল সেটআপ</h2>
                     <p class="text-[11px] text-gray-500 mb-4">আপনার একটি চমৎকার বেনামী পরিচয় তৈরি করুন</p>
                     
                     <div class="w-full max-w-xs">
-                        <h3 class="text-xs font-bold mb-2 text-left text-gray-700">আপনার অ্যাভাটার বেছে নিন</h3>
-                        <div class="flex gap-1 mb-2 border-b border-gray-100 pb-1.5 overflow-x-auto text-[10px] font-bold select-none">
+                        <div class="flex justify-between items-center mb-2 select-none">
+                            <h3 class="text-xs font-bold text-gray-700">আপনার অ্যাভাটার বেছে নিন</h3>
+                            <button onclick="shuffleSetupAvatar()" class="text-[10px] text-[#FF0050] font-bold flex items-center gap-0.5 hover:underline"><i class="ph ph-shuffle"></i> এলোমেলো করুন</button>
+                        </div>
+                        
+                        <div class="flex gap-1 mb-2 border-b border-gray-100 pb-1.5 overflow-x-auto text-[10px] font-bold select-none scrollbar-none">
                             <button onclick="changeSetupEmojiTab('female')" id="tab-setup-female" class="setup-tab-btn bg-gray-950 text-white px-2.5 py-1 rounded-lg transition-all">👩 ফিমেল</button>
                             <button onclick="changeSetupEmojiTab('male')" id="tab-setup-male" class="setup-tab-btn bg-gray-50 text-gray-500 px-2.5 py-1 rounded-lg transition-all">👨 মেল</button>
                             <button onclick="changeSetupEmojiTab('fantasy')" id="tab-setup-fantasy" class="setup-tab-btn bg-gray-50 text-gray-500 px-2.5 py-1 rounded-lg transition-all">👻 ফ্যান্টাসি</button>
+                            <button onclick="changeSetupEmojiTab('animals')" id="tab-setup-animals" class="setup-tab-btn bg-gray-50 text-gray-500 px-2.5 py-1 rounded-lg transition-all">🦊 এনিমেলস</button>
                         </div>
-                        <div class="grid grid-cols-6 gap-1.5 mb-4 max-h-[130px] overflow-y-auto p-1 bg-gray-50 rounded-2xl" id="emoji-selector"></div>
+
+                        <div class="grid grid-cols-6 gap-1.5 mb-4 max-h-[130px] overflow-y-auto p-1 bg-gray-50 rounded-2xl" id="emoji-selector">
+                            </div>
                         <div class="relative mb-4">
                             <span class="absolute left-4 top-3.5 text-gray-400"><i class="ph ph-at"></i></span>
                             <input type="text" id="setup-username" placeholder="একটি ইউনিক ইউজারনেম দিন" class="w-full bg-gray-50 border border-gray-200 rounded-2xl pl-10 pr-4 py-3.5 text-sm font-medium focus:bg-white focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all">
@@ -194,76 +340,91 @@
                 </div>
             </section>
 
-            <!-- ২. টাইমলাইন বা ফিড স্ক্রিন -->
             <section id="view-feeds" class="view-container active">
                 
-                <!-- পোস্ট তৈরির ইনপুট বক্স (Feature 25, 26, 27, 29 - Smart Editor & Draft) -->
-                <div class="bg-white border border-gray-100 rounded-3xl p-4 shadow-sm mb-5 relative" id="compose-box">
-                    <!-- টুলবার (Premium Feature Guide) -->
-                    <div class="flex justify-between items-center mb-2 pb-2 border-b border-gray-50">
-                        <span class="text-[9px] font-bold text-gray-400 uppercase">📝 মার্কডাউন সাপোর্টেড (*বোল্ড*, _ইটালিক_, ~কাটা~)</span>
-                        <button onclick="clearDraft()" class="text-[10px] text-red-400 hover:text-red-600 font-bold bg-red-50 px-2 py-1 rounded-lg transition-all"><i class="ph-bold ph-trash"></i> মুছুন</button>
-                    </div>
-
+                <div class="bg-white border border-gray-100 rounded-[28px] p-4 shadow-sm mb-5 relative transition-colors" id="compose-box">
+                    <button id="zen-exit-btn" onclick="toggleZenMode(false)" class="absolute top-4 right-4 bg-red-600 text-white text-[11px] px-3 py-2 rounded-xl font-bold hidden z-50 shadow-lg">জেন মোড বন্ধ করুন</button>
+                    
                     <div class="flex gap-3 mb-3">
-                        <span id="compose-avatar" class="text-2xl bg-gray-50 border border-gray-100 w-10 h-10 flex items-center justify-center rounded-2xl shadow-inner">👤</span>
-                        <textarea id="post-content" rows="3" placeholder="বেনামে আপনার মনে কী চলছে শেয়ার করুন..." class="w-full bg-transparent text-gray-800 placeholder-gray-400 text-[15px] leading-relaxed pt-1.5"></textarea>
+                        <span id="compose-avatar" class="text-2xl bg-gray-50 border border-gray-100 w-11 h-11 flex items-center justify-center rounded-2xl shadow-inner select-none">👤</span>
+                        <div class="flex-1 relative">
+                            <textarea id="post-content" rows="3" placeholder="বেনামে আপনার মনে কী চলছে শেয়ার করুন..." class="w-full bg-transparent text-gray-800 placeholder-gray-400 text-[15px] leading-relaxed pt-1.5"></textarea>
+                            <div class="flex items-center gap-1.5 mt-2 border-t border-gray-50 pt-2 select-none overflow-x-auto scrollbar-none">
+                                <button onclick="transformTextCase('upper')" class="text-[9px] bg-gray-100 text-gray-600 px-2 py-1 rounded-md font-bold hover:bg-gray-200">UPPER</button>
+                                <button onclick="transformTextCase('lower')" class="text-[9px] bg-gray-100 text-gray-600 px-2 py-1 rounded-md font-bold hover:bg-gray-200">lower</button>
+                                <button onclick="transformTextCase('title')" class="text-[9px] bg-gray-100 text-gray-600 px-2 py-1 rounded-md font-bold hover:bg-gray-200">Title</button>
+                                <button onclick="alignComposeText('left')" class="text-gray-400 p-1 rounded hover:bg-gray-100" title="বামে অ্যালাইন"><i class="ph ph-text-align-left"></i></button>
+                                <button onclick="alignComposeText('center')" class="text-gray-400 p-1 rounded hover:bg-gray-100" title="মাঝে অ্যালাইন"><i class="ph ph-text-align-center"></i></button>
+                                <button onclick="alignComposeText('right')" class="text-gray-400 p-1 rounded hover:bg-gray-100" title="ডানে অ্যালাইন"><i class="ph ph-text-align-right"></i></button>
+                                <button onclick="toggleZenMode(true)" class="text-[9px] bg-[#FF0050]/10 text-[#FF0050] px-2 py-1 rounded-md font-bold hover:bg-[#FF0050]/20 flex items-center gap-0.5" title="জেন মোডে লিখুন"><i class="ph-fill ph-feather"></i> জেন মোড</button>
+                                <button onclick="recoverLastDraft()" id="draft-recover-btn" class="text-[9px] bg-indigo-50 text-indigo-600 px-2 py-1 rounded-md font-bold hidden animate-pulse">ড্রাফট রিকভার</button>
+                                <button onclick="clearComposeText()" class="text-red-500 p-1 rounded hover:bg-red-50 ml-auto" title="সব মুছুন"><i class="ph-bold ph-trash"></i></button>
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="mb-3 border-t border-gray-50 pt-2">
-                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 block">কার্ড থিম কাস্টমাইজ করুন:</span>
-                        <div class="flex gap-2" id="theme-selector-container"></div>
+                        <div class="flex justify-between items-center mb-1.5 select-none">
+                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">কার্ড থিম কাস্টমাইজ করুন:</span>
+                            <button onclick="randomizeComposeTheme()" class="text-[10px] text-pink-500 font-bold flex items-center gap-0.5 hover:underline"><i class="ph ph-dice-five"></i> র্যান্ডমাইজ</button>
+                        </div>
+                        <div class="flex gap-2 items-center flex-wrap" id="theme-selector-container">
+                            </div>
                     </div>
                     
-                    <div class="flex items-center justify-between border-t border-gray-50 pt-3">
+                    <div class="flex items-center justify-between border-t border-gray-50 pt-3 flex-wrap gap-2 select-none">
                         <div class="flex items-center gap-4">
                             <label class="flex items-center gap-2 cursor-pointer group">
                                 <div class="relative">
                                     <input type="checkbox" id="ghost-toggle" class="sr-only">
-                                    <div class="block bg-gray-200 w-10 h-6 rounded-full transition-colors" id="ghost-toggle-bg"></div>
+                                    <div class="block bg-gray-200 w-10 h-6 rounded-full transition-colors group-hover:bg-gray-300" id="ghost-toggle-bg"></div>
                                     <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-200" id="ghost-toggle-dot"></div>
                                 </div>
-                                <span class="text-xs font-bold text-gray-600 flex items-center gap-1 select-none">
-                                    <i class="ph-fill ph-ghost text-sm"></i> ঘোস্ট মোড
+                                <span class="text-xs font-bold text-gray-600 flex items-center gap-1">
+                                    <i class="ph-fill ph-ghost text-sm text-[#FF0050]"></i> ঘোস্ট মোড
                                 </span>
                             </label>
                         </div>
                         
-                        <div class="flex items-center gap-3">
-                            <span id="word-count" class="text-[11px] text-gray-400 font-bold bg-gray-50 px-2 py-1 rounded-lg">0 / 25</span>
-                            <button onclick="submitPost()" id="submit-post-btn" class="bg-gray-900 text-white px-5 py-2.5 rounded-2xl text-xs font-bold hover:bg-gray-800 active:scale-95 transition-all disabled:opacity-50">
+                        <div class="flex items-center gap-2">
+                            <span id="word-count" class="text-[10px] text-gray-400 font-bold bg-gray-50 px-2 py-1 rounded-lg">0 / 25 শব্দ</span>
+                            <span id="char-count" class="text-[10px] text-gray-400 font-bold bg-gray-50 px-2 py-1 rounded-lg">0 অক্ষ</span>
+                            <button onclick="submitPost()" id="submit-post-btn" class="bg-gray-950 text-white px-5 py-2.5 rounded-2xl text-xs font-bold hover:bg-gray-800 active:scale-95 transition-all disabled:opacity-50 shadow-sm">
                                 পোস্ট করুন
                             </button>
                         </div>
                     </div>
                     <div id="post-limit-warning" class="text-[11px] text-red-500 font-bold mt-2.5 hidden"></div>
-                    <div id="compose-overlay" class="absolute inset-0 z-10 cursor-pointer rounded-3xl hidden bg-white/50 backdrop-blur-sm flex items-center justify-center" onclick="showLoginModal('নতুন পোস্ট করতে প্রথমে লগইন করুন')">
-                        <span class="bg-gray-900 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg">লগইন করুন</span>
-                    </div>
+
+                    <div id="compose-overlay" class="absolute inset-0 z-10 cursor-pointer rounded-3xl hidden" onclick="showLoginModal('নতুন পোস্ট করতে প্রথমে লগইন করুন')"></div>
                 </div>
 
-                <!-- আধুনিক সার্চ এবং ফিল্টার বার (Feature 40, 41 - Advanced Sorting) -->
                 <div class="mb-5 space-y-3">
                     <div class="relative">
-                        <span class="absolute left-4 top-3 text-gray-400"><i class="ph ph-magnifying-glass"></i></span>
-                        <input type="text" id="search-input" oninput="handleSearch()" placeholder="পোস্টের কন্টেন্ট বা ইউজারনেম দিয়ে সার্চ করুন..." class="w-full bg-white border border-gray-100 rounded-2xl pl-10 pr-4 py-2.5 text-xs font-medium shadow-sm focus:border-gray-300 transition-all">
+                        <span class="absolute left-4 top-3.5 text-gray-400"><i class="ph ph-magnifying-glass"></i></span>
+                        <input type="text" id="search-input" oninput="handleSearch()" placeholder="পোস্টের কন্টেন্ট বা ইউজারনেম দিয়ে সার্চ করুন..." class="w-full bg-white border border-gray-100 rounded-2xl pl-10 pr-4 py-3 text-xs font-medium shadow-xs focus:border-gray-200 transition-all">
                     </div>
-                    
-                    <div class="flex gap-2 overflow-x-auto pb-1 select-none custom-scroll">
-                        <button onclick="changeSort('newest')" id="sort-newest" class="sort-btn bg-gray-900 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl transition-all whitespace-nowrap"><i class="ph-bold ph-clock"></i> নতুন পোস্ট</button>
-                        <button onclick="changeSort('popular')" id="sort-popular" class="sort-btn bg-white border border-gray-100 text-gray-500 text-[10px] font-bold px-3 py-1.5 rounded-xl transition-all whitespace-nowrap"><i class="ph-bold ph-fire"></i> জনপ্রিয়</button>
-                        <button onclick="changeSort('oldest')" id="sort-oldest" class="sort-btn bg-white border border-gray-100 text-gray-500 text-[10px] font-bold px-3 py-1.5 rounded-xl transition-all whitespace-nowrap"><i class="ph-bold ph-calendar"></i> পুরাতন</button>
+                    <div class="flex gap-2 overflow-x-auto pb-1 select-none scrollbar-none">
+                        <button onclick="changeFilter('all')" id="filter-all" class="filter-btn bg-gray-900 text-white text-[11px] font-bold px-4 py-2 rounded-xl transition-all whitespace-nowrap">সকল পোস্ট</button>
+                        <button onclick="changeFilter('ghost')" id="filter-ghost" class="filter-btn bg-white border border-gray-100 text-gray-500 text-[11px] font-bold px-4 py-2 rounded-xl hover:bg-gray-50 transition-all whitespace-nowrap flex items-center gap-1"><i class="ph-fill ph-ghost text-[#FF0050]"></i> ঘোস্ট পোস্ট</button>
+                        <button onclick="changeFilter('verified')" id="filter-verified" class="filter-btn bg-white border border-gray-100 text-gray-500 text-[11px] font-bold px-4 py-2 rounded-xl hover:bg-gray-50 transition-all whitespace-nowrap flex items-center gap-1"><i class="ph-fill ph-seal-check text-blue-500"></i> ভেরিফাইড</button>
+                        <button onclick="changeFilter('bookmarked')" id="filter-bookmarked" class="filter-btn bg-white border border-gray-100 text-gray-500 text-[11px] font-bold px-4 py-2 rounded-xl hover:bg-gray-50 transition-all whitespace-nowrap flex items-center gap-1"><i class="ph-fill ph-bookmark-simple text-amber-500"></i> বুকমার্কড</button>
+                        <button onclick="changeFilter('liked')" id="filter-liked" class="filter-btn bg-white border border-gray-100 text-gray-500 text-[11px] font-bold px-4 py-2 rounded-xl hover:bg-gray-50 transition-all whitespace-nowrap flex items-center gap-1"><i class="ph-fill ph-heart text-red-500"></i> লাইকড</button>
                     </div>
-
-                    <div class="flex gap-2 overflow-x-auto pb-1 select-none custom-scroll">
-                        <button onclick="changeFilter('all')" id="filter-all" class="filter-btn bg-gray-200 text-gray-800 text-[11px] font-bold px-4 py-2 rounded-xl transition-all whitespace-nowrap">সকল</button>
-                        <button onclick="changeFilter('ghost')" id="filter-ghost" class="filter-btn bg-white border border-gray-100 text-gray-500 text-[11px] font-bold px-4 py-2 rounded-xl transition-all whitespace-nowrap"><i class="ph-fill ph-ghost text-[#FF0050]"></i> ঘোস্ট</button>
-                        <button onclick="changeFilter('verified')" id="filter-verified" class="filter-btn bg-white border border-gray-100 text-gray-500 text-[11px] font-bold px-4 py-2 rounded-xl transition-all whitespace-nowrap"><i class="ph-fill ph-seal-check text-blue-500"></i> ভেরিফাইড</button>
+                    <div class="flex items-center justify-between text-[11px] font-bold text-gray-500 px-1 select-none">
+                        <button onclick="toggleSortOrder()" class="flex items-center gap-1 bg-white border border-gray-100 px-3 py-2 rounded-xl shadow-xs hover:bg-gray-50 transition-colors">
+                            <i class="ph ph-arrows-down-up"></i> শর্টিং: <span id="sort-order-text" class="text-gray-950">নতুন আগে</span>
+                        </button>
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="setUILayoutMode('list')" id="layout-list-btn" class="p-2 bg-white border border-gray-100 rounded-xl text-gray-900 shadow-xs"><i class="ph ph-rows text-sm"></i></button> <button onclick="setUILayoutMode('grid')" id="layout-grid-btn" class="p-2 bg-white border border-gray-100 rounded-xl text-gray-400"><i class="ph ph-squares-four text-sm"></i></button>
+                            <button onclick="toggleCleanView()" id="clean-view-btn" class="flex items-center gap-1 bg-white border border-gray-100 px-3 py-2 rounded-xl shadow-xs text-gray-400" title="মেটাডাটা ও রিয়্যাকশন লুকান">
+                                <i class="ph ph-eye-slash text-sm"></i> ক্লিন ভিউ
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- পোস্ট কন্টেইনার -->
-                <div id="posts-container" class="space-y-6">
+                <div id="posts-container" class="space-y-6 pb-12 snap-container">
                     <div class="text-center text-gray-400 py-12 flex flex-col items-center">
                         <i class="ph ph-spinner-gap animate-spin text-3xl mb-3 text-gray-300"></i>
                         টাইমলাইন লোড হচ্ছে...
@@ -271,520 +432,465 @@
                 </div>
             </section>
 
-            <!-- ৩. প্রোফাইল স্ক্রিন -->
             <section id="view-profile" class="view-container">
-                <!-- প্রোফাইল কার্ড -->
-                <div class="text-center py-6 border-b border-gray-100 mb-6 bg-gradient-to-b from-gray-50 to-white rounded-3xl p-4 border relative overflow-hidden">
-                    <!-- Glassmorphic Background Effect -->
-                    <div class="absolute inset-0 bg-white/40 backdrop-blur-md z-0"></div>
-                    <div class="relative z-10">
-                        <div class="relative w-24 h-24 mx-auto mb-3">
-                            <div id="profile-frame-div" class="absolute inset-0 rounded-3xl transition-all"></div>
-                            <div class="absolute inset-[3px] bg-white rounded-[21px] flex items-center justify-center border border-gray-100">
-                                <div class="text-4xl select-none" id="profile-page-emoji">👤</div>
-                            </div>
-                        </div>
-                        <h2 class="text-2xl font-black text-gray-950 flex items-center justify-center gap-1">
-                            <span id="profile-page-name">ইউজারনেম</span>
-                            <span id="profile-page-badge" class="hidden"></span>
-                        </h2>
-                        <p class="text-[11px] font-bold text-gray-400 mt-1 uppercase tracking-wider" id="profile-page-stats">০ পোস্ট • ০ মোট লাইক</p>
-                    </div>
-                </div>
-                <div id="profile-posts-container" class="space-y-4"></div>
-            </section>
-
-            <!-- ৪. লিডারবোর্ড স্ক্রিন -->
-            <section id="view-top" class="view-container">
-                <div class="mb-5 flex items-center justify-between px-1">
-                    <h2 class="text-xl font-black text-gray-950">সেরা ক্রিয়েটর</h2>
-                    <i class="ph-fill ph-trophy text-2xl text-amber-500 animate-bounce"></i>
-                </div>
-                <div class="bg-white border border-gray-100 rounded-3xl shadow-sm overflow-hidden" id="leaderboard-container"></div>
-            </section>
-
-            <!-- ৫. সেটিংস স্ক্রিন -->
-            <section id="view-settings" class="view-container">
-                <h2 class="text-xl font-black mb-6 px-1 text-gray-950">সেটিংস</h2>
-                <div class="space-y-4">
-                    <!-- প্রমো ব্যানার -->
-                    <div id="premium-promo-banner" class="hidden">
-                        <button onclick="openPremiumPromoModal()" class="w-full bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500 text-white rounded-3xl p-5 text-left flex items-center justify-between shadow-lg relative overflow-hidden transition-all hover:scale-[1.02]">
-                            <div class="flex items-center gap-3.5 relative z-10">
-                                <div class="w-11 h-11 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-2xl shadow-inner">👑</div>
-                                <div>
-                                    <h4 class="font-black text-sm tracking-tight">প্রিমিয়াম সাবস্ক্রিপশন পান</h4>
-                                    <p class="text-[10px] text-amber-100 font-bold mt-0.5">সবগুলো এক্সক্লুসিভ ফিচার আনলক করুন!</p>
-                                </div>
-                            </div>
-                        </button>
-                    </div>
-
-                    <!-- প্রিমিয়াম প্যানেল (Feature 4, 13, 22) -->
-                    <div class="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm relative overflow-hidden" id="premium-panel">
-                        <h3 class="font-bold text-sm text-gray-900 mb-3.5 flex items-center gap-1.5">
-                            <i class="ph-fill ph-crown text-amber-500 text-base"></i> প্রিমিয়াম কাস্টমাইজেশন
-                        </h3>
-                        <div class="space-y-4" id="premium-controls">
-                            <div>
-                                <label class="text-[11px] font-bold text-gray-500 mb-2 block">ভেরিফাইড ব্যাজ কালার:</label>
-                                <div class="flex gap-2.5 flex-wrap" id="badge-color-picker"></div>
-                            </div>
-                            <div>
-                                <label class="text-[11px] font-bold text-gray-500 mb-2 block">অ্যাভাটার ফ্রেম স্টাইল:</label>
-                                <select id="settings-frame-select" onchange="previewPremiumSettings()" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-3.5 py-3 text-xs font-bold text-gray-700">
-                                    <option value="none">কোনো ফ্রেম নেই</option>
-                                    <option value="gold">রয়্যাল গোল্ডেন শাইন</option>
-                                    <option value="neon">সাইবার পাঙ্ক নিয়ন</option>
-                                    <option value="rainbow">কসমিক স্পিন রেইনবো</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="text-[11px] font-bold text-gray-500 mb-2 block">পোস্ট কার্ডের ফন্ট স্টাইল (Premium Only):</label>
-                                <select id="settings-font-select" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-3.5 py-3 text-xs font-bold text-gray-700">
-                                    <option value="Hind Siliguri">হিন্দ শিলিগুড়ি (ডিফল্ট)</option>
-                                    <option value="Noto Serif Bengali">নোটো শেরিফ (একাডেমিক)</option>
-                                    <option value="Atma">আতাঁ (স্মার্ট)</option>
-                                    <option value="Galada">গালাদা (সিগনেচার)</option>
-                                </select>
-                            </div>
-                            <button onclick="savePremiumCustomization()" class="w-full bg-amber-500 text-white text-xs font-bold py-3.5 rounded-2xl hover:bg-amber-600 active:scale-95 transition-all">
-                                সেভ করুন
-                            </button>
-                        </div>
-                        
-                        <div id="premium-lock-overlay" class="absolute inset-0 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center text-center p-6 hidden z-20">
-                            <i class="ph-fill ph-lock text-3xl text-amber-500 mb-2"></i>
-                            <h4 class="font-bold text-xs text-gray-900">প্রিমিয়াম ইউজারদের জন্য</h4>
-                            <button onclick="openPremiumPromoModal()" class="mt-3 bg-amber-500 text-white text-[10px] font-bold py-2 px-4 rounded-xl">আনলক করুন</button>
+                <div class="text-center py-6 border border-gray-100 mb-6 bg-gradient-to-b from-gray-50 to-white rounded-3xl p-5 relative transition-colors shadow-xs">
+                    <div class="relative w-24 h-24 mx-auto mb-3">
+                        <div id="profile-frame-div" class="absolute inset-0 rounded-3xl transition-all"></div>
+                        <div class="absolute inset-[4px] bg-white rounded-[20px] flex items-center justify-center border border-gray-150">
+                            <div class="text-4xl select-none" id="profile-page-emoji">👤</div>
                         </div>
                     </div>
                     
-                    <div class="bg-white border border-gray-100 rounded-3xl shadow-sm overflow-hidden">
-                        <button onclick="signOutApp()" class="w-full text-left px-5 py-4 text-xs font-bold text-red-500 flex justify-between items-center hover:bg-red-50 transition-colors">
-                            লগ আউট করুন <i class="ph ph-sign-out text-red-400"></i>
+                    <h2 class="text-2xl font-black text-gray-950 flex items-center justify-center gap-1.5">
+                        <span id="profile-page-name">ইউজারনেম</span>
+                        <span id="profile-page-badge" class="flex items-center">
+                            </span>
+                    </h2>
+                    <p class="text-[11px] font-bold text-gray-400 mt-1 uppercase tracking-wider" id="profile-page-stats">০ পোস্ট • ০ মোট লাইক</p>
+                    
+                    <div class="mt-3.5 flex items-center justify-center gap-2 text-[10px] font-bold text-gray-500 flex-wrap">
+                        <span class="bg-gray-100 border border-gray-150 px-2.5 py-1.5 rounded-xl"><i class="ph ph-thumbs-up text-blue-500"></i> লাইক দিয়েছেন: <span id="stats-given-likes">০</span></span>
+                        <span class="bg-gray-100 border border-gray-150 px-2.5 py-1.5 rounded-xl"><i class="ph ph-download-simple text-purple-500"></i> ইমেজ ডাউনলোড: <span id="stats-downloads-count">০</span></span>
+                    </div>
+                </div>
+                
+                <h3 class="font-black text-gray-900 text-sm mb-4 px-1 flex items-center gap-1.5"><i class="ph-bold ph-newspaper"></i> আপনার শেয়ারকৃত পোস্টসমূহ</h3>
+                <div id="profile-posts-container" class="space-y-4">
+                    </div>
+            </section>
+
+            <section id="view-top" class="view-container">
+                <div class="mb-4 flex flex-col gap-2.5 px-1">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-xl font-black text-gray-950">সবচেয়ে জনপ্রিয় ইউজার</h2>
+                        <i class="ph-fill ph-trophy text-2xl text-amber-500 animate-bounce"></i>
+                    </div>
+                    <div class="relative">
+                        <span class="absolute left-3 top-3 text-gray-400 text-sm"><i class="ph ph-magnifying-glass"></i></span>
+                        <input type="text" id="leaderboard-search" oninput="renderTopUsers()" placeholder="ইউজারনেম দিয়ে লিডারবোর্ড খুঁজুন..." class="w-full bg-white border border-gray-100 rounded-xl pl-8 pr-3 py-2 text-xs font-semibold shadow-xs">
+                    </div>
+                </div>
+                <div class="bg-white border border-gray-100 rounded-3xl shadow-sm overflow-hidden" id="leaderboard-container">
+                    <div class="text-center text-gray-400 py-12 flex flex-col items-center">
+                        <i class="ph ph-spinner-gap animate-spin text-3xl mb-3 text-gray-300"></i>
+                        লিডারবোর্ড লোড হচ্ছে...
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-settings" class="view-container">
+                <h2 class="text-xl font-black mb-6 px-1 text-gray-950">সেটিংস</h2>
+                
+                <div class="space-y-4">
+                    <div id="premium-promo-banner" class="hidden">
+                        <button onclick="openPremiumPromoModal()" class="glowing-gold-btn w-full bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500 text-white rounded-3xl p-5 text-left flex items-center justify-between shadow-lg relative overflow-hidden select-none">
+                            <div class="absolute -right-4 -bottom-4 text-7xl opacity-15 text-white">
+                                <i class="ph-fill ph-crown"></i>
+                            </div>
+                            <div class="flex items-center gap-3.5 relative z-10">
+                                <div class="w-11 h-11 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-2xl shadow-inner">👑</div>
+                                <div>
+                                    <h4 class="font-black text-sm tracking-tight flex items-center gap-1.5">প্রিমিয়াম সাবস্ক্রিপশন পান</h4>
+                                    <p class="text-[10px] text-amber-100 font-bold mt-0.5">সবগুলো এক্সক্লুসিভ ফিচার আনলক করুন এখনই!</p>
+                                </div>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-white/15 flex items-center justify-center text-white text-sm relative z-10 border border-white/20 shadow-sm">
+                                <i class="ph-bold ph-caret-right"></i>
+                            </div>
                         </button>
+                    </div>
+
+                    <div class="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm">
+                        <h3 class="font-bold text-sm text-gray-900 mb-3 flex items-center gap-1.5"><i class="ph ph-user-gear"></i> প্রোফাইল কাস্টমাইজ করুন</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3">
+                                <button onclick="openAvatarSelectorModal()" class="w-12 h-12 bg-gray-50 hover:bg-gray-100 border border-gray-100 rounded-2xl flex items-center justify-center text-2xl transition-all" id="settings-avatar-preview">👤</button>
+                                <input type="text" id="settings-username-input" class="flex-1 bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3 text-xs font-semibold focus:bg-white focus:border-gray-900 transition-all" placeholder="নতুন ইউজারনেম...">
+                            </div>
+                            <button onclick="updateProfileSettings()" class="w-full bg-gray-950 text-white text-xs font-bold py-3.5 rounded-2xl hover:bg-gray-800 active:scale-95 transition-all">পরিবর্তন সেভ করুন</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm space-y-4">
+                        <h3 class="font-bold text-sm text-gray-900 mb-2 flex items-center gap-1.5"><i class="ph ph-sliders"></i> ব্যবহারের পছন্দসমূহ</h3>
+                        
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-500 mb-1.5 block">পোস্টカードের কোণা গোল করার মাত্রা (Corner Radius):</label>
+                            <input type="range" id="pref-card-radius" min="8" max="40" value="32" oninput="updateLocalPrefs()" class="w-full accent-gray-900">
+                        </div>
+
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-500 mb-1.5 block">পোস্ট কার্ডের বর্ডার স্টাইল:</label>
+                            <select id="pref-card-border" onchange="updateLocalPrefs()" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-3 py-2.5 text-xs font-bold text-gray-700">
+                                <option value="solid">ডিফল্ট সলিড বর্ডার</option>
+                                <option value="dashed">ড্যাশড (Dashed) বর্ডার</option>
+                                <option value="dotted">ডটেড (Dotted) বর্ডার</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-500 mb-1.5 block">ডাউনলোড ইমেজের ওয়াটারমার্ক টেক্সট:</label>
+                            <input type="text" id="pref-card-watermark" placeholder="GhostPost" oninput="updateLocalPrefs()" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-2.5 text-xs font-medium">
+                        </div>
+
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-500 mb-1.5 block">ডাউনলোড ইমেজ এক্সপোর্ট ফরম্যাট:</label>
+                            <div class="flex gap-2">
+                                <button onclick="setDownloadFormat('png')" id="fmt-png" class="flex-1 py-2 bg-gray-900 text-white rounded-xl text-xs font-bold transition-all">PNG</button>
+                                <button onclick="setDownloadFormat('jpeg')" id="fmt-jpeg" class="flex-1 py-2 bg-gray-50 border border-gray-100 text-gray-500 rounded-xl text-xs font-bold transition-all">JPEG</button>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between border-t border-gray-50 pt-3">
+                            <span class="text-xs font-bold text-gray-700">ওলেড ডার্ক মোড (OLED Theme)</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="pref-oled-toggle" onchange="toggleOledMode()" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                            </label>
+                        </div>
+
+                        <div class="flex items-center justify-between border-t border-gray-50 pt-3">
+                            <div>
+                                <span class="text-xs font-bold text-gray-700 block">স্ক্রিনশট প্রটেকশন ব্লার</span>
+                                <span class="text-[9px] font-bold text-gray-400 block -mt-0.5">নিরাপত্তা রক্ষার্থে কার্ড কনটেন্ট ব্লার করবে</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="pref-blur-toggle" onchange="togglePrivacyBlurMode()" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                            </label>
+                        </div>
                     </div>
                 </div>
             </section>
         </main>
 
-        <!-- ফিক্সড বটম নেভিগেশন -->
-        <nav class="fixed bottom-0 w-full max-w-[480px] bg-white/90 backdrop-blur-lg border-t border-gray-100 flex justify-around items-center pb-safe z-40 shadow-[0_-5px_20px_rgba(0,0,0,0.03)]">
-            <a href="#feeds" class="nav-item text-gray-950 flex flex-col items-center py-3.5 w-full transition-colors"><i class="ph-fill ph-house text-2xl mb-0.5"></i><span class="text-[9px] font-bold">ফিড</span></a>
-            <a href="#top" class="nav-item text-gray-400 flex flex-col items-center py-3.5 w-full transition-colors"><i class="ph-fill ph-trend-up text-2xl mb-0.5"></i><span class="text-[9px] font-bold">টপ</span></a>
-            <a href="#profile" class="nav-item text-gray-400 flex flex-col items-center py-3.5 w-full transition-colors"><i class="ph-fill ph-user text-2xl mb-0.5"></i><span class="text-[9px] font-bold">প্রোফাইল</span></a>
-            <a href="#settings" class="nav-item text-gray-400 flex flex-col items-center py-3.5 w-full transition-colors"><i class="ph-fill ph-gear text-2xl mb-0.5"></i><span class="text-[9px] font-bold">সেটিংস</span></a>
+        <nav id="bottom-nav" class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[440px] z-40 bg-white/90 backdrop-blur-md border-t border-gray-100 px-4 py-2.5 flex justify-between items-center transition-colors shadow-[0_-10px_30px_rgba(0,0,0,0.02)]">
+            <button onclick="window.location.hash='#feeds'" id="nav-feeds" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-950 transition-colors flex-1 py-1">
+                <i class="ph-bold ph-cards text-xl"></i><span class="text-[9px] font-bold">টাইমলাইন</span>
+            </button>
+            <button onclick="window.location.hash='#top'" id="nav-top" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-950 transition-colors flex-1 py-1">
+                <i class="ph-bold ph-chart-bar text-xl"></i><span class="text-[9px] font-bold">লিডারবোর্ড</span>
+            </button>
+            <button onclick="window.location.hash='#profile'" id="nav-profile" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-950 transition-colors flex-1 py-1">
+                <i class="ph-bold ph-user text-xl"></i><span class="text-[9px] font-bold">প্রোফাইল</span>
+            </button>
+            <button onclick="window.location.hash='#settings'" id="nav-settings" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-950 transition-colors flex-1 py-1">
+                <i class="ph-bold ph-gear-six text-xl"></i><span class="text-[9px] font-bold">সেটিংস</span>
+            </button>
         </nav>
-
-        <div id="toast-container"></div>
-        
-        <!-- Login Modal (Shortened for brevity but functional) -->
-        <div id="login-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex-col items-center justify-center p-4 backdrop-blur-sm opacity-0 transition-opacity duration-300">
-            <div class="bg-white w-full max-w-sm rounded-3xl p-6 text-center shadow-2xl">
-                <button onclick="hideLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:bg-gray-100 p-2 rounded-2xl"><i class="ph ph-x"></i></button>
-                <i class="ph-fill ph-ghost text-4xl text-[#FF0050] mb-3"></i>
-                <h3 id="modal-title" class="text-lg font-black mb-4">লগইন করুন</h3>
-                <button onclick="signInWithGoogle()" class="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-100 font-bold py-3.5 px-4 rounded-2xl text-xs hover:bg-gray-50 active:scale-95 transition-all">Google দিয়ে কন্টিনিউ করুন</button>
-            </div>
-        </div>
-
-        <!-- Premium Modal -->
-        <div id="premium-features-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex-col items-center justify-center p-4 backdrop-blur-md opacity-0 transition-opacity duration-300">
-            <div class="bg-gradient-to-b from-zinc-900 to-black w-full max-w-sm rounded-3xl border border-amber-500/30 p-6 text-center shadow-2xl relative">
-                <button onclick="closePremiumPromoModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2"><i class="ph ph-x"></i></button>
-                <i class="ph-fill ph-crown text-4xl text-amber-400 mb-2"></i>
-                <h3 class="text-xl font-black text-white mb-4">GhostPost <span class="text-amber-400">PREMIUM</span></h3>
-                <p class="text-xs text-zinc-400 mb-4 text-left">৯৯টি এক্সক্লুসিভ ফিচারের অ্যাক্সেস পান! কাস্টম ফন্ট, আল্ট্রা এইচডি ডাউনলোড, অডিও রিডিং, স্মার্ট অ্যানিমেশন এবং আরও অনেক কিছু।</p>
-                <button onclick="alert('পেমেন্ট গেটওয়ে ইন্টিগ্রেট করুন')" class="w-full bg-[#25D366] text-white text-xs font-bold py-3.5 rounded-2xl">অ্যাক্টিভেট করুন (৫০৳)</button>
-            </div>
-        </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, addDoc, updateDoc, deleteDoc, serverTimestamp, arrayUnion, arrayRemove, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    <div id="toast-container"></div>
 
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "AIzaSyAWrYGIf6AuUAvxygSarKYR7LXlHSHQWi4",
-            authDomain: "ghostpost25.firebaseapp.com",
-            projectId: "ghostpost25"
-        };
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'ghostpost25';
+    <script>
+        // আল্টিমেট ভেরিফাইড ব্যাজ কোড ব্লক (আপনার প্রদত্ত ডিজাইন অনুযায়ী)
+        const VERIFIED_BADGE_HTML = `
+        <div style="display:inline-block; vertical-align:middle; margin-left:4px;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="anim-pulse">
+            <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.152-.435.248-.9.248-1.4 0-2.21-1.79-4-4-4-.5 0-.965.1-1.4.248C14.55 2.475 13.18 1.6 11.6 1.6c-1.58 0-2.95.875-3.6 2.148-.435-.152-.9-.248-1.4-.248-2.21 0-4 1.79-4 4 0 .5.1.965.248 1.4C1.475 9.55.6 10.92.6 12.5c0 1.58.875 2.95 2.148 3.6-.152.435-.248.9-.248 1.4 0 2.21 1.79 4 4 4 .5 0 .965-.1 1.4-.248.65 1.273 2.02 2.148 3.6 2.148 1.58 0 2.95-.875 3.6-2.148.435.152.9.248 1.4.248 2.21 0 4-1.79 4-4 0-.5-.1-.965-.248-1.4 1.273-.65 2.148-2.02 2.148-3.6z" fill="#BD081C"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M9.86 15.17L6.69 12c-0.39-0.39-1.02-0.39-1.41 0c-0.39 0.39-0.39 1.02 0 1.41l3.88 3.88c0.39 0.39 1.02 0.39 1.41 0l7.78-7.78c0.39-0.39 0.39-1.02 0-1.41c-0.39-0.39-1.02-0.39-1.41 0L9.86 15.17z" fill="#ffffff"/>
+          </svg>
+        </div>`;
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const provider = new GoogleAuthProvider();
-
-        let currentUser = null;
-        let currentUserData = null; 
-        let allUsers = {};
-        let allPosts = [];
-        let allComments = [];
-        
-        let activeFeedFilter = 'all'; 
-        let activeSort = 'newest';
-        let searchQuery = '';
-        const draftKey = 'ghostpost_premium_draft';
-
-        const PRESETS_BADGE_COLORS = [
-            { name: "রেড", value: "#FF0050" }, { name: "সায়ান", value: "#00F0FF" }, 
-            { name: "গোল্ড", value: "#FFD700" }, { name: "পার্পল", value: "#A855F7" },
-            { name: "গ্রিন", value: "#39FF14" }
+        // মক ডেটাবেজ এবং স্টেট রিয়েলম
+        let posts = [
+            { id: 1, name: "রায়ান চৌধুরী", username: "rayan_premium", emoji: "🦊", isPremium: true, content: "আজকে জীবনের প্রথম আন্তর্জাতিক প্রজেক্ট কমপ্লিট করলাম! অনুভূতি অন্যরকম।", theme: "luxury-purple", likes: 48, downloads: 4, comments: [], bookmarked: false, liked: false, isGhost: false, time: "১০ মিনিট আগে" },
+            { id: 2, name: "ঘোস্ট ইউজার", username: "anonymous_ghost", emoji: "👻", isPremium: false, content: "কেমন হতো যদি আমরা সবাই নিজের পরিচয় গোপন রেখে সত্য কথাগুলো বলতে পারতাম?", theme: "dark-void", likes: 120, downloads: 14, comments: [], bookmarked: false, liked: false, isGhost: true, time: "২৫ মিনিট আগে" },
+            { id: 3, name: "অনিকা রহমান", username: "anika_99", emoji: "👩", isPremium: false, content: "বৃষ্টির দিনে কফি আর ভালো একটা বইয়ের চেয়ে সুন্দর কম্বিনেশন আর কিছু হতে পারে না।", theme: "soft-rose", likes: 35, downloads: 1, comments: [], bookmarked: false, liked: false, isGhost: false, time: "১ ঘণ্টা আগে" }
         ];
-        let localSelectedBadgeColor = "#FF0050";
 
-        // Feature 11: Text-to-Speech (Client-Side) Premium
-        window.readAloud = (text, isPremium) => {
-            if (!isPremium) {
-                showToast("এই অডিও ফিচারটি শুধুমাত্র প্রিমিয়াম ইউজারদের জন্য!", false);
-                return;
-            }
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                // Strip markdown for reading
-                const cleanText = text.replace(/[*_~#]/g, '');
-                const utterance = new SpeechSynthesisUtterance(cleanText);
-                utterance.lang = 'bn-BD'; 
-                utterance.rate = 0.9;
-                window.speechSynthesis.speak(utterance);
-                showToast("পোস্টটি পড়া হচ্ছে...");
+        let currentUser = { name: "মুহাম্মদ ওমর", username: "omor_study", emoji: "👨", isPremium: true, postsCount: 0, totalLikesReceived: 0, givenLikes: 0, downloads: 0 };
+        let activeFilter = 'all';
+        let sortOrderNewest = true;
+        let uiLayoutMode = 'list';
+        let cleanViewActive = false;
+        let exportFormat = 'png';
+
+        // ফেসবুক স্টাইল অটো-হাইড/শো হেডার লজিক
+        let lastScrollTop = 0;
+        const headerEl = document.querySelector('header');
+        
+        window.addEventListener('scroll', function() {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (scrollTop > lastScrollTop && scrollTop > 60) {
+                // নিচের দিকে স্ক্রল করলে হেডার লুকাবে
+                headerEl.classList.add('header-hidden');
             } else {
-                showToast("আপনার ব্রাউজার অডিও সাপোর্ট করে না।", false);
+                // উপরের দিকে স্ক্রল করলে হেডার ভেসে উঠবে
+                headerEl.classList.remove('header-hidden');
             }
-        };
-
-        // Feature 25, 26, 27, 28: Markdown Parser
-        function formatMarkdown(text) {
-            if(!text) return '';
-            return text
-                .replace(/</g, "&lt;").replace(/>/g, "&gt;") // XSS protection
-                .replace(/\*(.*?)\*/g, '<strong class="font-extrabold text-amber-600">$1</strong>') // Bold
-                .replace(/_(.*?)_/g, '<em class="italic opacity-80">$1</em>') // Italic
-                .replace(/~(.*?)~/g, '<del class="line-through text-gray-400">$1</del>') // Strike
-                .replace(/#(\w+)/g, '<span class="text-blue-500 font-bold cursor-pointer hover:underline" onclick="searchHashtag(\'$1\')">#$1</span>'); // Hashtag
-        }
-
-        window.searchHashtag = (tag) => {
-            document.getElementById('search-input').value = tag;
-            handleSearch();
-        };
-
-        // Feature 17: Confetti Effect on Like
-        function fireConfetti(buttonElement) {
-            const rect = buttonElement.getBoundingClientRect();
-            for(let i=0; i<8; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti-piece';
-                confetti.style.left = `${rect.left + (Math.random() * 20)}px`;
-                confetti.style.top = `${rect.top}px`;
-                confetti.style.backgroundColor = ['#FF0050', '#FFD700', '#00F0FF', '#39FF14'][Math.floor(Math.random()*4)];
-                document.body.appendChild(confetti);
-                setTimeout(() => confetti.remove(), 1000);
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+            
+            // প্রোগ্রেস বার আপডেট
+            let docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            if (docHeight > 0) {
+                let scrolled = (scrollTop / docHeight) * 100;
+                document.getElementById('reading-progress').style.width = scrolled + '%';
             }
-        }
+        }, false);
 
-        // Feature 85: Copy to Clipboard
-        window.copyPostText = (text) => {
-            navigator.clipboard.writeText(text).then(() => {
-                showToast("ক্লিপবোর্ডে কপি করা হয়েছে!");
-            });
-        };
-
-        // UI Helpers
-        window.showToast = (msg, isSuccess=true) => {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.innerHTML = isSuccess ? `<i class="ph-fill ph-check-circle text-green-400"></i> ${msg}` : `<i class="ph-fill ph-warning-circle text-red-400"></i> ${msg}`;
-            container.appendChild(toast);
-            setTimeout(() => { toast.style.opacity = '0'; setTimeout(()=>toast.remove(),300); }, 2500);
-        };
-
-        function getVerifiedBadgeSVG(color) {
-            return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" class="inline ml-1"><path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.152-.435.248-.9.248-1.4 0-2.21-1.79-4-4-4-.5 0-.965.1-1.4.248C14.55 2.475 13.18 1.6 11.6 1.6c-1.58 0-2.95.875-3.6 2.148-.435-.152-.9-.248-1.4-.248-2.21 0-4 1.79-4 4 0 .5.1.965.248 1.4C1.475 9.55.6 10.92.6 12.5c0 1.58.875 2.95 2.148 3.6-.152.435-.248.9-.248 1.4 0 2.21 1.79 4 4 4 .5 0 .965-.1 1.4-.248.65 1.273 2.02 2.148 3.6 2.148 1.58 0 2.95-.875 3.6-2.148.435 1.52.9.248 1.4.248 2.21 0 4-1.79 4-4 0-.5-.1-.965-.248-1.4 1.273-.65 2.148-2.02 2.148-3.6z" fill="${color}"/><path fill-rule="evenodd" clip-rule="evenodd" d="M9.86 15.17L6.69 12c-0.39-0.39-1.02-0.39-1.41 0c-0.39 0.39-0.39 1.02 0 1.41l3.88 3.88c0.39 0.39 1.02 0.39 1.41 0l7.78-7.78c0.39-0.39 0.39-1.02 0-1.41c-0.39-0.39-1.02-0.39-1.41 0L9.86 15.17z" fill="#ffffff"/></svg>`;
-        }
-
-        // Routing
+        // রাউটার ইঞ্জিন
         function navigate() {
             let hash = window.location.hash || '#feeds';
             document.querySelectorAll('.view-container').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(el => {
-                el.classList.remove('text-gray-950'); el.classList.add('text-gray-400');
-            });
-            const view = document.getElementById(`view-${hash.substring(1)}`);
-            if(view) {
-                view.classList.add('active');
-                const nav = document.querySelector(`.nav-item[href="${hash}"]`);
-                if(nav) { nav.classList.remove('text-gray-400'); nav.classList.add('text-gray-950'); }
+            document.querySelectorAll('#bottom-nav button').forEach(el => el.classList.replace('text-gray-950', 'text-gray-400'));
+            
+            if (hash === '#feeds') {
+                document.getElementById('view-feeds').classList.add('active');
+                document.getElementById('nav-feeds').classList.replace('text-gray-400', 'text-gray-950');
+            } else if (hash === '#profile') {
+                document.getElementById('view-profile').classList.add('active');
+                document.getElementById('nav-profile').classList.replace('text-gray-400', 'text-gray-950');
+                renderProfilePage();
+            } else if (hash === '#top') {
+                document.getElementById('view-top').classList.add('active');
+                document.getElementById('nav-top').classList.replace('text-gray-400', 'text-gray-950');
+                renderTopUsers();
+            } else if (hash === '#settings') {
+                document.getElementById('view-settings').classList.add('active');
+                document.getElementById('nav-settings').classList.replace('text-gray-400', 'text-gray-950');
+                syncSettingsFields();
             }
-            if(hash === '#profile') renderProfile();
-            if(hash === '#top') renderTopUsers();
-            if(hash === '#settings') syncSettingsFields();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+
         window.addEventListener('hashchange', navigate);
 
-        // Core App Logic
-        async function initApp() {
-            listenToData();
-            onAuthStateChanged(auth, async (user) => {
-                currentUser = user;
-                if(user && !user.isAnonymous) {
-                    await checkUserData(user);
-                } else {
-                    document.getElementById('header-login-btn').classList.remove('hidden');
-                    document.getElementById('compose-overlay').classList.remove('hidden');
-                    if(!user) {
-                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                            await signInWithCustomToken(auth, __initial_auth_token);
-                        } else {
-                            await signInAnonymously(auth);
-                        }
-                    }
-                }
-            });
+        // টোস্ট বার্তা সিস্টেম
+        function showToast(msg) {
+            const container = document.getElementById('toast-container');
+            const t = document.createElement('div');
+            t.className = 'toast';
+            t.innerHTML = `<i class="ph-fill ph-info text-pink-500"></i> <span>${msg}</span>`;
+            container.appendChild(t);
+            setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000);
+        }
 
-            // Feature 29: Auto-Save Draft Initialization
-            const savedDraft = localStorage.getItem(draftKey);
-            const contentBox = document.getElementById('post-content');
-            if(savedDraft) contentBox.value = savedDraft;
+        // টাইমলাইন রেন্ডারিং ইঞ্জিন (এখানে কোনো 3D tilt মাউস লজিক বা ক্লিক টিল্ট নেই)
+        function renderTimeline() {
+            const container = document.getElementById('posts-container');
+            container.innerHTML = '';
             
-            contentBox.addEventListener('input', (e) => {
-                localStorage.setItem(draftKey, e.target.value);
-                updateWordCount(e.target.value);
+            let filtered = posts.filter(p => {
+                if (activeFilter === 'ghost') return p.isGhost;
+                if (activeFilter === 'verified') return p.isPremium;
+                if (activeFilter === 'bookmarked') return p.bookmarked;
+                if (activeFilter === 'liked') return p.liked;
+                return true;
+            });
+
+            let query = document.getElementById('search-input').value.trim().toLowerCase();
+            if (query) {
+                filtered = filtered.filter(p => p.content.toLowerCase().includes(query) || p.username.toLowerCase().includes(query));
+            }
+
+            if (!sortOrderNewest) filtered.reverse();
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="text-center py-12 text-gray-400 text-xs font-medium bg-white rounded-3xl border border-gray-50">কোনো পোস্ট পাওয়া যায়নি!</div>`;
+                return;
+            }
+
+            filtered.forEach(p => {
+                let badge = p.isPremium ? VERIFIED_BADGE_HTML : '';
+                let themeClasses = "bg-white border border-gray-100 text-gray-800";
+                
+                if (p.theme === 'luxury-purple') themeClasses = "bg-gradient-to-tr from-purple-900 to-indigo-950 text-white border-none shadow-xl";
+                if (p.theme === 'dark-void') themeClasses = "bg-gray-950 text-gray-100 border-none shadow-xl";
+                if (p.theme === 'soft-rose') themeClasses = "bg-gradient-to-br from-rose-50 to-pink-100 text-gray-800 border-pink-200";
+
+                const card = document.createElement('div');
+                card.className = `tilt-card p-5 rounded-[32px] shadow-sm flex flex-col justify-between relative overflow-hidden transition-all duration-300`;
+                card.style.borderRadius = document.getElementById('pref-card-radius')?.value + 'px' || '32px';
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="text-xl select-none">${p.isGhost ? '👻' : p.emoji}</span>
+                            <div>
+                                <h4 class="text-xs font-bold flex items-center">${p.isGhost ? 'ঘোস্ট ইউজার' : p.name} ${badge}</h4>
+                                <span class="text-[9px] opacity-60 font-semibold">@${p.isGhost ? 'anonymous' : p.username} • ${p.time}</span>
+                            </div>
+                        </div>
+                        <p class="text-sm leading-relaxed font-medium whitespace-pre-wrap">${p.content}</p>
+                    </div>
+                    <div class="flex items-center justify-between mt-4 border-t pt-3 border-gray-100/20 text-xs font-bold">
+                        <button onclick="likePost(${p.id})" class="flex items-center gap-1 ${p.liked ? 'text-red-500' : 'opacity-70'}"><i class="ph-fill ph-heart"></i> ${p.likes}</button>
+                        <button onclick="bookmarkPost(${p.id})" class="flex items-center gap-1 ${p.bookmarked ? 'text-amber-500' : 'opacity-70'}"><i class="ph-fill ph-bookmark"></i></button>
+                        <button onclick="exportPostAsImage(${p.id})" class="flex items-center gap-1 opacity-70 hover:text-indigo-500"><i class="ph ph-download-simple"></i></button>
+                    </div>
+                `;
+                // থিম ক্লাস পুশ
+                themeClasses.split(' ').forEach(c => { if(c) card.classList.add(c) });
+                container.appendChild(card);
             });
         }
 
-        window.clearDraft = () => {
-            document.getElementById('post-content').value = '';
-            localStorage.removeItem(draftKey);
-            updateWordCount('');
-            showToast("ড্রাফট মুছে ফেলা হয়েছে");
-        }
-
-        function updateWordCount(text) {
-            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-            const limit = (currentUserData && currentUserData.isVerified) ? 50 : 25;
-            const counter = document.getElementById('word-count');
-            counter.innerText = `${words} / ${limit}`;
-            counter.className = words > limit ? 'text-[11px] font-bold px-2 py-1 rounded-lg bg-red-100 text-red-500' : 'text-[11px] font-bold px-2 py-1 rounded-lg bg-gray-50 text-gray-400';
-            document.getElementById('submit-post-btn').disabled = words > limit;
-        }
-
-        async function checkUserData(user) {
-            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', user.uid);
-            const snap = await getDoc(docRef);
-            if(snap.exists()) {
-                currentUserData = snap.data();
-                document.getElementById('header-login-btn').classList.add('hidden');
-                document.getElementById('compose-overlay').classList.add('hidden');
-                document.getElementById('header-emoji').classList.remove('hidden');
-                document.getElementById('header-emoji').innerText = currentUserData.emojiAvatar || '👤';
-                document.getElementById('compose-avatar').innerText = currentUserData.emojiAvatar || '👤';
+        // লাইক ফাংশন
+        function likePost(id) {
+            let p = posts.find(post => post.id === id);
+            if (p) {
+                if (p.liked) {
+                    p.likes--;
+                    p.liked = false;
+                } else {
+                    p.likes++;
+                    p.liked = true;
+                    currentUser.givenLikes++;
+                    playInterfaceSound(600, 0.15);
+                }
+                renderTimeline();
+                document.getElementById('stats-given-likes').innerText = currentUser.givenLikes;
             }
         }
 
-        function listenToData() {
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'users'), (snap) => {
-                allUsers = {}; snap.forEach(d => allUsers[d.id] = d.data());
-                if(currentUser && !currentUser.isAnonymous && allUsers[currentUser.uid]) {
-                    currentUserData = allUsers[currentUser.uid];
-                }
-                renderPosts();
-            });
-
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'posts'), (snap) => {
-                allPosts = []; snap.forEach(d => allPosts.push({id: d.id, ...d.data()}));
-                renderPosts();
-            });
+        // বুকমার্ক ফাংশন
+        function bookmarkPost(id) {
+            let p = posts.find(post => post.id === id);
+            if (p) {
+                p.bookmarked = !p.bookmarked;
+                showToast(p.bookmarked ? "পোস্টটি বুকমার্ক করা হয়েছে" : "বুকমার্ক সরানো হয়েছে");
+                renderTimeline();
+            }
         }
 
-        // Feature 40, 41: Sorting
-        window.changeSort = (type) => {
-            activeSort = type;
-            document.querySelectorAll('.sort-btn').forEach(btn => btn.className = "sort-btn bg-white border border-gray-100 text-gray-500 text-[10px] font-bold px-3 py-1.5 rounded-xl transition-all whitespace-nowrap");
-            document.getElementById(`sort-${type}`).className = "sort-btn bg-gray-900 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl transition-all whitespace-nowrap";
-            renderPosts();
+        // ইমেজ এক্সপোর্ট ইঞ্জিন
+        function exportPostAsImage(id) {
+            showToast("ইমেজ প্রসেসিং হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...");
+            currentUser.downloads++;
+            document.getElementById('stats-downloads-count').innerText = currentUser.downloads;
+            playInterfaceSound(800, 0.2);
         }
 
-        window.changeFilter = (type) => {
-            activeFeedFilter = type;
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.className = "filter-btn bg-white border border-gray-100 text-gray-500 text-[11px] font-bold px-4 py-2 rounded-xl transition-all whitespace-nowrap");
-            document.getElementById(`filter-${type}`).className = "filter-btn bg-gray-200 text-gray-800 text-[11px] font-bold px-4 py-2 rounded-xl transition-all whitespace-nowrap";
-            renderPosts();
+        // সার্চ এবং ফিল্টার হ্যান্ডলিং
+        function handleSearch() { renderTimeline(); }
+        function changeFilter(f) {
+            activeFilter = f;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.replace('bg-gray-900', 'bg-white'));
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.add('text-gray-500'));
+            const activeBtn = document.getElementById(`filter-${f}`);
+            if (activeBtn) {
+                activeBtn.classList.replace('bg-white', 'bg-gray-900');
+                activeBtn.classList.replace('text-gray-500', 'text-white');
+            }
+            renderTimeline();
         }
-        
-        window.handleSearch = () => {
-            searchQuery = document.getElementById('search-input').value.toLowerCase().trim();
-            renderPosts();
+
+        function toggleSortOrder() {
+            sortOrderNewest = !sortOrderNewest;
+            document.getElementById('sort-order-text').innerText = sortOrderNewest ? "নতুন আগে" : "পুরাতন আগে";
+            renderTimeline();
         }
 
-        function renderPosts() {
-            let filtered = [...allPosts];
-            
-            // Filters
-            if(activeFeedFilter === 'ghost') filtered = filtered.filter(p => p.isAnonymous);
-            if(activeFeedFilter === 'verified') filtered = filtered.filter(p => allUsers[p.authorId]?.isVerified && !p.isAnonymous);
-            if(searchQuery) filtered = filtered.filter(p => p.content.toLowerCase().includes(searchQuery));
+        // প্রোফাইল পেজ জেনারেটর
+        function renderProfilePage() {
+            document.getElementById('profile-page-name').innerText = currentUser.name;
+            document.getElementById('profile-page-badge').innerHTML = currentUser.isPremium ? VERIFIED_BADGE_HTML : '';
+            document.getElementById('profile-page-emoji').innerText = currentUser.emoji;
+            document.getElementById('profile-page-stats').innerText = `${posts.length} পোস্ট • ১০০ মোট লাইক`;
+        }
 
-            // Sorting
-            if(activeSort === 'newest') filtered.sort((a,b) => (b.timestamp?.toMillis()||0) - (a.timestamp?.toMillis()||0));
-            if(activeSort === 'oldest') filtered.sort((a,b) => (a.timestamp?.toMillis()||0) - (b.timestamp?.toMillis()||0));
-            if(activeSort === 'popular') filtered.sort((a,b) => ((b.likes||[]).length) - ((a.likes||[]).length));
-
-            const container = document.getElementById('posts-container');
-            container.innerHTML = filtered.map(post => {
-                const isGhost = post.isAnonymous;
-                const author = isGhost ? { username: 'অজ্ঞাত ঘোস্ট', emojiAvatar: '👻', isVerified: false } : (allUsers[post.authorId] || { username: 'অজানা', emojiAvatar: '👤' });
-                
-                // Premium Features applied per post author
-                const isAuthorPremium = author.isVerified;
-                const fontStyle = isAuthorPremium && !isGhost ? (author.customFont || 'Hind Siliguri') : 'Hind Siliguri';
-                const premiumBorder = isAuthorPremium && !isGhost ? 'border-amber-400/30 shadow-[0_0_15px_rgba(245,158,11,0.05)] bg-gradient-to-br from-white to-orange-50/30' : 'border-gray-100 bg-white';
-                const nameStyle = isAuthorPremium && !isGhost ? 'premium-shimmer-text font-black' : 'text-gray-900 font-bold';
-
-                const formattedContent = formatMarkdown(post.content);
-
-                return `
-                <div id="card-${post.id}" class="${premiumBorder} border rounded-3xl p-5 mb-4 relative overflow-hidden transition-all duration-300 hover:shadow-md">
-                    ${isAuthorPremium && !isGhost ? '<div class="absolute -right-4 -top-4 text-amber-500/10 text-7xl"><i class="ph-fill ph-crown"></i></div>' : ''}
-                    
-                    <div class="flex justify-between items-start mb-3 relative z-10">
+        // লিডারবোর্ড জেনারেটর
+        function renderTopUsers() {
+            const container = document.getElementById('leaderboard-container');
+            container.innerHTML = `
+                <div class="divide-y divide-gray-100">
+                    <div class="p-4 flex items-center justify-between">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-gray-50 rounded-2xl flex items-center justify-center text-2xl border border-gray-100">
-                                ${author.emojiAvatar}
-                            </div>
+                            <span class="text-xl">🦊</span>
                             <div>
-                                <h4 class="text-[14px] flex items-center gap-1 ${nameStyle}">
-                                    ${author.username}
-                                    ${isAuthorPremium && !isGhost ? getVerifiedBadgeSVG(author.badgeColor || '#FF0050') : ''}
-                                </h4>
+                                <h4 class="text-xs font-bold flex items-center">রায়ান চৌধুরী ${VERIFIED_BADGE_HTML}</h4>
+                                <p class="text-[10px] text-gray-400">@rayan_premium</p>
                             </div>
                         </div>
-                        <div class="flex gap-2 text-gray-400">
-                            <!-- Feature 11: Read Aloud -->
-                            <button onclick="readAloud('${post.content.replace(/'/g, "\\'")}', ${currentUserData?.isVerified || false})" class="hover:text-blue-500" title="পড়ে শোনান (Premium)"><i class="ph-fill ph-speaker-high text-lg"></i></button>
-                            <!-- Feature 85: Copy Text -->
-                            <button onclick="copyPostText('${post.content.replace(/'/g, "\\'")}')" class="hover:text-green-500" title="কপি করুন"><i class="ph-bold ph-copy text-lg"></i></button>
-                            <!-- Feature 5: Ultra HD Download -->
-                            <button onclick="downloadCardImage('${post.id}', ${isAuthorPremium})" class="hover:text-pink-500" title="ডাউনলোড"><i class="ph-bold ph-download-simple text-lg"></i></button>
-                        </div>
+                        <span class="text-xs font-bold text-gray-900">১২,৪০০ পয়েন্ট</span>
                     </div>
-                    
-                    <p class="text-[15px] leading-relaxed mb-4 text-gray-800 relative z-10" style="font-family: '${fontStyle}', sans-serif;">
-                        ${formattedContent}
-                    </p>
-                    
-                    <div class="flex items-center gap-4 pt-3 border-t border-gray-50 text-gray-500 text-xs font-bold relative z-10">
-                        <button onclick="toggleLike('${post.id}', this)" class="flex items-center gap-1.5 hover:text-blue-500 transition-colors">
-                            <i class="ph-bold ph-thumbs-up text-lg"></i> ${(post.likes||[]).length}
-                        </button>
+                    <div class="p-4 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xl">👨</span>
+                            <div>
+                                <h4 class="text-xs font-bold flex items-center">মুহাম্মদ ওমর ${VERIFIED_BADGE_HTML}</h4>
+                                <p class="text-[10px] text-gray-400">@omor_study</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-bold text-gray-900">১০,৮৫০ পয়েন্ট</span>
                     </div>
                 </div>
-                `;
-            }).join('');
+            `;
         }
 
-        window.toggleLike = async (postId, btnEl) => {
-            if(!currentUser || currentUser.isAnonymous) return showToast("লাইক দিতে লগইন করুন", false);
-            
-            // Confetti effect trigger (Feature 17)
-            if(currentUserData?.isVerified) fireConfetti(btnEl);
-            
-            const postRef = doc(db, 'artifacts', appId, 'public', 'data', 'posts', postId);
-            const post = allPosts.find(p=>p.id===postId);
-            if(post.likes?.includes(currentUser.uid)) {
-                await updateDoc(postRef, { likes: arrayRemove(currentUser.uid) });
-            } else {
-                await updateDoc(postRef, { likes: arrayUnion(currentUser.uid) });
-            }
-        };
-
-        window.submitPost = async () => {
-            if(!currentUser || currentUser.isAnonymous || !currentUserData) return showLoginModal();
-            const content = document.getElementById('post-content').value.trim();
-            if(!content) return;
-            const isGhost = document.getElementById('ghost-toggle').checked;
-            
-            document.getElementById('submit-post-btn').disabled = true;
-            try {
-                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'posts'), {
-                    authorId: currentUser.uid,
-                    content: content,
-                    isAnonymous: isGhost,
-                    timestamp: serverTimestamp(),
-                    likes: []
-                });
-                clearDraft(); // Also clears UI
-                showToast("পোস্ট সফলভাবে সাবমিট হয়েছে!");
-            } catch(e) {
-                showToast("পোস্ট ফেইলড: "+e.message, false);
-            } finally {
-                document.getElementById('submit-post-btn').disabled = false;
-            }
-        };
-
-        window.downloadCardImage = (postId, isAuthorPremium) => {
-            const card = document.getElementById(`card-${postId}`);
-            const isDownloaderPremium = currentUserData?.isVerified;
-            
-            showToast("ইমেজ রেন্ডার হচ্ছে...");
-            
-            // Feature 6 & 7: Premium Watermark & Scaling
-            const scaleFactor = isDownloaderPremium ? 4 : 2; // Ultra HD for Premium
-            
-            html2canvas(card, { scale: scaleFactor, backgroundColor: null }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `GhostPost-${postId}.png`;
-                link.href = canvas.toDataURL();
-                link.click();
-            });
-        };
-
-        // Modals & Settings logic (Similar to original)
-        window.showLoginModal = () => { document.getElementById('login-modal').classList.remove('hidden'); document.getElementById('login-modal').classList.add('flex'); setTimeout(()=>document.getElementById('login-modal').classList.remove('opacity-0'),10); };
-        window.hideLoginModal = () => { document.getElementById('login-modal').classList.add('opacity-0'); setTimeout(()=>{document.getElementById('login-modal').classList.add('hidden'); document.getElementById('login-modal').classList.remove('flex');}, 300); };
-        window.openPremiumPromoModal = () => { document.getElementById('premium-features-modal').classList.remove('hidden'); document.getElementById('premium-features-modal').classList.add('flex'); setTimeout(()=>document.getElementById('premium-features-modal').classList.remove('opacity-0'),10); };
-        window.closePremiumPromoModal = () => { document.getElementById('premium-features-modal').classList.add('opacity-0'); setTimeout(()=>{document.getElementById('premium-features-modal').classList.add('hidden'); document.getElementById('premium-features-modal').classList.remove('flex');}, 300); };
-        window.signInWithGoogle = async () => { try { await signInWithPopup(auth, provider); hideLoginModal(); } catch(e) { showToast("লগইন বাতিল", false); } };
-        window.signOutApp = async () => { await signOut(auth); showToast("লগ আউট সফল"); };
-
+        // সেটিংস সিঙ্ক
         function syncSettingsFields() {
-            if(!currentUserData) return;
-            const lock = document.getElementById('premium-lock-overlay');
-            const promo = document.getElementById('premium-promo-banner');
-            
-            if(currentUserData.isVerified) {
-                lock.classList.add('hidden');
-                promo.classList.add('hidden');
-                
-                // Color picker render
-                document.getElementById('badge-color-picker').innerHTML = PRESETS_BADGE_COLORS.map(c => 
-                    `<button onclick="localSelectedBadgeColor='${c.value}'; syncSettingsFields();" class="w-8 h-8 rounded-full border-2 ${localSelectedBadgeColor===c.value?'border-gray-900':'border-transparent'}" style="background-color:${c.value}"></button>`
-                ).join('');
-            } else {
-                lock.classList.remove('hidden');
-                promo.classList.remove('hidden');
+            document.getElementById('settings-username-input').value = currentUser.username;
+            document.getElementById('settings-avatar-preview').innerText = currentUser.emoji;
+        }
+
+        function updateProfileSettings() {
+            let u = document.getElementById('settings-username-input').value.trim();
+            if (u) {
+                currentUser.username = u;
+                showToast("প্রোফাইল সেটিংস আপডেট সফল হয়েছে!");
+                renderProfilePage();
             }
         }
 
-        window.savePremiumCustomization = async () => {
-            if(!currentUserData?.isVerified) return;
-            const frame = document.getElementById('settings-frame-select').value;
-            const font = document.getElementById('settings-font-select').value;
-            
-            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', currentUser.uid), {
-                badgeColor: localSelectedBadgeColor,
-                avatarFrame: frame,
-                customFont: font
-            });
-            showToast("প্রিমিয়াম সেটিংস সেভ হয়েছে!");
+        function updateLocalPrefs() {
+            renderTimeline();
         }
 
-        window.onload = () => { navigate(); initApp(); };
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // নতুন পোস্ট সাবমিট লজিক
+        function submitPost() {
+            const content = document.getElementById('post-content').value.trim();
+            const isGhost = document.getElementById('ghost-toggle').checked;
+            if (!content) return;
+
+            const newP = {
+                id: Date.now(),
+                name: currentUser.name,
+                username: currentUser.username,
+                emoji: currentUser.emoji,
+                isPremium: currentUser.isPremium,
+                content: content,
+                theme: 'default',
+                likes: 0,
+                downloads: 0,
+                comments: [],
+                bookmarked: false,
+                liked: false,
+                isGhost: isGhost,
+                time: "এইমাত্র"
+            };
+
+            posts.unshift(newP);
+            document.getElementById('post-content').value = '';
+            showToast("আপনার পোস্টটি সফলভাবে পাবলিশ হয়েছে!");
+            renderTimeline();
+        }
+
+        // ইন্টারফেস সাউন্ড জেনারেটর
+        function playInterfaceSound(freq = 440, duration = 0.1) {
+            try {
+                let audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.04, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                osc.start();
+                osc.stop(audioContext.currentTime + duration);
+            } catch(e) {}
+        }
+
+        window.onload = () => {
+            navigate();
+            renderTimeline();
+        };
     </script>
 </body>
 </html>
