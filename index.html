@@ -540,7 +540,7 @@
                     Google অ্যাকাউন্ট দিয়ে চালিয়ে যান
                 </button>
 
-                <!-- Email/Password Authentication Form Container (আইফ্রেমে বা ম্যানুয়াল লগইনে ব্যবহৃত হবে) -->
+                <!-- Email/Password Authentication Form Container -->
                 <div id="email-auth-container" class="mt-4 text-left space-y-3">
                     <div class="relative">
                         <span class="absolute left-4 top-3.5 text-gray-400"><i class="ph ph-envelope"></i></span>
@@ -549,7 +549,7 @@
                     
                     <div class="relative" id="password-field-container">
                         <span class="absolute left-4 top-3.5 text-gray-400"><i class="ph ph-lock"></i></span>
-                        <input type="password" id="authPassword" placeholder="আপনার পাসওয়ার্ড দিন (ন্যূনতম ৬ অক্ষর)" class="w-full bg-gray-50 border border-gray-150 rounded-2xl pl-10 pr-4 py-3.5 text-xs font-semibold focus:bg-white focus:border-gray-900 transition-all">
+                        <input type="password" id="authPassword" placeholder="আপনার পাসওয়ার্ড দিন" class="w-full bg-gray-50 border border-gray-150 rounded-2xl pl-10 pr-4 py-3.5 text-xs font-semibold focus:bg-white focus:border-gray-900 transition-all">
                     </div>
                     
                     <button id="emailAuthBtn" onclick="handleEmailAuth()" class="w-full bg-[#FF0050] text-white text-xs font-bold py-3.5 px-4 rounded-2xl shadow-lg shadow-[#FF0050]/15 hover:bg-[#e60048] active:scale-95 transition-all text-center">
@@ -557,11 +557,13 @@
                     </button>
                     
                     <div class="text-center pt-2 flex flex-col gap-2">
+                        <!-- পাসওয়ার্ড রিসেট বাটন (Forget Password) -->
+                        <button id="authResetBtn" onclick="toggleAuthMode('reset')" class="text-[11px] text-amber-600 font-bold hover:underline transition-all">
+                            পাসওয়ার্ড ভুলে গেছেন? অথবা নতুন সেট করতে এখানে চাপুন
+                        </button>
+                        
                         <button id="authToggleBtn" onclick="toggleAuthMode('signup')" class="text-[11px] text-[#FF0050] font-bold hover:underline transition-all">
                             নতুন অ্যাকাউন্ট তৈরি করতে চান? সাইন আপ করুন
-                        </button>
-                        <button id="authLinkToggleBtn" onclick="toggleAuthMode('link')" class="text-[11px] text-gray-500 font-bold hover:underline transition-all">
-                            গুগল অ্যাকাউন্ট ইমেইলে পাসওয়ার্ড সেট করতে চান? এখানে চাপুন
                         </button>
                     </div>
                 </div>
@@ -735,7 +737,7 @@
     <!-- Firebase SDK সেটাপ -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, signInAnonymously, signInWithCustomToken, createUserWithEmailAndPassword, signInWithEmailAndPassword, updatePassword, linkWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, signInAnonymously, signInWithCustomToken, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, addDoc, updateDoc, deleteDoc, serverTimestamp, arrayUnion, arrayRemove, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         // ফায়ারবেস কনফিগারেশন
@@ -768,10 +770,10 @@
         let activeFeedFilter = 'all'; 
         let searchQuery = '';
         
-        // টাইমার কালেকশন (মেমোরি ফিক্সের জন্য)
+        // টাইমার কালেকশন
         let promoTimeouts = [];
         
-        // উন্নত ইমোজি কালেকশন (Categorized for selection)
+        // উন্নত ইমোজি কালেকশন
         const emojiCategories = {
             female: ['👧', '👩', '👵', '🧕', '👮‍♀️', '👷‍♀️', '💂‍♀️', '🕵️‍♀️', '👩‍⚕️', '👩‍🎓', '👩‍🏫', '👩‍💻', '👩‍🎨', '👩‍✈️', '👩‍🚀', '👩‍🚒', '👸', '👰‍♀️', '🤰', '🤱', '💃', '🤸‍♀️', '🧘‍♀️'],
             male: ['👦', '👨', '👴', '👲', '👮‍♂️', '👷‍♂️', '💂‍♂️', '🕵️‍♂️', '👨‍⚕️', '👨‍🎓', '👨‍🏫', '👨‍💻', '👨‍🎨', '👨‍✈️', '👨‍🚀', '👨‍🚒', '🤴', '🤵‍♂️', '🧔', '🕴️', '🕺', '🤸‍♂️', '🧘‍♂️'],
@@ -783,7 +785,7 @@
         let activeSettingsTab = 'female';
         let selectedEmoji = emojiCategories.female[0];
 
-        // প্রিমিয়াম কার্ড থিম ডেফিনিশন (The Text String Hack)
+        // প্রিমিয়াম কার্ড থিম ডেফিনিশন
         const PREMIUM_THEMES = [
             { id: 0, name: "লাইট মিনিমাল", class: "bg-white border border-gray-100 shadow-sm text-gray-900", textAccent: "text-gray-900", tagColor: "text-gray-400", bgDot: "bg-gray-100", activeClass: "border-gray-900" },
             { id: 1, name: "মিডনাইট নিয়ন", class: "bg-gradient-to-b from-gray-900 via-zinc-900 to-gray-950 border border-pink-500/20 shadow-lg shadow-pink-500/5 text-white", textAccent: "text-pink-400", tagColor: "text-gray-400", bgDot: "bg-pink-500/10", activeClass: "border-pink-500" },
@@ -811,13 +813,13 @@
             { name: "সফট ব্লু", value: "#2563EB" }
         ];
 
-        let localSelectedBadgeColor = "#FF0050"; // ডিফল্ট কালার
+        let localSelectedBadgeColor = "#FF0050";
         
-        // ১. আইফ্রেম ডিটেকশন লজিক (Iframe Context Determination)
+        // ১. আইফ্রেম ডিটেকশন লজিক
         const isIframe = window.self !== window.top;
-        let authMode = 'login'; // 'login', 'signup', অথবা 'link' (পাসওয়ার্ড লিঙ্ক/সেট করার জন্য)
+        let authMode = 'login'; // 'login', 'signup', বা 'reset' (পাসওয়ার্ড রিসেটের জন্য)
 
-        // ডায়নামিক ব্যাজ জেনারেটর SVG (Custom Color Support)
+        // ডায়নামিক ব্যাজ জেনারেটর SVG
         function getVerifiedBadgeSVG(color = '#FF0050') {
             return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" class="inline-block flex-shrink-0 align-middle"><path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.152-.435.248-.9.248-1.4 0-2.21-1.79-4-4-4-.5 0-.965.1-1.4.248C14.55 2.475 13.18 1.6 11.6 1.6c-1.58 0-2.95.875-3.6 2.148-.435-.152-.9-.248-1.4-.248-2.21 0-4 1.79-4 4 0 .5.1.965.248 1.4C1.475 9.55.6 10.92.6 12.5c0 1.58.875 2.95 2.148 3.6-.152.435-.248.9-.248 1.4 0 2.21 1.79 4 4 4 .5 0 .965-.1 1.4-.248.65 1.273 2.02 2.148 3.6 2.148 1.58 0 2.95-.875 3.6-2.148.435 1.52.9.248 1.4.248 2.21 0 4-1.79 4-4 0-.5-.1-.965-.248-1.4 1.273-.65 2.148-2.02 2.148-3.6z" fill="${color}"/><path fill-rule="evenodd" clip-rule="evenodd" d="M9.86 15.17L6.69 12c-0.39-0.39-1.02-0.39-1.41 0c-0.39 0.39-0.39 1.02 0 1.41l3.88 3.88c0.39 0.39 1.02 0.39 1.41 0l7.78-7.78c0.39-0.39 0.39-1.02 0-1.41c-0.39-0.39-1.02-0.39-1.41 0L9.86 15.17z" fill="#ffffff"/></svg>`;
         }
@@ -886,7 +888,7 @@
             }, 300);
         }
 
-        // স্মার্ট এবং সিকোয়েন্সিয়াল পপ-আপ টাইমার সেটিংস (৩০ সেকেন্ড, ১.৫ মিনিট এবং ৩ মিনিট পর পর পপ-আপ আসবে)
+        // পপ-আপ টাইমার সেটিংস
         function startPromoTimers() {
             clearPromoTimers();
             if (currentUserData && currentUserData.isVerified) return;
@@ -1070,21 +1072,20 @@
                 if (emailContainer) emailContainer.classList.remove('hidden');
                 if (iframeBox) iframeBox.classList.remove('hidden'); 
                 if (modalDesc) {
-                    modalDesc.innerText = "আইফ্রেমে নিরাপত্তার স্বার্থে গুগল পপআপের পরিবর্তে ইমেইল ও পাসওয়ার্ড ব্যবহার করে লগইন, সাইন-আপ অথবা পাসওয়ার্ড সেটআপ সম্পন্ন করুন।";
+                    modalDesc.innerText = "আইফ্রেমে নিরাপত্তার স্বার্থে গুগল পপআপের পরিবর্তে ইমেইল ও পাসওয়ার্ড ব্যবহার করে লগইন, সাইন-আপ অথবা পাসওয়ার্ড রিসেট সম্পন্ন করুন।";
                 }
             } else {
                 if (googleBtn) googleBtn.classList.remove('hidden');
-                // মেইন ব্রাউজারেও ইমেইল অথেন্টিকেশনের ব্যবস্থা থাকবে ব্যাকআপ হিসেবে
                 if (emailContainer) emailContainer.classList.remove('hidden');
                 if (iframeBox) iframeBox.classList.add('hidden'); 
             }
         }
 
-        // ২. উন্নত ও থ্রি-স্টেট ইমেইল অথেনটিকেশন ফর্ম লজিক (লগইন, সাইন-আপ, গুগল আইডিতে পাসওয়ার্ড সেট করা)
+        // ২. উন্নত ও থ্রি-স্টেট ইমেইল অথেনটিকেশন ফর্ম লজিক (লগইন, সাইন-আপ, পাসওয়ার্ড রিসেট)
         window.toggleAuthMode = (mode) => {
             const emailBtn = document.getElementById('emailAuthBtn');
             const toggleBtn = document.getElementById('authToggleBtn');
-            const linkToggleBtn = document.getElementById('authLinkToggleBtn');
+            const resetBtn = document.getElementById('authResetBtn');
             const modalTitle = document.getElementById('modal-title');
             const passwordFieldContainer = document.getElementById('password-field-container');
             const authPasswordInput = document.getElementById('authPassword');
@@ -1099,16 +1100,16 @@
                 
                 toggleBtn.innerText = 'ইতিমধ্যে অ্যাকাউন্ট আছে? লগইন করুন';
                 toggleBtn.setAttribute('onclick', "toggleAuthMode('login')");
-                linkToggleBtn.classList.remove('hidden');
-            } else if (authMode === 'link') {
-                passwordFieldContainer.classList.remove('hidden');
-                authPasswordInput.placeholder = "গুগল ইমেইলের জন্য নতুন পাসওয়ার্ড দিন";
-                emailBtn.innerText = 'পাসওয়ার্ড সেট ও লিংক করুন';
-                modalTitle.innerText = 'গুগল অ্যাকাউন্টে পাসওয়ার্ড সেট করুন';
+                resetBtn.classList.remove('hidden');
+                resetBtn.innerText = "গুগল অ্যাকাউন্টে পাসওয়ার্ড সেট করতে রিসেট চাপুন";
+            } else if (authMode === 'reset') {
+                passwordFieldContainer.classList.add('hidden'); // পাসওয়ার্ড ইনপুট হিডেন থাকবে
+                emailBtn.innerText = 'রিসেট/সেটআপ লিংক পাঠান';
+                modalTitle.innerText = 'পাসওয়ার্ড রিসেট ও সেটআপ';
                 
                 toggleBtn.innerText = 'ফিরে যান - লগইন করুন';
                 toggleBtn.setAttribute('onclick', "toggleAuthMode('login')");
-                linkToggleBtn.classList.add('hidden');
+                resetBtn.classList.add('hidden');
             } else {
                 // 'login' মোড
                 passwordFieldContainer.classList.remove('hidden');
@@ -1118,11 +1119,12 @@
                 
                 toggleBtn.innerText = 'নতুন অ্যাকাউন্ট তৈরি করতে চান? সাইন আপ করুন';
                 toggleBtn.setAttribute('onclick', "toggleAuthMode('signup')");
-                linkToggleBtn.classList.remove('hidden');
+                resetBtn.classList.remove('hidden');
+                resetBtn.innerText = "পাসওয়ার্ড ভুলে গেছেন? অথবা নতুন সেট করতে এখানে চাপুন";
             }
         }
 
-        // ৩. ফায়ারবেস ইমেইল/পাসওয়ার্ড সাইন-আপ, সাইন-ইন এবং পাসওয়ার্ড লিংক এক্সিকিউশন
+        // ৩. ফায়ারবেস ইমেইল/পাসওয়ার্ড সাইন-আপ, সাইন-ইন এবং পাসওয়ার্ড রিসেট এক্সিকিউশন
         window.handleEmailAuth = async () => {
             triggerHaptic();
             const email = document.getElementById('authEmail').value.trim();
@@ -1133,10 +1135,6 @@
                 showToast("অনুগ্রহ করে একটি সঠিক ইমেইল এড্রেস দিন।", false);
                 return;
             }
-            if (!password || password.length < 6) {
-                showToast("পাসওয়ার্ড অবশ্যই কমপক্ষে ৬ অক্ষরের হতে হবে।", false);
-                return;
-            }
 
             const actionBtn = document.getElementById('emailAuthBtn');
             const originalText = actionBtn.innerText;
@@ -1144,46 +1142,25 @@
             actionBtn.innerText = 'প্রক্রিয়াধীন...';
 
             try {
-                if (authMode === 'signup') {
-                    // নতুন ইমেইল সাইন-আপ লজিক
+                if (authMode === 'reset') {
+                    // পাসওয়ার্ড রিসেট বা গুগল অ্যাকাউন্টের বিপরীতে পাসওয়ার্ড সেটিং মেইল সেন্ডিং
+                    await sendPasswordResetEmail(auth, email);
+                    showToast("আপনার ইমেইলে পাসওয়ার্ড রিসেট ও সেটআপ লিংক পাঠানো হয়েছে! ইনবক্স অথবা স্প্যাম ফোল্ডার চেক করুন।", true);
+                    toggleAuthMode('login');
+                } else if (authMode === 'signup') {
+                    if (!password || password.length < 6) {
+                        showToast("পাসওয়ার্ড অবশ্যই কমপক্ষে ৬ অক্ষরের হতে হবে।", false);
+                        return;
+                    }
                     const credential = await createUserWithEmailAndPassword(auth, email, password);
                     showToast("সাইন আপ সফল হয়েছে!", true);
                     hideLoginModal();
                     await checkUserData(credential.user);
-                } else if (authMode === 'link') {
-                    // গুগল সাইন-ইন দিয়ে করা ইমেইলে নতুন পাসওয়ার্ড লিঙ্ক/সেটআপ করা
-                    try {
-                        // প্রথমে উক্ত ইমেইলে অলরেডি অ্যাকাউন্ট আছে কিনা পরীক্ষা করতে লগইন চেষ্টা করব
-                        const credential = await signInWithEmailAndPassword(auth, email, password);
-                        showToast("আপনার ইমেইলে অলরেডি পাসওয়ার্ড সেট করা আছে এবং আপনি লগইন হয়েছেন।", true);
-                        hideLoginModal();
-                        await checkUserData(credential.user);
-                    } catch (signInErr) {
-                        // যদি ভুল পাসওয়ার্ড বা ক্রেডেনশিয়াল এরর দেয়, তারমানে অ্যাকাউন্ট আছে কিন্তু পাসওয়ার্ড ভিন্ন বা সেট করতে হবে।
-                        // আমরা ইমেইল দিয়ে একটি নতুন পাসওয়ার্ড সহ ইউজার ক্রিয়েট করার ট্রাই করব।
-                        if (signInErr.code === 'auth/wrong-password' || signInErr.code === 'auth/invalid-credential') {
-                            showToast("পাসওয়ার্ড আপডেট করতে আপনার মূল গুগল অ্যাকাউন্ট দিয়ে প্রথমে লগইন থাকা আবশ্যক।", false);
-                        } else if (signInErr.code === 'auth/user-not-found') {
-                            // যদি কোনো অ্যাকাউন্টই না থাকে
-                            showToast("এই ইমেইলে কোনো অ্যাকাউন্ট পাওয়া যায়নি। অনুগ্রহ করে সাইন-আপ করুন।", false);
-                        } else {
-                            // ফায়ারবেস লিংক বা পাসওয়ার্ড আপগ্রেড লজিক
-                            // যদি কারেন্ট ইউজার লগইন থাকে (যেমন অ্যানোনিমাস বা আংশিক), সেটিকে রূপান্তর
-                            if (auth.currentUser && !auth.currentUser.isAnonymous) {
-                                const credential = EmailAuthProvider.credential(email, password);
-                                await linkWithCredential(auth.currentUser, credential);
-                                showToast("সাফল্যের সাথে আপনার অ্যাকাউন্টে পাসওয়ার্ড সেট করা হয়েছে!", true);
-                                hideLoginModal();
-                                await checkUserData(auth.currentUser);
-                            } else {
-                                // যদি ব্রাউজারে লগইন না থাকে, তাহলে এটি ডিরেক্টলি নতুন অ্যাকাউন্ট হিসেবে রেজিস্ট্রেশন করতে বলবে
-                                showToast("পাসওয়ার্ড সেট করতে প্রথমে মূল অ্যাকাউন্ট দিয়ে একবার সাইন-ইন থাকা প্রয়োজন।", false);
-                                toggleAuthMode('signup');
-                            }
-                        }
-                    }
                 } else {
-                    // সাধারণ লগইন লজিক
+                    if (!password || password.length < 6) {
+                        showToast("পাসওয়ার্ড অবশ্যই কমপক্ষে ৬ অক্ষরের হতে হবে।", false);
+                        return;
+                    }
                     const credential = await signInWithEmailAndPassword(auth, email, password);
                     showToast("সাফল্যের সাথে লগইন সম্পন্ন হয়েছে!", true);
                     hideLoginModal();
@@ -1197,14 +1174,14 @@
             }
         }
 
-        // ৪. ফায়ারবেস অথেনটিকেশন এরর হ্যান্ডলার (বাংলা ট্রান্সলেশন)
+        // ৪. ফায়ারবেস অথেনটিকেশন এরর হ্যান্ডলার
         function handleAuthError(error) {
             console.error("Auth System Error Code:", error.code);
-            let responseMsg = "একটি ইন্টারনাল অথেনটিকেশন প্রবলেম দেখা দিয়েছে।";
+            let responseMsg = "একটি ইন্টারনাল প্রবলেম দেখা দিয়েছে।";
 
             switch (error.code) {
                 case 'auth/email-already-in-use':
-                    responseMsg = "এই ইমেইল এড্রেসটি দিয়ে ইতিপূর্বে অ্যাকাউন্ট খোলা হয়েছে। আপনি চাইলে সরাসরি লগইন করতে পারেন।";
+                    responseMsg = "এই ইমেইল এড্রেসটি দিয়ে ইতিপূর্বে অ্যাকাউন্ট খোলা হয়েছে। পাসওয়ার্ড ভুলে গেলে রিসেট অপশনটি ব্যবহার করুন।";
                     break;
                 case 'auth/invalid-email':
                     responseMsg = "প্রদানকৃত ইমেইল ফরম্যাটটি সঠিক নয়।";
@@ -1215,7 +1192,7 @@
                 case 'auth/wrong-password':
                 case 'auth/user-not-found':
                 case 'auth/invalid-credential':
-                    responseMsg = "ভুল ইমেইল অথবা পাসওয়ার্ড প্রদান করা হয়েছে। অনুগ্রহ করে যাচাই করুন।";
+                    responseMsg = "ভুল ইমেইল অথবা পাসওয়ার্ড প্রদান করা হয়েছে। অনুগ্রহ করে যাচাই করুন বা রিসেট করুন।";
                     break;
                 case 'auth/user-disabled':
                     responseMsg = "নিরাপত্তাজনিত কারণে আপনার অ্যাকাউন্টটি এডমিন কর্তৃক স্থগিত করা হয়েছে।";
@@ -1223,17 +1200,11 @@
                 case 'auth/network-request-failed':
                     responseMsg = "নেটওয়ার্ক কানেকশন ব্যর্থ হয়েছে। আপনার ইন্টারনেট কানেকশন চেক করুন।";
                     break;
-                case 'auth/provider-already-linked':
-                    responseMsg = "আপনার এই ইমেইল অ্যাকাউন্টটি ইতিমধ্যে সংযুক্ত করা আছে।";
-                    break;
-                case 'auth/credential-already-in-use':
-                    responseMsg = "এই ক্রেডেনশিয়ালটি ইতিমধ্যে অন্য একটি অ্যাকাউন্টের সাথে লিংক করা আছে।";
-                    break;
             }
             showToast(responseMsg, false);
         }
 
-        // ৫. প্যারেন্ট উইন্ডোতে পোস্ট মেসেজ সিগন্যাল প্রেরণ (Back to Dashboard Action)
+        // ৫. প্যারেন্ট উইন্ডোতে পোস্ট মেসেজ সিগন্যাল প্রেরণ
         window.backToParentApp = () => {
             triggerHaptic();
             showToast("My Aim অ্যাপের মূল স্ক্রিনে ফিরে যাওয়া হচ্ছে...", true);
@@ -1701,7 +1672,7 @@
             });
         }
 
-        // ওয়ান-ট্যাপ কমেন্ট ডিলিট সিস্টেম (Author ও Admin জন্য ব্যাকআপ)
+        // ওয়ান-ট্যাপ কমেন্ট ডিলিট সিস্টেম
         window.deleteComment = async (commentId) => {
             const confirmDelete = confirm("আপনি কি এই মন্তব্যটি মুছে ফেলতে চান?");
             if (!confirmDelete) return;
@@ -2274,7 +2245,7 @@
             container.innerHTML = filtered.map(post => createPostElement(post)).join('');
         }
 
-        // প্রোফাইল পেজ রেন্ডারার (প্রিমিয়াম ফ্রেম প্রিভিউ ও শ্রিঙ্ক-টু-ফিট নেম সহ)
+        // প্রোফাইল পেজ রেন্ডারার
         function renderProfile() {
             if(!currentUserData || currentUser.isAnonymous) return;
             
