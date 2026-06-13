@@ -36,7 +36,6 @@
     <!-- html2canvas লাইব্রেরি সিডিএন -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    
     <style>
         /* গুগল ফন্টস থেকে প্রিমিয়াম বাংলা ও ইংরেজি ফন্টসমূহ ইমপোর্ট */
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Atma:wght@400;600;700&family=Galada&family=Noto+Serif+Bengali:wght@400;700&display=swap');
@@ -188,7 +187,7 @@
                     লগইন করুন
                 </button>
                 <div class="flex items-center gap-2.5">
-                    <!-- কুইক ভেরিফাই বাটন (শুধুমাত্র আন-ভেরিফাইড ইউজারদের জন্য হেডারে চমৎকার গ্লোয়িং ব্যাজ বাটন) -->
+                    <!-- কুইক ভেরিফাই বাটন -->
                     <button id="header-verify-badge-btn" onclick="showPremiumPromoModal('এক্সক্লুসিভ অফার')" class="hidden animate-pulse bg-gradient-to-r from-amber-500 to-yellow-400 text-gray-950 p-1.5 rounded-xl text-xs font-black shadow-md shadow-amber-500/15 flex items-center gap-1 active:scale-95 transition-all">
                         <i class="ph-fill ph-seal-check text-sm text-[#FF0050]"></i> ভেরিফাই
                     </button>
@@ -367,7 +366,7 @@
                         </div>
                     </div>
 
-                    <!-- আইফ্রেম ড্যাশবোর্ড কন্ট্রোল সেকশন (শুধুমাত্র আইফ্রেমের ভেতরে থাকলে ডায়নামিকলি শো হবে) -->
+                    <!-- আইফ্রেম ড্যাশবোর্ড কন্ট্রোল সেকশন (শুধুমাত্র আইফ্রেমের ভেতরে থাকলে শো হবে) -->
                     <div id="iframe-control-box" class="bg-gradient-to-r from-gray-900 via-zinc-950 to-black border border-amber-500/20 rounded-3xl p-5 shadow-md hidden relative overflow-hidden">
                         <div class="absolute -right-8 -top-8 text-7xl opacity-5 text-white">
                             <i class="ph ph-arrow-u-up-left"></i>
@@ -466,7 +465,7 @@
                         </div>
                     </div>
 
-                    <!-- ভেরিফিকেশন সেকশন (এটি ডায়নামিকলি শুধুমাত্র আন-ভেরিফাইড ইউজারদের দেখানো হবে) -->
+                    <!-- ভেরিফিকেশন সেকশন -->
                     <div id="whatsapp-verify-box" class="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-950 rounded-3xl p-6 relative overflow-hidden shadow-lg hidden">
                         <div class="absolute -right-8 -top-8 text-9xl opacity-10 text-white">
                             <i class="ph-fill ph-seal-check"></i>
@@ -521,9 +520,9 @@
         <!-- টোস্ট কন্টেইনার -->
         <div id="toast-container"></div>
 
-        <!-- গুগল লগইন পপ-আপ মডাল -->
+        <!-- গুগল ও ইমেইল লগইন পপ-আপ মডাল -->
         <div id="login-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex-col items-center justify-center p-4 backdrop-blur-sm opacity-0 transition-opacity duration-300">
-            <div class="bg-white w-full max-w-sm rounded-3xl p-6 text-center shadow-2xl transform scale-95 transition-transform duration-300 relative">
+            <div class="bg-white w-full max-w-sm rounded-3xl p-6 text-center shadow-2xl transform scale-95 transition-transform duration-300 relative max-h-[90vh] overflow-y-auto">
                 <button onclick="hideLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 bg-gray-50 hover:bg-gray-100 p-2 rounded-2xl transition-all">
                     <i class="ph text-base ph-x"></i>
                 </button>
@@ -533,37 +532,43 @@
                 </div>
                 
                 <h3 id="modal-title" class="text-lg font-black mb-1.5 text-gray-900">লগইন করুন</h3>
-                <p id="modal-desc-text" class="text-xs text-gray-500 mb-6 px-3">সম্পূর্ণ বেনামে আপনার মতামত প্রকাশ করতে এবং অন্যদের পোস্টে লাইক-কমেন্ট করতে আপনার গুগল অ্যাকাউন্ট সংযুক্ত করুন।</p>
+                <p id="modal-desc-text" class="text-xs text-gray-500 mb-6 px-3">সম্পূর্ণ বেনামে আপনার মতামত প্রকাশ করতে এবং অন্যদের পোস্টে লাইক-কমেন্ট করতে অ্যাকাউন্ট সংযুক্ত করুন।</p>
                 
-                <!-- Google Authentication (স্বাধীন উইন্ডোতে ব্যবহৃত হবে) -->
+                <!-- Google Authentication (সাধারণ ব্রাউজারে দৃশ্যমান) -->
                 <button id="google-login-btn" onclick="signInWithGoogle()" class="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-100 text-gray-800 font-bold py-3.5 px-4 rounded-2xl shadow-sm hover:bg-gray-50 hover:border-gray-200 active:scale-95 transition-all text-xs">
                     <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-4 h-5" alt="Google">
                     Google অ্যাকাউন্ট দিয়ে চালিয়ে যান
                 </button>
 
-                <!-- Email/Password Authentication Form Container (আইফ্রেমে ডাইনামিকলি অ্যাক্টিভেট হবে) -->
-                <div id="email-auth-container" class="mt-4 hidden text-left space-y-3">
+                <!-- Email/Password Authentication Form Container (আইফ্রেমে বা ম্যানুয়াল লগইনে ব্যবহৃত হবে) -->
+                <div id="email-auth-container" class="mt-4 text-left space-y-3">
                     <div class="relative">
-                        <span class="absolute left-4 top-3 text-gray-400"><i class="ph ph-envelope"></i></span>
-                        <input type="email" id="authEmail" placeholder="আপনার ইমেইল দিন" class="w-full bg-gray-50 border border-gray-150 rounded-2xl pl-10 pr-4 py-3 text-xs font-semibold focus:bg-white focus:border-gray-900 transition-all">
+                        <span class="absolute left-4 top-3.5 text-gray-400"><i class="ph ph-envelope"></i></span>
+                        <input type="email" id="authEmail" placeholder="আপনার ইমেইল দিন" class="w-full bg-gray-50 border border-gray-150 rounded-2xl pl-10 pr-4 py-3.5 text-xs font-semibold focus:bg-white focus:border-gray-900 transition-all">
                     </div>
-                    <div class="relative">
-                        <span class="absolute left-4 top-3 text-gray-400"><i class="ph ph-lock"></i></span>
-                        <input type="password" id="authPassword" placeholder="আপনার পাসওয়ার্ড দিন (ন্যূনতম ৬ অক্ষর)" class="w-full bg-gray-50 border border-gray-150 rounded-2xl pl-10 pr-4 py-3 text-xs font-semibold focus:bg-white focus:border-gray-900 transition-all">
+                    
+                    <div class="relative" id="password-field-container">
+                        <span class="absolute left-4 top-3.5 text-gray-400"><i class="ph ph-lock"></i></span>
+                        <input type="password" id="authPassword" placeholder="আপনার পাসওয়ার্ড দিন (ন্যূনতম ৬ অক্ষর)" class="w-full bg-gray-50 border border-gray-150 rounded-2xl pl-10 pr-4 py-3.5 text-xs font-semibold focus:bg-white focus:border-gray-900 transition-all">
                     </div>
+                    
                     <button id="emailAuthBtn" onclick="handleEmailAuth()" class="w-full bg-[#FF0050] text-white text-xs font-bold py-3.5 px-4 rounded-2xl shadow-lg shadow-[#FF0050]/15 hover:bg-[#e60048] active:scale-95 transition-all text-center">
                         লগইন করুন
                     </button>
-                    <div class="text-center pt-2">
-                        <button id="authToggleBtn" onclick="toggleAuthMode()" class="text-[11px] text-[#FF0050] font-bold hover:underline transition-all">
+                    
+                    <div class="text-center pt-2 flex flex-col gap-2">
+                        <button id="authToggleBtn" onclick="toggleAuthMode('signup')" class="text-[11px] text-[#FF0050] font-bold hover:underline transition-all">
                             নতুন অ্যাকাউন্ট তৈরি করতে চান? সাইন আপ করুন
+                        </button>
+                        <button id="authLinkToggleBtn" onclick="toggleAuthMode('link')" class="text-[11px] text-gray-500 font-bold hover:underline transition-all">
+                            গুগল অ্যাকাউন্ট ইমেইলে পাসওয়ার্ড সেট করতে চান? এখানে চাপুন
                         </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- প্রিমিয়াম বেনিফিটস এবং ফিচার লিস্ট পপ-আপ মডাল (The Gold/Neon Ultra Luxury Popup) -->
+        <!-- প্রিমিয়াম বেনিফিটস এবং ফিচার লিস্ট পপ-আপ মডাল -->
         <div id="premium-promo-modal" class="fixed inset-0 bg-black/75 z-50 hidden flex-col items-center justify-center p-4 backdrop-blur-md opacity-0 transition-opacity duration-300">
             <div class="bg-gradient-to-b from-gray-900 via-zinc-950 to-black w-full max-w-sm rounded-3xl p-6 text-center border border-amber-500/30 shadow-2xl shadow-amber-500/10 transform scale-95 transition-transform duration-300 relative">
                 
@@ -581,7 +586,7 @@
                 <h3 id="promo-modal-title" class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-400 to-orange-400 mb-1">প্রিমিয়াম ভেরিফাইড লাইসেন্স!</h3>
                 <p class="text-[11px] text-gray-400 mb-5">মাত্র ৫০৳ ওয়ান-টাইম পেমেন্টে নিজেকে সবার চেয়ে একধাপ এগিয়ে রাখুন</p>
                 
-                <!-- বেনিফিট সমূহের লিস্ট (আইকনসহ অত্যন্ত প্রিমিয়াম গ্রিড/লিস্ট) -->
+                <!-- বেনিফিট সমূহের লিস্ট -->
                 <div class="text-left space-y-3.5 mb-6 max-h-[250px] overflow-y-auto pr-1">
                     <div class="flex items-start gap-3.5 bg-white/5 p-3 rounded-2xl border border-white/5">
                         <div class="w-7 h-7 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 flex-shrink-0">
@@ -668,7 +673,7 @@
                     </div>
                     <div>
                         <h4 class="font-bold text-gray-800 mb-1">৪. নীতি পরিবর্তন:</h4>
-                        <p>앱ের পরিবেশ রক্ষার স্বার্থে ডেভলপার যেকোনো মুহূর্তে এই নীতিমালা পরিবর্তন বা পরিবর্ধন করার পূর্ণ ক্ষমতা রাখেন।</p>
+                        <p>অ্যাপের পরিবেশ রক্ষার স্বার্থে ডেভলপার যেকোনো মুহূর্তে এই নীতিমালা পরিবর্তন বা পরিবর্ধন করার পূর্ণ ক্ষমতা রাখেন।</p>
                     </div>
                 </div>
                 
@@ -730,7 +735,7 @@
     <!-- Firebase SDK সেটাপ -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, signInAnonymously, signInWithCustomToken, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, signInAnonymously, signInWithCustomToken, createUserWithEmailAndPassword, signInWithEmailAndPassword, updatePassword, linkWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, addDoc, updateDoc, deleteDoc, serverTimestamp, arrayUnion, arrayRemove, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         // ফায়ারবেস কনফিগারেশন
@@ -810,7 +815,7 @@
         
         // ১. আইফ্রেম ডিটেকশন লজিক (Iframe Context Determination)
         const isIframe = window.self !== window.top;
-        let authMode = 'login'; // 'login' অথবা 'signup' স্টেট
+        let authMode = 'login'; // 'login', 'signup', অথবা 'link' (পাসওয়ার্ড লিঙ্ক/সেট করার জন্য)
 
         // ডায়নামিক ব্যাজ জেনারেটর SVG (Custom Color Support)
         function getVerifiedBadgeSVG(color = '#FF0050') {
@@ -847,6 +852,7 @@
                 modal.classList.remove('opacity-0');
                 modal.querySelector('div').classList.remove('scale-95');
             }, 10);
+            toggleAuthMode('login'); // ডিফল্ট মোড সর্বদা লগইন হিসেবে শুরু হবে
         }
 
         window.hideLoginModal = () => {
@@ -1062,37 +1068,61 @@
             if (isIframe) {
                 if (googleBtn) googleBtn.classList.add('hidden');
                 if (emailContainer) emailContainer.classList.remove('hidden');
-                if (iframeBox) iframeBox.classList.remove('hidden'); // আইফ্রেম হলে সেটিংসের বাটন বক্সটি ভিজিবল করা হলো
+                if (iframeBox) iframeBox.classList.remove('hidden'); 
                 if (modalDesc) {
-                    modalDesc.innerText = "আইফ্রেমে নিরাপত্তার স্বার্থে গুগল পপআপের পরিবর্তে ইমেইল ও পাসওয়ার্ড ব্যবহার করে লগইন অথবা সাইন-আপ সম্পন্ন করুন।";
+                    modalDesc.innerText = "আইফ্রেমে নিরাপত্তার স্বার্থে গুগল পপআপের পরিবর্তে ইমেইল ও পাসওয়ার্ড ব্যবহার করে লগইন, সাইন-আপ অথবা পাসওয়ার্ড সেটআপ সম্পন্ন করুন।";
                 }
             } else {
                 if (googleBtn) googleBtn.classList.remove('hidden');
-                if (emailContainer) emailContainer.classList.add('hidden');
-                if (iframeBox) iframeBox.classList.add('hidden'); // আইফ্রেম না থাকলে বাটন বক্সটি পুরোপুরি হিডেন থাকবে
+                // মেইন ব্রাউজারেও ইমেইল অথেন্টিকেশনের ব্যবস্থা থাকবে ব্যাকআপ হিসেবে
+                if (emailContainer) emailContainer.classList.remove('hidden');
+                if (iframeBox) iframeBox.classList.add('hidden'); 
             }
         }
 
-        // ২. ইমেইল অথেনটিকেশন ফর্ম লজিক এবং স্টেট সুইচার (Toggle Mode)
-        window.toggleAuthMode = () => {
+        // ২. উন্নত ও থ্রি-স্টেট ইমেইল অথেনটিকেশন ফর্ম লজিক (লগইন, সাইন-আপ, গুগল আইডিতে পাসওয়ার্ড সেট করা)
+        window.toggleAuthMode = (mode) => {
             const emailBtn = document.getElementById('emailAuthBtn');
             const toggleBtn = document.getElementById('authToggleBtn');
+            const linkToggleBtn = document.getElementById('authLinkToggleBtn');
             const modalTitle = document.getElementById('modal-title');
+            const passwordFieldContainer = document.getElementById('password-field-container');
+            const authPasswordInput = document.getElementById('authPassword');
 
-            if (authMode === 'login') {
-                authMode = 'signup';
+            authMode = mode;
+
+            if (authMode === 'signup') {
+                passwordFieldContainer.classList.remove('hidden');
+                authPasswordInput.placeholder = "নতুন পাসওয়ার্ড দিন (ন্যূনতম ৬ অক্ষর)";
                 emailBtn.innerText = 'অ্যাকাউন্ট তৈরি করুন';
-                toggleBtn.innerText = 'ইতিমধ্যে অ্যাকাউন্ট আছে? লগইন করুন';
                 modalTitle.innerText = 'নতুন অ্যাকাউন্ট তৈরি করুন';
+                
+                toggleBtn.innerText = 'ইতিমধ্যে অ্যাকাউন্ট আছে? লগইন করুন';
+                toggleBtn.setAttribute('onclick', "toggleAuthMode('login')");
+                linkToggleBtn.classList.remove('hidden');
+            } else if (authMode === 'link') {
+                passwordFieldContainer.classList.remove('hidden');
+                authPasswordInput.placeholder = "গুগল ইমেইলের জন্য নতুন পাসওয়ার্ড দিন";
+                emailBtn.innerText = 'পাসওয়ার্ড সেট ও লিংক করুন';
+                modalTitle.innerText = 'গুগল অ্যাকাউন্টে পাসওয়ার্ড সেট করুন';
+                
+                toggleBtn.innerText = 'ফিরে যান - লগইন করুন';
+                toggleBtn.setAttribute('onclick', "toggleAuthMode('login')");
+                linkToggleBtn.classList.add('hidden');
             } else {
-                authMode = 'login';
+                // 'login' মোড
+                passwordFieldContainer.classList.remove('hidden');
+                authPasswordInput.placeholder = "আপনার পাসওয়ার্ড দিন";
                 emailBtn.innerText = 'লগইন করুন';
-                toggleBtn.innerText = 'নতুন অ্যাকাউন্ট তৈরি করতে চান? সাইন আপ করুন';
                 modalTitle.innerText = 'লগইন করুন';
+                
+                toggleBtn.innerText = 'নতুন অ্যাকাউন্ট তৈরি করতে চান? সাইন আপ করুন';
+                toggleBtn.setAttribute('onclick', "toggleAuthMode('signup')");
+                linkToggleBtn.classList.remove('hidden');
             }
         }
 
-        // ৩. ফায়ারবেস ইমেইল/পাসওয়ার্ড সাইন-আপ ও সাইন-ইন এক্সিকিউশন
+        // ৩. ফায়ারবেস ইমেইল/পাসওয়ার্ড সাইন-আপ, সাইন-ইন এবং পাসওয়ার্ড লিংক এক্সিকিউশন
         window.handleEmailAuth = async () => {
             triggerHaptic();
             const email = document.getElementById('authEmail').value.trim();
@@ -1109,16 +1139,51 @@
             }
 
             const actionBtn = document.getElementById('emailAuthBtn');
+            const originalText = actionBtn.innerText;
             actionBtn.disabled = true;
-            actionBtn.innerText = authMode === 'login' ? 'লগইন করা হচ্ছে...' : 'প্রোফাইল তৈরি হচ্ছে...';
+            actionBtn.innerText = 'প্রক্রিয়াধীন...';
 
             try {
                 if (authMode === 'signup') {
+                    // নতুন ইমেইল সাইন-আপ লজিক
                     const credential = await createUserWithEmailAndPassword(auth, email, password);
                     showToast("সাইন আপ সফল হয়েছে!", true);
                     hideLoginModal();
                     await checkUserData(credential.user);
+                } else if (authMode === 'link') {
+                    // গুগল সাইন-ইন দিয়ে করা ইমেইলে নতুন পাসওয়ার্ড লিঙ্ক/সেটআপ করা
+                    try {
+                        // প্রথমে উক্ত ইমেইলে অলরেডি অ্যাকাউন্ট আছে কিনা পরীক্ষা করতে লগইন চেষ্টা করব
+                        const credential = await signInWithEmailAndPassword(auth, email, password);
+                        showToast("আপনার ইমেইলে অলরেডি পাসওয়ার্ড সেট করা আছে এবং আপনি লগইন হয়েছেন।", true);
+                        hideLoginModal();
+                        await checkUserData(credential.user);
+                    } catch (signInErr) {
+                        // যদি ভুল পাসওয়ার্ড বা ক্রেডেনশিয়াল এরর দেয়, তারমানে অ্যাকাউন্ট আছে কিন্তু পাসওয়ার্ড ভিন্ন বা সেট করতে হবে।
+                        // আমরা ইমেইল দিয়ে একটি নতুন পাসওয়ার্ড সহ ইউজার ক্রিয়েট করার ট্রাই করব।
+                        if (signInErr.code === 'auth/wrong-password' || signInErr.code === 'auth/invalid-credential') {
+                            showToast("পাসওয়ার্ড আপডেট করতে আপনার মূল গুগল অ্যাকাউন্ট দিয়ে প্রথমে লগইন থাকা আবশ্যক।", false);
+                        } else if (signInErr.code === 'auth/user-not-found') {
+                            // যদি কোনো অ্যাকাউন্টই না থাকে
+                            showToast("এই ইমেইলে কোনো অ্যাকাউন্ট পাওয়া যায়নি। অনুগ্রহ করে সাইন-আপ করুন।", false);
+                        } else {
+                            // ফায়ারবেস লিংক বা পাসওয়ার্ড আপগ্রেড লজিক
+                            // যদি কারেন্ট ইউজার লগইন থাকে (যেমন অ্যানোনিমাস বা আংশিক), সেটিকে রূপান্তর
+                            if (auth.currentUser && !auth.currentUser.isAnonymous) {
+                                const credential = EmailAuthProvider.credential(email, password);
+                                await linkWithCredential(auth.currentUser, credential);
+                                showToast("সাফল্যের সাথে আপনার অ্যাকাউন্টে পাসওয়ার্ড সেট করা হয়েছে!", true);
+                                hideLoginModal();
+                                await checkUserData(auth.currentUser);
+                            } else {
+                                // যদি ব্রাউজারে লগইন না থাকে, তাহলে এটি ডিরেক্টলি নতুন অ্যাকাউন্ট হিসেবে রেজিস্ট্রেশন করতে বলবে
+                                showToast("পাসওয়ার্ড সেট করতে প্রথমে মূল অ্যাকাউন্ট দিয়ে একবার সাইন-ইন থাকা প্রয়োজন।", false);
+                                toggleAuthMode('signup');
+                            }
+                        }
+                    }
                 } else {
+                    // সাধারণ লগইন লজিক
                     const credential = await signInWithEmailAndPassword(auth, email, password);
                     showToast("সাফল্যের সাথে লগইন সম্পন্ন হয়েছে!", true);
                     hideLoginModal();
@@ -1128,7 +1193,7 @@
                 handleAuthError(error);
             } finally {
                 actionBtn.disabled = false;
-                actionBtn.innerText = authMode === 'login' ? 'লগইন করুন' : 'অ্যাকাউন্ট তৈরি করুন';
+                actionBtn.innerText = originalText;
             }
         }
 
@@ -1139,7 +1204,7 @@
 
             switch (error.code) {
                 case 'auth/email-already-in-use':
-                    responseMsg = "এই ইমেইল এড্রেসটি দিয়ে ইতিপূর্বে অ্যাকাউন্ট খোলা হয়েছে।";
+                    responseMsg = "এই ইমেইল এড্রেসটি দিয়ে ইতিপূর্বে অ্যাকাউন্ট খোলা হয়েছে। আপনি চাইলে সরাসরি লগইন করতে পারেন।";
                     break;
                 case 'auth/invalid-email':
                     responseMsg = "প্রদানকৃত ইমেইল ফরম্যাটটি সঠিক নয়।";
@@ -1158,6 +1223,12 @@
                 case 'auth/network-request-failed':
                     responseMsg = "নেটওয়ার্ক কানেকশন ব্যর্থ হয়েছে। আপনার ইন্টারনেট কানেকশন চেক করুন।";
                     break;
+                case 'auth/provider-already-linked':
+                    responseMsg = "আপনার এই ইমেইল অ্যাকাউন্টটি ইতিমধ্যে সংযুক্ত করা আছে।";
+                    break;
+                case 'auth/credential-already-in-use':
+                    responseMsg = "এই ক্রেডেনশিয়ালটি ইতিমধ্যে অন্য একটি অ্যাকাউন্টের সাথে লিংক করা আছে।";
+                    break;
             }
             showToast(responseMsg, false);
         }
@@ -1166,7 +1237,6 @@
         window.backToParentApp = () => {
             triggerHaptic();
             showToast("My Aim অ্যাপের মূল স্ক্রিনে ফিরে যাওয়া হচ্ছে...", true);
-            // Parent অ্যাপে সিগন্যাল পাঠানো হচ্ছে
             window.parent.postMessage({ action: 'back_to_aim' }, '*');
         }
 
@@ -1212,6 +1282,9 @@
                 console.error("Auth Pop Error: ", error);
                 if (error.code === 'auth/popup-closed-by-user') {
                     showToast("লগইন প্রক্রিয়া বাতিল করা হয়েছে", false);
+                } else if (error.code === 'auth/popup-blocked') {
+                    showToast("পপ-আপ ব্লক করা হয়েছে। অনুগ্রহ করে ইমেইল এবং পাসওয়ার্ড দিয়ে লগইন করুন।", false);
+                    toggleAuthMode('login');
                 } else {
                     showToast("লগইন করা যায়নি: " + error.message, false);
                 }
@@ -1601,7 +1674,7 @@
             });
         }
 
-        // ১০,০০০+ রিড অপ্টিমাইজড কমেন্ট লিসেনার
+        // কমেন্ট লিসেনার
         function listenToComments(postId) {
             if(unsubComments) unsubComments();
 
@@ -1626,6 +1699,20 @@
             }, (error) => {
                 console.error("Comments sync failed:", error);
             });
+        }
+
+        // ওয়ান-ট্যাপ কমেন্ট ডিলিট সিস্টেম (Author ও Admin জন্য ব্যাকআপ)
+        window.deleteComment = async (commentId) => {
+            const confirmDelete = confirm("আপনি কি এই মন্তব্যটি মুছে ফেলতে চান?");
+            if (!confirmDelete) return;
+
+            try {
+                const commentRef = doc(db, 'artifacts', appId, 'public', 'data', 'comments', commentId);
+                await deleteDoc(commentRef);
+                showToast("মন্তব্যটি সফলভাবে মুছে ফেলা হয়েছে।");
+            } catch (error) {
+                showToast("মুছে ফেলতে ব্যর্থ: " + error.message, false);
+            }
         }
 
         // ওয়ার্ড কাউন্টার এবং লিমিটেশন চেক
@@ -1776,7 +1863,7 @@
 
         // নিজের পোস্ট ডিলিট করা
         window.deletePost = async (postId) => {
-            const confirmDelete = confirm("আপনি কি নিশ্চিতভাবে এই পোস্টটি চিরতরে মুছে ফেলতে চান?");
+            const confirmDelete = confirm("আপনি কি নিশ্চিতভাবে এই পোস্টটি মুছে ফেলতে চান?");
             if (!confirmDelete) return;
 
             try {
@@ -1963,8 +2050,10 @@
                 const author = allUsers[comment.authorId] || { username: 'অজানা ইউজার', emojiAvatar: '👤', isVerified: false, badgeColor: '#FF0050' };
                 const nameLength = author.username.length;
                 const dynamicFontSize = nameLength > 12 ? Math.max(9, Math.floor(150 / nameLength)) : 12;
+                const isMyComment = currentUser && currentUser.uid === comment.authorId;
+
                 return `
-                    <div class="flex gap-3 bg-gray-50/50 p-3.5 rounded-2xl border border-gray-100/50">
+                    <div class="flex gap-3 bg-gray-50/50 p-3.5 rounded-2xl border border-gray-100/50 relative group">
                         <span class="text-2xl flex-shrink-0">${author.emojiAvatar}</span>
                         <div class="flex-1 overflow-hidden">
                             <div class="flex justify-between items-center mb-1 gap-2">
@@ -1974,7 +2063,14 @@
                                     </h5>
                                     ${author.isVerified ? getVerifiedBadgeSVG(author.badgeColor || '#FF0050') : ''}
                                 </div>
-                                <span class="text-[9px] text-gray-400 font-bold flex-shrink-0">${formatTime(comment.timestamp)}</span>
+                                <div class="flex items-center gap-1.5 flex-shrink-0">
+                                    <span class="text-[9px] text-gray-400 font-bold">${formatTime(comment.timestamp)}</span>
+                                    ${isMyComment ? `
+                                        <button onclick="deleteComment('${comment.id}')" class="text-gray-400 hover:text-red-500 transition-colors p-0.5" title="মন্তব্য মুছুন">
+                                            <i class="ph ph-trash text-xs"></i>
+                                        </button>
+                                    ` : ''}
+                                </div>
                             </div>
                             <p class="text-xs text-gray-700 leading-relaxed break-words">${comment.content}</p>
                         </div>
