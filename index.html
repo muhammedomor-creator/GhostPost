@@ -174,6 +174,12 @@
 <body class="bg-gray-100">
 
     <div id="app" class="flex flex-col">
+        <!-- ইমেইল আনভেরিফাইড ওয়ার্নিং ব্যানার -->
+        <div id="email-verification-banner" class="bg-gradient-to-r from-amber-600 to-orange-500 text-white text-[11px] font-bold px-4 py-2.5 flex items-center justify-between gap-2 shadow-inner hidden">
+            <span class="flex items-center gap-1.5 leading-tight"><i class="ph-fill ph-warning text-sm"></i> আপনার ইমেইলটি এখনো ভেরিফাই করা হয়নি! অনুগ্রহ করে লিংক চেক করুন।</span>
+            <button onclick="resendVerificationMail()" class="bg-white text-gray-950 px-2.5 py-1 rounded-lg text-[9px] font-extrabold flex-shrink-0 active:scale-95 transition-all">পুনরায় পাঠান</button>
+        </div>
+
         <!-- গ্লাস অ্যান্ড শ্যাডো হেডার -->
         <header class="sticky top-0 z-40 bg-white/85 backdrop-blur-md border-b border-gray-100 px-4 py-3.5 flex justify-between items-center">
             <div class="flex items-center gap-2.5 cursor-pointer" onclick="window.location.hash='#feeds'">
@@ -282,6 +288,18 @@
 
                     <!-- গেস্ট ইউজারদের জন্য অ্যাক্টিভ ওভারলে -->
                     <div id="compose-overlay" class="absolute inset-0 z-10 cursor-pointer rounded-3xl hidden" onclick="showLoginModal('নতুন পোস্ট করতে প্রথমে লগইন করুন')"></div>
+                    
+                    <!-- ইমেইল আন-ভেরিফাইড ইউজারদের জন্য রাইট ব্লক ওভারলে -->
+                    <div id="email-unverified-overlay" class="absolute inset-0 z-20 bg-white/95 backdrop-blur-xs flex flex-col items-center justify-center text-center p-5 rounded-3xl hidden">
+                        <div class="w-11 h-11 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-500 border border-amber-100 mb-2">
+                            <i class="ph-bold ph-envelope-open text-xl"></i>
+                        </div>
+                        <h4 class="font-bold text-xs text-gray-900 mb-1">ইমেইল ভেরিফিকেশন প্রয়োজন</h4>
+                        <p class="text-[10px] text-gray-500 max-w-[250px] leading-relaxed mb-3">আপনার মনের কথা প্রকাশ করতে দয়া করে অ্যাকাউন্ট ইমেইলটি ভেরিফাই করুন। একটি কনফার্মেশন লিংক পাঠানো হয়েছে।</p>
+                        <button onclick="resendVerificationMail()" class="bg-amber-500 text-white text-[10px] font-bold py-2 px-4 rounded-xl shadow-md hover:bg-amber-600 active:scale-95 transition-all">
+                            ভেরিফিকেশন লিংক পুনরায় পাঠান
+                        </button>
+                    </div>
                 </div>
 
                 <!-- আধুনিক সার্চ এবং ফিল্টার বার -->
@@ -318,7 +336,7 @@
                         </div>
                     </div>
                     
-                    <!-- ডায়নামিক ফিট ও শ্রিঙ্ক-টু-ফিট ইউজারনেম সেকশন -->
+                    <!-- ডায়নামিক ইউজারনেম সেকশন -->
                     <div class="flex items-center justify-center w-full px-4 overflow-hidden">
                         <div id="profile-name-container" class="flex items-center justify-center gap-1.5 max-w-full">
                             <span id="profile-page-name" class="font-black text-gray-950 transition-all whitespace-nowrap leading-none">ইউজারনেম</span>
@@ -338,7 +356,7 @@
             <!-- ৪. লিডারবোর্ড স্ক্রিন -->
             <section id="view-top" class="view-container">
                 <div class="mb-5 flex items-center justify-between px-1">
-                    <h2 class="text-xl font-black text-gray-950">সবচেয়ে জনপ্রিয় ইউজার</h2>
+                    <h2 class="text-xl font-black text-gray-950">সবচেয়ে জনপ্রিয় ইউজার</h2>
                     <i class="ph-fill ph-trophy text-2xl text-amber-500 animate-bounce"></i>
                 </div>
                 <div class="bg-white border border-gray-100 rounded-3xl shadow-sm overflow-hidden" id="leaderboard-container">
@@ -366,7 +384,7 @@
                         </div>
                     </div>
 
-                    <!-- আইফ্রেম ড্যাশবোর্ড কন্ট্রোল সেকশন (শুধুমাত্র আইফ্রেমের ভেতরে থাকলে শো হবে) -->
+                    <!-- আইফ্রেম ড্যাশবোর্ড কন্ট্রোল সেকশন -->
                     <div id="iframe-control-box" class="bg-gradient-to-r from-gray-900 via-zinc-950 to-black border border-amber-500/20 rounded-3xl p-5 shadow-md hidden relative overflow-hidden">
                         <div class="absolute -right-8 -top-8 text-7xl opacity-5 text-white">
                             <i class="ph ph-arrow-u-up-left"></i>
@@ -434,7 +452,7 @@
                             </button>
                         </div>
 
-                        <!-- লক ওভারলে স্ক্রিন (সাধারণ ইউজারদের জন্য) -->
+                        <!-- লক ওভারলে স্ক্রিন -->
                         <div id="premium-lock-overlay" class="absolute inset-0 bg-white/95 backdrop-blur-xs flex flex-col items-center justify-center text-center p-6 hidden">
                             <div class="w-11 h-11 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-500 border border-amber-100 mb-2">
                                 <i class="ph-fill ph-lock text-xl"></i>
@@ -557,7 +575,7 @@
                     </button>
                     
                     <div class="text-center pt-2 flex flex-col gap-2">
-                        <!-- পাসওয়ার্ড রিসেট বাটন (Forget Password) -->
+                        <!-- পাসওয়ার্ড রিসেট বাটন -->
                         <button id="authResetBtn" onclick="toggleAuthMode('reset')" class="text-[11px] text-amber-600 font-bold hover:underline transition-all">
                             পাসওয়ার্ড ভুলে গেছেন? অথবা নতুন সেট করতে এখানে চাপুন
                         </button>
@@ -737,7 +755,7 @@
     <!-- Firebase SDK সেটাপ -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, signInAnonymously, signInWithCustomToken, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, signInAnonymously, signInWithCustomToken, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, addDoc, updateDoc, deleteDoc, serverTimestamp, arrayUnion, arrayRemove, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         // ফায়ারবেস কনফিগারেশন
@@ -760,7 +778,7 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        // লোকাল ডেটা স্টেট ম্যানেজমেন্ট
+        // লোকাল ডেটা স্টেট ম্যানেজমেন্ট (রিয়েল-টাইম ল্যাটেন্সি ফিক্সের জন্য)
         let currentUser = null;
         let currentUserData = null; 
         let allUsers = {};
@@ -817,7 +835,7 @@
         
         // ১. আইফ্রেম ডিটেকশন লজিক
         const isIframe = window.self !== window.top;
-        let authMode = 'login'; // 'login', 'signup', বা 'reset' (পাসওয়ার্ড রিসেটের জন্য)
+        let authMode = 'login'; // 'login', 'signup', বা 'reset'
 
         // ডায়নামিক ব্যাজ জেনারেটর SVG
         function getVerifiedBadgeSVG(color = '#FF0050') {
@@ -910,7 +928,7 @@
             promoTimeouts = [];
         }
 
-        // ড্রাফট টেক্সট ও সিলেক্টেড থিম সম্পূর্ণভাবে মুছে ফেলার ফাংশন
+        // ড্রাফট ক্লিয়ার করা
         window.clearDraft = () => {
             triggerHaptic();
             const textarea = document.getElementById('post-content');
@@ -1035,7 +1053,11 @@
                         currentUserData = null;
                         updateUIGuestMode();
                         clearPromoTimers();
+                        document.getElementById('email-verification-banner').classList.add('hidden');
+                        document.getElementById('email-unverified-overlay').classList.add('hidden');
                     } else {
+                        // ইমেইল ভেরিফিকেশন চেক করা
+                        checkEmailVerificationStatus(user);
                         await checkUserData(user);
                     }
                 } else {
@@ -1060,6 +1082,44 @@
             document.getElementById('verification-badge-sample').innerHTML = getVerifiedBadgeSVG('#FF0050');
         }
 
+        // ইমেইল ভেরিফিকেশন চেক করার প্রফেশনাল মেথড
+        function checkEmailVerificationStatus(user) {
+            const banner = document.getElementById('email-verification-banner');
+            const overlay = document.getElementById('email-unverified-overlay');
+            
+            if (user && !user.isAnonymous) {
+                // গুগল দিয়ে সাইন-ইন করা থাকলে স্বয়ংক্রিয়ভাবে ভেরিফাইড
+                const isEmailVerified = user.emailVerified || (user.providerData && user.providerData[0] && user.providerData[0].providerId === 'google.com');
+
+                if (!isEmailVerified) {
+                    banner.classList.remove('hidden');
+                    overlay.classList.remove('hidden');
+                    document.getElementById('submit-post-btn').disabled = true;
+                } else {
+                    banner.classList.add('hidden');
+                    overlay.classList.add('hidden');
+                    document.getElementById('submit-post-btn').disabled = false;
+                }
+            } else {
+                banner.classList.add('hidden');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // ইমেইল ভেরিফিকেশন পুনরায় পাঠানো
+        window.resendVerificationMail = async () => {
+            if (auth.currentUser && !auth.currentUser.isAnonymous) {
+                try {
+                    showToast("ভেরিফিকেশন ইমেইল পাঠানো হচ্ছে...");
+                    await sendEmailVerification(auth.currentUser);
+                    showToast("লিংক পাঠানো হয়েছে! ইনবক্স অথবা স্প্যাম/প্রোমোশন ফোল্ডার চেক করে 'Not Spam' বাটন চাপুন।", true);
+                } catch (error) {
+                    console.error("Verification resend error:", error);
+                    showToast("প্রেরণ ব্যর্থ হয়েছে! কিছুক্ষণ পর আবার চেষ্টা করুন।", false);
+                }
+            }
+        }
+
         // আইফ্রেম ডিটেকশন ও UI কনফিগারেশন
         function applyIframeAuthUI() {
             const googleBtn = document.getElementById('google-login-btn');
@@ -1072,7 +1132,7 @@
                 if (emailContainer) emailContainer.classList.remove('hidden');
                 if (iframeBox) iframeBox.classList.remove('hidden'); 
                 if (modalDesc) {
-                    modalDesc.innerText = "আইফ্রেমে নিরাপত্তার স্বার্থে গুগল পপআপের পরিবর্তে ইমেইল ও পাসওয়ার্ড ব্যবহার করে লগইন, সাইন-আপ অথবা পাসওয়ার্ড রিসেট সম্পন্ন করুন।";
+                    modalDesc.innerText = "আইফ্রেমে নিরাপত্তার স্বার্থে গুগল পপআপের পরিবর্তে ইমেইল ভেরিফাইড অ্যাকাউন্ট তৈরি বা লগইন করুন।";
                 }
             } else {
                 if (googleBtn) googleBtn.classList.remove('hidden');
@@ -1081,7 +1141,7 @@
             }
         }
 
-        // ২. উন্নত ও থ্রি-স্টেট ইমেইল অথেনটিকেশন ফর্ম লজিক (লগইন, সাইন-আপ, পাসওয়ার্ড রিসেট)
+        // ২. উন্নত ও থ্রি-স্টেট ইমেইল অথেনটিকেশন ফর্ম লজিক
         window.toggleAuthMode = (mode) => {
             const emailBtn = document.getElementById('emailAuthBtn');
             const toggleBtn = document.getElementById('authToggleBtn');
@@ -1095,7 +1155,7 @@
             if (authMode === 'signup') {
                 passwordFieldContainer.classList.remove('hidden');
                 authPasswordInput.placeholder = "নতুন পাসওয়ার্ড দিন (ন্যূনতম ৬ অক্ষর)";
-                emailBtn.innerText = 'অ্যাকাউন্ট তৈরি করুন';
+                emailBtn.innerText = 'অ্যাকাউন্ট তৈরি করুন (ইমেইল ভেরিফিকেশন সহ)';
                 modalTitle.innerText = 'নতুন অ্যাকাউন্ট তৈরি করুন';
                 
                 toggleBtn.innerText = 'ইতিমধ্যে অ্যাকাউন্ট আছে? লগইন করুন';
@@ -1103,7 +1163,7 @@
                 resetBtn.classList.remove('hidden');
                 resetBtn.innerText = "গুগল অ্যাকাউন্টে পাসওয়ার্ড সেট করতে রিসেট চাপুন";
             } else if (authMode === 'reset') {
-                passwordFieldContainer.classList.add('hidden'); // পাসওয়ার্ড ইনপুট হিডেন থাকবে
+                passwordFieldContainer.classList.add('hidden'); 
                 emailBtn.innerText = 'রিসেট/সেটআপ লিংক পাঠান';
                 modalTitle.innerText = 'পাসওয়ার্ড রিসেট ও সেটআপ';
                 
@@ -1124,15 +1184,44 @@
             }
         }
 
+        // ইমেইল ডোমেইন ভ্যালিডেশন স্ক্রিপ্ট (ফেক বা অস্তিত্বহীন ইমেইল প্রতিরোধ)
+        function validateEmailDomain(email) {
+            const domain = email.split('@')[1];
+            if (!domain) return false;
+            
+            // পপুলার সচল ডোমেইন লিস্ট
+            const allowedPopularDomains = [
+                'gmail.com', 'yahoo.com', 'ymail.com', 'outlook.com', 
+                'hotmail.com', 'live.com', 'icloud.com', 'aol.com', 
+                'zoho.com', 'protonmail.com', 'proton.me', 'mail.com'
+            ];
+            
+            // সাধারণ ইমেইল রেগুলার এক্সপ্রেশন চেক
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!emailRegex.test(email)) return false;
+
+            // যদি ডোমেইনে স্প্যাম বা ট্র্যাশ কি-ওয়ার্ড থাকে তা ব্লক করা
+            const blockedKeywords = ['temp', 'trash', 'fake', 'disposable', 'notexist', 'example', 'test', 'generator', 'mailinator'];
+            const containsBlocked = blockedKeywords.some(kw => domain.includes(kw));
+            if (containsBlocked) return false;
+
+            // সাধারণ ইউজারদের জন্য পপুলার ডোমেইনগুলো ব্যবহারের পরামর্শ দেওয়া
+            return true;
+        }
+
         // ৩. ফায়ারবেস ইমেইল/পাসওয়ার্ড সাইন-আপ, সাইন-ইন এবং পাসওয়ার্ড রিসেট এক্সিকিউশন
         window.handleEmailAuth = async () => {
             triggerHaptic();
             const email = document.getElementById('authEmail').value.trim();
             const password = document.getElementById('authPassword').value;
 
-            // বেসিক ইনপুট ভ্যালিডেশন
+            // ১. কঠোর ইমেইল ডোমেইন ভ্যালিডেশন
             if (!email || !email.includes('@')) {
                 showToast("অনুগ্রহ করে একটি সঠিক ইমেইল এড্রেস দিন।", false);
+                return;
+            }
+            if (!validateEmailDomain(email)) {
+                showToast("অনুগ্রহ করে একটি আসল ও সচল ইমেইল ব্যবহার করুন (যেমন: Gmail, Yahoo, Outlook ইত্যাদি)!", false);
                 return;
             }
 
@@ -1143,9 +1232,8 @@
 
             try {
                 if (authMode === 'reset') {
-                    // পাসওয়ার্ড রিসেট বা গুগল অ্যাকাউন্টের বিপরীতে পাসওয়ার্ড সেটিং মেইল সেন্ডিং
                     await sendPasswordResetEmail(auth, email);
-                    showToast("আপনার ইমেইলে পাসওয়ার্ড রিসেট ও সেটআপ লিংক পাঠানো হয়েছে! ইনবক্স অথবা স্প্যাম ফোল্ডার চেক করুন।", true);
+                    showToast("আপনার ইমেইলে পাসওয়ার্ড রিসেট ও সেটআপ লিংক পাঠানো হয়েছে! ইনবক্স অথবা স্প্যাম/প্রোমোশন ফোল্ডার চেক করুন।", true);
                     toggleAuthMode('login');
                 } else if (authMode === 'signup') {
                     if (!password || password.length < 6) {
@@ -1153,7 +1241,11 @@
                         return;
                     }
                     const credential = await createUserWithEmailAndPassword(auth, email, password);
-                    showToast("সাইন আপ সফল হয়েছে!", true);
+                    
+                    // ইমেইল ভেরিফিকেশন লিংক পাঠানো
+                    await sendEmailVerification(credential.user);
+                    
+                    showToast("অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! অনুগ্রহ করে ইমেইলের 'Spam' বা 'Inbox' ফোল্ডার থেকে লিংক ভেরিফাই করুন।", true);
                     hideLoginModal();
                     await checkUserData(credential.user);
                 } else {
@@ -1425,10 +1517,17 @@
                 const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', currentUser.uid);
                 await setDoc(userDocRef, newUser);
                 
+                // ১. ল্যাটেন্সি ফিক্স: লোকাল ডাটাবেস ক্যাশ ও গ্লোবাল অবজেক্ট সাথে সাথে ওভাররাইট করা
                 currentUserData = newUser;
+                allUsers[currentUser.uid] = newUser;
+                
                 showToast("প্রোফাইল সফলভাবে তৈরি হয়েছে!");
                 updateUILoggedInMode(currentUserData);
                 window.location.hash = '#feeds';
+                
+                // ২. জোরপূর্বক রিয়েল-টাইম স্ক্রিন রেন্ডার ট্রিপ করা
+                renderPosts();
+                
             } catch (error) {
                 console.error("Save profile error:", error);
                 showToast("সেভ করতে ব্যর্থ: " + error.message, false);
@@ -1563,8 +1662,16 @@
                     username: newUsername,
                     emojiAvatar: selectedEmoji
                 });
+                
+                // ল্যাটেন্সি ফিক্স: লোকাল ক্যাশ আপডেট এবং ইন্সট্যান্ট UI রি-রেন্ডার ট্রিগার
+                currentUserData.username = newUsername;
+                currentUserData.emojiAvatar = selectedEmoji;
+                allUsers[currentUser.uid] = { ...currentUserData };
+                
                 showToast("প্রোফাইল তথ্য আপডেট করা হয়েছে!");
                 previewPremiumSettings();
+                renderPosts();
+                
             } catch (err) {
                 showToast("আপডেট করা যায়নি: " + err.message, false);
             }
@@ -1587,6 +1694,13 @@
                     avatarFrame: frameVal,
                     customFont: fontVal
                 });
+                
+                // ল্যাটেন্সি ফিক্স: লোকাল স্টেট ইনস্ট্যান্ট সিঙ্ক ও ফোর্স রি-রেন্ডার
+                currentUserData.badgeColor = localSelectedBadgeColor;
+                currentUserData.avatarFrame = frameVal;
+                currentUserData.customFont = fontVal;
+                allUsers[currentUser.uid] = { ...currentUserData };
+                
                 showToast("প্রিমিয়াম কাস্টমাইজেশন সফলভাবে সেভ হয়েছে!");
                 renderPosts();
             } catch (err) {
@@ -1678,6 +1792,10 @@
             if (!confirmDelete) return;
 
             try {
+                // ল্যাটেন্সি ফিক্স: UI থেকে সাথে সাথে কমেন্ট হাইড করে দেওয়া (Optimistic UI update)
+                allComments = allComments.filter(c => c.id !== commentId);
+                if (activePostIdForComments) renderComments(activePostIdForComments);
+
                 const commentRef = doc(db, 'artifacts', appId, 'public', 'data', 'comments', commentId);
                 await deleteDoc(commentRef);
                 showToast("মন্তব্যটি সফলভাবে মুছে ফেলা হয়েছে।");
@@ -1703,6 +1821,14 @@
                     document.getElementById('submit-post-btn').disabled = true;
                 } else {
                     wordCountSpan.classList.remove('text-red-500');
+                    // ইমেইল ভেরিফাইড না হলে বাটন ডিসেবল রাখার চেক রি-এপ্লাই করা
+                    if (auth.currentUser && !auth.currentUser.isAnonymous) {
+                        const isEmailVerified = auth.currentUser.emailVerified || (auth.currentUser.providerData && auth.currentUser.providerData[0] && auth.currentUser.providerData[0].providerId === 'google.com');
+                        if (!isEmailVerified) {
+                            document.getElementById('submit-post-btn').disabled = true;
+                            return;
+                        }
+                    }
                     document.getElementById('submit-post-btn').disabled = false;
                 }
             });
@@ -1758,6 +1884,16 @@
                 showLoginModal('নতুন পোস্ট ক্রিয়েট করতে লগইন করুন');
                 return;
             }
+
+            // সাবমিট করার আগে পুনরায় ইমেইল ভেরিফিকেশন চেক
+            if (!currentUser.emailVerified && !(currentUser.providerData && currentUser.providerData[0] && currentUser.providerData[0].providerId === 'google.com')) {
+                await currentUser.reload();
+                if (!auth.currentUser.emailVerified) {
+                    showToast("দয়া করে পোস্ট করার আগে আপনার ইমেইলটি ভেরিফাই করুন!", false);
+                    checkEmailVerificationStatus(auth.currentUser);
+                    return;
+                }
+            }
             
             let content = document.getElementById('post-content').value.trim();
             if(!content) return;
@@ -1785,6 +1921,7 @@
                 newGhostCount++;
             }
 
+            const rawContent = content; // থিম ক্যাগ ছাড়া কন্টেন্ট কপি রাখা
             if (selectedThemeId > 0) {
                 content = `[T:${selectedThemeId}]${content}`;
             }
@@ -1793,9 +1930,25 @@
             btn.disabled = true;
             btn.innerText = 'পোস্টিং হচ্ছে...';
 
+            // ল্যাটেন্সি ফিক্স: ফাস্টার UI রেন্ডার করার জন্য একটি ডেমো অবজেক্ট তৈরি করে লোকাল অ্যারেইতে পুশ
+            const tempId = "temp-" + Date.now();
+            const tempPostObj = {
+                id: tempId,
+                authorId: currentUser.uid,
+                content: content,
+                isAnonymous: isGhost,
+                timestamp: { toMillis: () => Date.now(), toDate: () => new Date() },
+                likes: [],
+                loveReacts: [],
+                hahaReacts: []
+            };
+            
+            allPosts.unshift(tempPostObj); // ফিডের শীর্ষে সাথে সাথে যুক্ত করা
+            renderPosts(); // চোখের পলকে UI রি-রেন্ডার ট্রিগার
+
             try {
                 const postRef = collection(db, 'artifacts', appId, 'public', 'data', 'posts');
-                await addDoc(postRef, {
+                const docRef = await addDoc(postRef, {
                     authorId: currentUser.uid,
                     content: content,
                     isAnonymous: isGhost,
@@ -1805,12 +1958,18 @@
                     hahaReacts: []
                 });
 
+                // টেম্পোরারি আইডিটিকে আসল আইডি দিয়ে রিপ্লেস করে দেওয়া
+                const foundIdx = allPosts.findIndex(p => p.id === tempId);
+                if(foundIdx !== -1) allPosts[foundIdx].id = docRef.id;
+
                 if (isGhost && !currentUserData.isVerified) {
                     const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', currentUser.uid);
                     await updateDoc(userRef, {
                         ghostPostsToday: newGhostCount,
                         lastGhostPostDate: today
                     });
+                    currentUserData.ghostPostsToday = newGhostCount;
+                    currentUserData.lastGhostPostDate = today;
                 }
 
                 document.getElementById('post-content').value = '';
@@ -1825,6 +1984,9 @@
 
             } catch (error) {
                 console.error("Error submitting post:", error);
+                // ফায়ারবেস ফেইল করলে টেম্পো পোস্টটি মুছে ফেলা
+                allPosts = allPosts.filter(p => p.id !== tempId);
+                renderPosts();
                 showToast("পোস্ট করা সম্ভব হয়নি: " + error.message, false);
             } finally {
                 btn.disabled = false;
@@ -1838,6 +2000,10 @@
             if (!confirmDelete) return;
 
             try {
+                // ল্যাটেন্সি ফিক্স: অপটিমিস্টিক UI ডিলিট
+                allPosts = allPosts.filter(p => p.id !== postId);
+                renderPosts();
+
                 const postDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'posts', postId);
                 await deleteDoc(postDocRef);
                 showToast("পোস্টটি সফলভাবে মুছে ফেলা হয়েছে।");
@@ -1846,7 +2012,7 @@
             }
         }
 
-        // ৪. ওয়ান-ক্লিক "Download Card as Image" (html2canvas UHD হ্যাক)
+        // UHD কার্ড ডাউনলোড সুবিধা
         window.downloadCardImage = (postId, isAuthorPremium = false) => {
             triggerHaptic();
             const cardElement = document.getElementById(`card-${postId}`);
@@ -1911,23 +2077,38 @@
             if(!post) return;
 
             triggerHaptic();
-            const postRef = doc(db, 'artifacts', appId, 'public', 'data', 'posts', postId);
             
             let arrayField = 'likes';
             if(reactionType === 'love') arrayField = 'loveReacts';
             if(reactionType === 'haha') arrayField = 'hahaReacts';
 
-            const currentReactors = post[arrayField] || [];
+            // ল্যাটেন্সি ফিক্স: ডাটাবেজে রিকোয়েস্ট যাওয়ার আগেই লোকাল স্টেটে রিয়্যাকশন সিঙ্ক করে স্ক্রিনে দেখানো
+            const currentReactors = [...(post[arrayField] || [])];
             const hasReacted = currentReactors.includes(currentUser.uid);
+            
+            if (hasReacted) {
+                post[arrayField] = currentReactors.filter(uid => uid !== currentUser.uid);
+            } else {
+                post[arrayField] = [...currentReactors, currentUser.uid];
+            }
+            renderPosts(); // ফাস্টার রি-রেন্ডারিং
 
             try {
+                const postRef = doc(db, 'artifacts', appId, 'public', 'data', 'posts', postId);
                 if (hasReacted) {
                     await updateDoc(postRef, { [arrayField]: arrayRemove(currentUser.uid) });
                 } else {
                     await updateDoc(postRef, { [arrayField]: arrayUnion(currentUser.uid) });
                 }
             } catch (error) {
-                console.error("Reaction failed:", error);
+                console.error("Reaction failed, rolling back:", error);
+                // রিকোয়েস্ট ফেইল করলে পূর্বের অবস্থায় ফিরিয়ে নিয়ে যাওয়া (Rollback)
+                if (hasReacted) {
+                    post[arrayField] = [...currentReactors, currentUser.uid];
+                } else {
+                    post[arrayField] = currentReactors.filter(uid => uid !== currentUser.uid);
+                }
+                renderPosts();
             }
         }
 
@@ -1987,17 +2168,36 @@
             const commentVal = inputField.value.trim();
             if(!commentVal || !activePostIdForComments) return;
 
+            // ল্যাটেন্সি ফিক্স: ফাস্টার কমেন্টিং এর জন্য অপটিমিস্টিক UI পুশ
+            const tempCommentId = "temp-c-" + Date.now();
+            const tempComment = {
+                id: tempCommentId,
+                postId: activePostIdForComments,
+                authorId: currentUser.uid,
+                content: commentVal,
+                timestamp: { toMillis: () => Date.now(), toDate: () => new Date() }
+            };
+            
+            allComments.push(tempComment);
+            renderComments(activePostIdForComments);
+            inputField.value = '';
+
             try {
                 const commentRef = collection(db, 'artifacts', appId, 'public', 'data', 'comments');
-                await addDoc(commentRef, {
+                const docRef = await addDoc(commentRef, {
                     postId: activePostIdForComments,
                     authorId: currentUser.uid,
                     content: commentVal,
                     timestamp: serverTimestamp()
                 });
-                inputField.value = '';
+                
+                const foundIdx = allComments.findIndex(c => c.id === tempCommentId);
+                if(foundIdx !== -1) allComments[foundIdx].id = docRef.id;
+
                 showToast("মন্তব্য সফলভাবে যোগ করা হয়েছে।");
             } catch (error) {
+                allComments = allComments.filter(c => c.id !== tempCommentId);
+                renderComments(activePostIdForComments);
                 showToast("কমেন্ট করা যায়নি: " + error.message, false);
             }
         }
@@ -2068,7 +2268,7 @@
             renderPosts();
         }
 
-        // সিঙ্গেল পোস্ট কার্ড ক্রিয়েটর (প্রিমিয়াম ফ্রেম, কাস্টম ব্যাজ কালার ও ফন্ট সাপোর্ট সহ)
+        // সিঙ্গেল পোস্ট কার্ড ক্রিয়েটর
         function createPostElement(post) {
             let originalContent = post.content || '';
             let themeId = 0; 
