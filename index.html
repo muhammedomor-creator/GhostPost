@@ -367,6 +367,20 @@
                         </div>
                     </div>
 
+                    <!-- আইফ্রেম ড্যাশবোর্ড কন্ট্রোল সেকশন (শুধুমাত্র আইফ্রেমের ভেতরে থাকলে ডায়নামিকলি শো হবে) -->
+                    <div id="iframe-control-box" class="bg-gradient-to-r from-gray-900 via-zinc-950 to-black border border-amber-500/20 rounded-3xl p-5 shadow-md hidden relative overflow-hidden">
+                        <div class="absolute -right-8 -top-8 text-7xl opacity-5 text-white">
+                            <i class="ph ph-arrow-u-up-left"></i>
+                        </div>
+                        <h3 class="font-bold text-sm text-white mb-1.5 flex items-center gap-1.5">
+                            <i class="ph ph-arrow-u-up-left text-base text-amber-400 animate-pulse"></i> ড্যাশবোর্ড কন্ট্রোল
+                        </h3>
+                        <p class="text-[10px] text-gray-400 mb-4 leading-relaxed">আপনি বর্তমানে "My Aim" অ্যাপের ড্যাশবোর্ড ফ্রেমের ভেতরে আছেন। সরাসরি ড্যাশবোর্ড ইন্টারফেসে ফিরে যেতে নিচের বাটনটি চাপুন।</p>
+                        <button onclick="backToParentApp()" class="w-full bg-gradient-to-r from-amber-500 to-yellow-500 text-gray-950 text-xs font-bold py-3 px-4 rounded-2xl flex items-center justify-center gap-1.5 shadow-md hover:scale-[1.01] active:scale-95 transition-all">
+                            <i class="ph ph-caret-left text-sm font-bold"></i> My Aim অ্যাপে ফিরে যান
+                        </button>
+                    </div>
+
                     <!-- প্রিমিয়াম কাস্টমাইজেশন প্যানেল -->
                     <div class="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm relative overflow-hidden" id="premium-panel">
                         <h3 class="font-bold text-sm text-gray-900 mb-4 flex items-center gap-1.5">
@@ -519,12 +533,33 @@
                 </div>
                 
                 <h3 id="modal-title" class="text-lg font-black mb-1.5 text-gray-900">লগইন করুন</h3>
-                <p class="text-xs text-gray-500 mb-6 px-3">সম্পূর্ণ বেনামে আপনার মতামত প্রকাশ করতে এবং অন্যদের পোস্টে লাইক-কমেন্ট করতে আপনার গুগল অ্যাকাউন্ট সংযুক্ত করুন।</p>
+                <p id="modal-desc-text" class="text-xs text-gray-500 mb-6 px-3">সম্পূর্ণ বেনামে আপনার মতামত প্রকাশ করতে এবং অন্যদের পোস্টে লাইক-কমেন্ট করতে আপনার গুগল অ্যাকাউন্ট সংযুক্ত করুন।</p>
                 
-                <button onclick="signInWithGoogle()" class="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-100 text-gray-800 font-bold py-3.5 px-4 rounded-2xl shadow-sm hover:bg-gray-50 hover:border-gray-200 active:scale-95 transition-all text-xs">
+                <!-- Google Authentication (স্বাধীন উইন্ডোতে ব্যবহৃত হবে) -->
+                <button id="google-login-btn" onclick="signInWithGoogle()" class="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-100 text-gray-800 font-bold py-3.5 px-4 rounded-2xl shadow-sm hover:bg-gray-50 hover:border-gray-200 active:scale-95 transition-all text-xs">
                     <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-4 h-5" alt="Google">
                     Google অ্যাকাউন্ট দিয়ে চালিয়ে যান
                 </button>
+
+                <!-- Email/Password Authentication Form Container (আইফ্রেমে ডাইনামিকলি অ্যাক্টিভেট হবে) -->
+                <div id="email-auth-container" class="mt-4 hidden text-left space-y-3">
+                    <div class="relative">
+                        <span class="absolute left-4 top-3 text-gray-400"><i class="ph ph-envelope"></i></span>
+                        <input type="email" id="authEmail" placeholder="আপনার ইমেইল দিন" class="w-full bg-gray-50 border border-gray-150 rounded-2xl pl-10 pr-4 py-3 text-xs font-semibold focus:bg-white focus:border-gray-900 transition-all">
+                    </div>
+                    <div class="relative">
+                        <span class="absolute left-4 top-3 text-gray-400"><i class="ph ph-lock"></i></span>
+                        <input type="password" id="authPassword" placeholder="আপনার পাসওয়ার্ড দিন (ন্যূনতম ৬ অক্ষর)" class="w-full bg-gray-50 border border-gray-150 rounded-2xl pl-10 pr-4 py-3 text-xs font-semibold focus:bg-white focus:border-gray-900 transition-all">
+                    </div>
+                    <button id="emailAuthBtn" onclick="handleEmailAuth()" class="w-full bg-[#FF0050] text-white text-xs font-bold py-3.5 px-4 rounded-2xl shadow-lg shadow-[#FF0050]/15 hover:bg-[#e60048] active:scale-95 transition-all text-center">
+                        লগইন করুন
+                    </button>
+                    <div class="text-center pt-2">
+                        <button id="authToggleBtn" onclick="toggleAuthMode()" class="text-[11px] text-[#FF0050] font-bold hover:underline transition-all">
+                            নতুন অ্যাকাউন্ট তৈরি করতে চান? সাইন আপ করুন
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -662,7 +697,7 @@
             <div class="p-4 border-t border-gray-50 bg-gray-50/50 rounded-t-2xl flex gap-3 items-center">
                 <span id="comment-box-avatar" class="text-2xl">👤</span>
                 <input type="text" id="comment-input-field" placeholder="একটি ইতিবাচক মন্তব্য লিখুন..." class="flex-1 bg-white border border-gray-200 rounded-2xl px-4 py-3.5 text-xs font-semibold focus:border-gray-400 transition-all shadow-sm">
-                <button onclick="submitComment()" class="bg-gray-900 text-white w-11 h-11 rounded-2xl flex items-center justify-center hover:bg-gray-800 active:scale-90 transition-all shadow-md">
+                <button onclick="submitComment()" class="bg-gray-950 text-white w-11 h-11 rounded-2xl flex items-center justify-center hover:bg-gray-800 active:scale-90 transition-all shadow-md">
                     <i class="ph-fill ph-paper-plane-right text-lg"></i>
                 </button>
             </div>
@@ -695,7 +730,7 @@
     <!-- Firebase SDK সেটাপ -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, signInAnonymously, signInWithCustomToken, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, addDoc, updateDoc, deleteDoc, serverTimestamp, arrayUnion, arrayRemove, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         // ফায়ারবেস কনফিগারেশন
@@ -772,6 +807,10 @@
         ];
 
         let localSelectedBadgeColor = "#FF0050"; // ডিফল্ট কালার
+        
+        // ১. আইফ্রেম ডিটেকশন লজিক (Iframe Context Determination)
+        const isIframe = window.self !== window.top;
+        let authMode = 'login'; // 'login' অথবা 'signup' স্টেট
 
         // ডায়নামিক ব্যাজ জেনারেটর SVG (Custom Color Support)
         function getVerifiedBadgeSVG(color = '#FF0050') {
@@ -841,18 +880,15 @@
             }, 300);
         }
 
-        // স্মার্ট এবং সিকোয়েন্সিয়াল পপ-আপ টাইমার সেটিংস (OMAR'S REQUEST: ৩০ সেকেন্ড, ১ মিনিট, ২ মিনিট পর পর পপ-আপ আসবে)
+        // স্মার্ট এবং সিকোয়েন্সিয়াল পপ-আপ টাইমার সেটিংস (৩০ সেকেন্ড, ১.৫ মিনিট এবং ৩ মিনিট পর পর পপ-আপ আসবে)
         function startPromoTimers() {
             clearPromoTimers();
-            // ইউজার ভেরিফাইড হলে টাইমার সেট করার প্রয়োজন নেই
             if (currentUserData && currentUserData.isVerified) return;
 
-            // ওমরের চাহিদা অনুযায়ী সময় নির্ধারণ: ৩০ সেকেন্ড, ১.৫ মিনিট (৯০ সেকেন্ড) এবং ৩ মিনিট (১৮০ সেকেন্ড)
             const delays = [30000, 90000, 180000]; 
 
             delays.forEach((delay, idx) => {
                 const timeoutId = setTimeout(() => {
-                    // ইউজার এখনো সাধারণ (Unverified) থাকা সাপেক্ষে এবং অন্য বড় কোনো ডায়ালগ খোলা না থাকলে দেখাবে
                     if (currentUserData && !currentUserData.isVerified && !activePostIdForComments) {
                         showPremiumPromoModal('বিশেষ অফার! ভেরিফাইড মেম্বার হোন');
                     }
@@ -872,11 +908,9 @@
             const textarea = document.getElementById('post-content');
             textarea.value = '';
             
-            // থিম রিসেট
             selectedThemeId = 0;
             renderThemeSelector();
             
-            // ওয়ার্ড কাউন্টার আপডেট
             const limit = (currentUserData && currentUserData.isVerified) ? LIMITS.VERIFIED_WORDS : LIMITS.FREE_WORDS;
             document.getElementById('word-count').innerText = `0 / ${limit}`;
             document.getElementById('word-count').classList.remove('text-red-500');
@@ -982,6 +1016,7 @@
 
         // অ্যাপ রুট ইনিশিয়ালাইজার
         async function initApp() {
+            applyIframeAuthUI(); // আইফ্রেম লেআউট ও ইউজার ইন্টারফেস অ্যাডজাস্টমেন্ট
             listenToUsers();
             listenToPosts();
 
@@ -1013,9 +1048,126 @@
             setupGhostToggle();
             renderThemeSelector();
             
-            // প্রোফাইল সেটআপ ইমোজি রেন্ডারিং
             populateSetupEmojis();
             document.getElementById('verification-badge-sample').innerHTML = getVerifiedBadgeSVG('#FF0050');
+        }
+
+        // আইফ্রেম ডিটেকশন ও UI কনফিগারেশন
+        function applyIframeAuthUI() {
+            const googleBtn = document.getElementById('google-login-btn');
+            const emailContainer = document.getElementById('email-auth-container');
+            const modalDesc = document.getElementById('modal-desc-text');
+            const iframeBox = document.getElementById('iframe-control-box');
+
+            if (isIframe) {
+                if (googleBtn) googleBtn.classList.add('hidden');
+                if (emailContainer) emailContainer.classList.remove('hidden');
+                if (iframeBox) iframeBox.classList.remove('hidden'); // আইফ্রেম হলে সেটিংসের বাটন বক্সটি ভিজিবল করা হলো
+                if (modalDesc) {
+                    modalDesc.innerText = "আইফ্রেমে নিরাপত্তার স্বার্থে গুগল পপআপের পরিবর্তে ইমেইল ও পাসওয়ার্ড ব্যবহার করে লগইন অথবা সাইন-আপ সম্পন্ন করুন।";
+                }
+            } else {
+                if (googleBtn) googleBtn.classList.remove('hidden');
+                if (emailContainer) emailContainer.classList.add('hidden');
+                if (iframeBox) iframeBox.classList.add('hidden'); // আইফ্রেম না থাকলে বাটন বক্সটি পুরোপুরি হিডেন থাকবে
+            }
+        }
+
+        // ২. ইমেইল অথেনটিকেশন ফর্ম লজিক এবং স্টেট সুইচার (Toggle Mode)
+        window.toggleAuthMode = () => {
+            const emailBtn = document.getElementById('emailAuthBtn');
+            const toggleBtn = document.getElementById('authToggleBtn');
+            const modalTitle = document.getElementById('modal-title');
+
+            if (authMode === 'login') {
+                authMode = 'signup';
+                emailBtn.innerText = 'অ্যাকাউন্ট তৈরি করুন';
+                toggleBtn.innerText = 'ইতিমধ্যে অ্যাকাউন্ট আছে? লগইন করুন';
+                modalTitle.innerText = 'নতুন অ্যাকাউন্ট তৈরি করুন';
+            } else {
+                authMode = 'login';
+                emailBtn.innerText = 'লগইন করুন';
+                toggleBtn.innerText = 'নতুন অ্যাকাউন্ট তৈরি করতে চান? সাইন আপ করুন';
+                modalTitle.innerText = 'লগইন করুন';
+            }
+        }
+
+        // ৩. ফায়ারবেস ইমেইল/পাসওয়ার্ড সাইন-আপ ও সাইন-ইন এক্সিকিউশন
+        window.handleEmailAuth = async () => {
+            triggerHaptic();
+            const email = document.getElementById('authEmail').value.trim();
+            const password = document.getElementById('authPassword').value;
+
+            // বেসিক ইনপুট ভ্যালিডেশন
+            if (!email || !email.includes('@')) {
+                showToast("অনুগ্রহ করে একটি সঠিক ইমেইল এড্রেস দিন।", false);
+                return;
+            }
+            if (!password || password.length < 6) {
+                showToast("পাসওয়ার্ড অবশ্যই কমপক্ষে ৬ অক্ষরের হতে হবে।", false);
+                return;
+            }
+
+            const actionBtn = document.getElementById('emailAuthBtn');
+            actionBtn.disabled = true;
+            actionBtn.innerText = authMode === 'login' ? 'লগইন করা হচ্ছে...' : 'প্রোফাইল তৈরি হচ্ছে...';
+
+            try {
+                if (authMode === 'signup') {
+                    const credential = await createUserWithEmailAndPassword(auth, email, password);
+                    showToast("সাইন আপ সফল হয়েছে!", true);
+                    hideLoginModal();
+                    await checkUserData(credential.user);
+                } else {
+                    const credential = await signInWithEmailAndPassword(auth, email, password);
+                    showToast("সাফল্যের সাথে লগইন সম্পন্ন হয়েছে!", true);
+                    hideLoginModal();
+                    await checkUserData(credential.user);
+                }
+            } catch (error) {
+                handleAuthError(error);
+            } finally {
+                actionBtn.disabled = false;
+                actionBtn.innerText = authMode === 'login' ? 'লগইন করুন' : 'অ্যাকাউন্ট তৈরি করুন';
+            }
+        }
+
+        // ৪. ফায়ারবেস অথেনটিকেশন এরর হ্যান্ডলার (বাংলা ট্রান্সলেশন)
+        function handleAuthError(error) {
+            console.error("Auth System Error Code:", error.code);
+            let responseMsg = "একটি ইন্টারনাল অথেনটিকেশন প্রবলেম দেখা দিয়েছে।";
+
+            switch (error.code) {
+                case 'auth/email-already-in-use':
+                    responseMsg = "এই ইমেইল এড্রেসটি দিয়ে ইতিপূর্বে অ্যাকাউন্ট খোলা হয়েছে।";
+                    break;
+                case 'auth/invalid-email':
+                    responseMsg = "প্রদানকৃত ইমেইল ফরম্যাটটি সঠিক নয়।";
+                    break;
+                case 'auth/weak-password':
+                    responseMsg = "আপনার পাসওয়ার্ডটি দুর্বল, ন্যূনতম ৬ অক্ষরের পাসওয়ার্ড ব্যবহার করুন।";
+                    break;
+                case 'auth/wrong-password':
+                case 'auth/user-not-found':
+                case 'auth/invalid-credential':
+                    responseMsg = "ভুল ইমেইল অথবা পাসওয়ার্ড প্রদান করা হয়েছে। অনুগ্রহ করে যাচাই করুন।";
+                    break;
+                case 'auth/user-disabled':
+                    responseMsg = "নিরাপত্তাজনিত কারণে আপনার অ্যাকাউন্টটি এডমিন কর্তৃক স্থগিত করা হয়েছে।";
+                    break;
+                case 'auth/network-request-failed':
+                    responseMsg = "নেটওয়ার্ক কানেকশন ব্যর্থ হয়েছে। আপনার ইন্টারনেট কানেকশন চেক করুন।";
+                    break;
+            }
+            showToast(responseMsg, false);
+        }
+
+        // ৫. প্যারেন্ট উইন্ডোতে পোস্ট মেসেজ সিগন্যাল প্রেরণ (Back to Dashboard Action)
+        window.backToParentApp = () => {
+            triggerHaptic();
+            showToast("My Aim অ্যাপের মূল স্ক্রিনে ফিরে যাওয়া হচ্ছে...", true);
+            // Parent অ্যাপে সিগন্যাল পাঠানো হচ্ছে
+            window.parent.postMessage({ action: 'back_to_aim' }, '*');
         }
 
         // গেস্ট ইউজারের ইন্টারফেস আপডেট
@@ -1037,14 +1189,13 @@
             document.getElementById('comment-box-avatar').innerText = userData.emojiAvatar || '👤';
             document.getElementById('compose-overlay').classList.add('hidden');
             
-            // OMAR'S REQUEST: ভেরিফাইড হলে ভেরিফাই বাটন লুকানো থাকবে, না হলে চমৎকার ব্যাজ বাটন দেখা যাবে
             const verifyBtn = document.getElementById('header-verify-badge-btn');
             if(userData.isVerified) {
                 verifyBtn.classList.add('hidden');
-                clearPromoTimers(); // ভেরিফাইডদের জন্য টাইমার বাতিল
+                clearPromoTimers(); 
             } else {
                 verifyBtn.classList.remove('hidden');
-                startPromoTimers(); // সাধারণ মেম্বারদের জন্য টাইমার চালু
+                startPromoTimers(); 
             }
             hideLoginModal();
         }
@@ -1274,18 +1425,15 @@
             const previewBadgeSpan = document.getElementById('preview-badge-span');
             const previewAvatar = document.getElementById('preview-avatar');
             
-            // রিয়েল টাইম ফন্ট সেট
             if (previewName) {
                 previewName.style.fontFamily = `'${fontVal}', sans-serif`;
                 previewName.innerText = document.getElementById('settings-username-input').value.trim() || currentUserData?.username || 'ইউজারনেম';
             }
 
-            // রিয়েল টাইম ভেরিফাইড ব্যাজ কালার সেট
             if (previewBadgeSpan) {
                 previewBadgeSpan.innerHTML = getVerifiedBadgeSVG(localSelectedBadgeColor);
             }
 
-            // রিয়েল টাইম ফ্রেম গ্লো ইফেক্ট
             if (previewAvatar) {
                 previewAvatar.className = "text-2xl p-1.5 rounded-2xl transition-all duration-300";
                 if(frameVal === 'gold') {
@@ -1297,7 +1445,6 @@
                 }
             }
 
-            // সেটিংস ভিউ ফ্রেম আপডেট
             const previewFrameDiv = document.getElementById('profile-frame-div');
             if (previewFrameDiv) {
                 previewFrameDiv.className = "absolute inset-0 rounded-3xl transition-all duration-300";
@@ -1318,15 +1465,13 @@
             document.getElementById('settings-username-input').value = currentUserData.username || '';
             selectedEmoji = currentUserData.emojiAvatar || emojiCategories.female[0];
 
-            // প্রিমিয়াম লকিং কন্ট্রোল ও ওমরের রিকোয়েস্ট অনুযায়ী WhatsApp বক্স কন্ডিশনাল শো
             const lockOverlay = document.getElementById('premium-lock-overlay');
             const whatsappVerifyBox = document.getElementById('whatsapp-verify-box');
             
             if (currentUserData.isVerified) {
                 lockOverlay.classList.add('hidden');
-                whatsappVerifyBox.classList.add('hidden'); // OMAR'S REQUEST: ভেরিফাইড হলে ভেরিফাই বাটন ও বক্সটি লুকিয়ে যাবে
+                whatsappVerifyBox.classList.add('hidden'); 
                 
-                // এক্সিস্টিং প্রিমিয়াম ভ্যালুস লোড করা
                 localSelectedBadgeColor = currentUserData.badgeColor || '#FF0050';
                 document.getElementById('settings-frame-select').value = currentUserData.avatarFrame || 'none';
                 document.getElementById('settings-font-select').value = currentUserData.customFont || 'Hind Siliguri';
@@ -1335,7 +1480,7 @@
                 previewPremiumSettings();
             } else {
                 lockOverlay.classList.remove('hidden');
-                whatsappVerifyBox.classList.remove('hidden'); // আন-ভেরিফাইড হলে দেখাবে
+                whatsappVerifyBox.classList.remove('hidden'); 
             }
         }
 
@@ -1443,7 +1588,6 @@
                     allPosts.push({ id: doc.id, ...doc.data() });
                 });
                 
-                // ক্লায়েন্ট সাইড সর্টিং 
                 allPosts.sort((a, b) => {
                     const timeA = a.timestamp?.toMillis ? a.timestamp.toMillis() : 0;
                     const timeB = b.timestamp?.toMillis ? b.timestamp.toMillis() : 0;
@@ -1583,7 +1727,6 @@
                 newGhostCount++;
             }
 
-            // টেক্সট স্ট্রিং হ্যাক: যদি থিম সিলেক্ট করা থাকে, লেখার শুরুতে গোপন ট্যাগ এম্বেড করে দেওয়া হচ্ছে
             if (selectedThemeId > 0) {
                 content = `[T:${selectedThemeId}]${content}`;
             }
@@ -1617,7 +1760,6 @@
                 document.getElementById('ghost-toggle').checked = false;
                 document.getElementById('ghost-toggle').dispatchEvent(new Event('change'));
                 
-                // থিম সিলেক্টর রিসেট
                 selectedThemeId = 0;
                 renderThemeSelector();
                 
@@ -1652,7 +1794,6 @@
             const cardElement = document.getElementById(`card-${postId}`);
             if (!cardElement) return;
 
-            // ডাউনলোডের সময় ব্যাকগ্রাউন্ড বাটন এবং কন্ট্রোল প্যানেল হাইড করা হচ্ছে
             const controlBar = cardElement.querySelector('.card-controls-panel');
             const actionHeader = cardElement.querySelector('.card-action-header');
             
@@ -1661,9 +1802,7 @@
 
             showToast("কার্ড ইমেজ এইচডি ফরম্যাটে রূপান্তর করা হচ্ছে...");
 
-            // যদি কার্ডের রেন্ডার করা ফন্ট Google fonts হয়, তাহলে ডাউনলোডের সময় সেটা যাতে মিস না হয় তার জন্য সামান্য প্রিপারেশন
             document.fonts.ready.then(() => {
-                // প্রিমিয়াম ইউজারদের জন্য ৪ গুণ আল্ট্রা-এইচডি এবং সাধারণদের জন্য ৩ গুণ এইচডি স্কেল
                 const optimalScale = isAuthorPremium ? 4 : 3;
 
                 html2canvas(cardElement, {
@@ -1674,12 +1813,10 @@
                     borderRadius: 32,
                     logging: false,
                     onclone: (clonedDoc) => {
-                        // ক্লোনড ডকুমেন্টে ডাউনলোডের সময় কার্ড সাইজকে শতভাগ রেসপন্সিভ রাখা
                         const clonedCard = clonedDoc.getElementById(`card-${postId}`);
                         if (clonedCard) {
                             clonedCard.style.transform = 'none';
                             clonedCard.style.boxShadow = 'none';
-                            // নিশ্চিত করা যে কোনো ট্রাঙ্কেশন বা রেপ নেই
                             const nameWrapper = clonedCard.querySelector('.dynamic-name-wrapper');
                             if (nameWrapper) {
                                 nameWrapper.style.fontSize = '14px';
@@ -1692,7 +1829,6 @@
                     link.href = canvas.toDataURL('image/png');
                     link.click();
                     
-                    // সাকসেসফুলি রিস্টোর করা হচ্ছে ইন্টারফেস
                     if (controlBar) controlBar.style.opacity = '1';
                     if (actionHeader) actionHeader.style.opacity = '1';
                     showToast("হাই-কোয়ালিটি কার্ড ইমেজ ডাউনলোড সম্পন্ন হয়েছে!");
@@ -1870,7 +2006,6 @@
             let originalContent = post.content || '';
             let themeId = 0; 
 
-            // টেক্সট স্ট্রিং হ্যাক থিম আইডি পার্সিং
             const themeMatch = originalContent.match(/^\[T:(\d+)\]/);
             if (themeMatch) {
                 themeId = parseInt(themeMatch[1]);
@@ -1913,7 +2048,6 @@
             const currentTheme = PREMIUM_THEMES[themeId] || PREMIUM_THEMES[0];
             const cleanPostContent = originalContent.replace(/'/g, "\\'").replace(/\n/g, ' ');
 
-            // কাস্টম প্রিমিয়াম বর্ডার ফ্রেম ডম স্ট্রাকচার জেনারেশন
             let frameClasses = '';
             if (!isGhost && authorVerified) {
                 if (authorFrame === 'gold') {
@@ -1925,7 +2059,6 @@
                 }
             }
 
-            // ডায়নামিক ফন্ট সাইজ ক্যালকুলেশন (শ্রিঙ্ক-টু-ফিট)
             const nameLength = authorName.length;
             const dynamicFontSize = nameLength > 12 ? Math.max(9, Math.floor(180 / nameLength)) : 14;
 
@@ -1936,7 +2069,6 @@
                         <!--  কার্ড হেডার -->
                         <div class="flex justify-between items-start mb-4 gap-2">
                             <div class="flex items-center gap-3 overflow-hidden flex-1">
-                                <!-- প্রফেশনাল ফ্রেম ইমপ্লিমেন্টেশন -->
                                 <div class="relative w-11 h-11 rounded-2xl flex items-center justify-center overflow-hidden flex-shrink-0 ${frameClasses ? frameClasses : ''}">
                                     <div class="w-full h-full bg-white rounded-[14px] flex items-center justify-center">
                                         <span class="text-3xl select-none">${authorEmoji}</span>
@@ -1970,7 +2102,7 @@
                             </div>
                         </div>
 
-                        <!-- কার্ড বডি -->
+                        <!-- ্কার্ড বডি -->
                         <div class="min-h-[80px] flex flex-col justify-center">
                             <p class="text-[15px] leading-relaxed mb-4 pl-1 whitespace-pre-line tracking-wide font-medium break-words" style="font-family: '${!isGhost && authorVerified ? authorFont : 'Hind Siliguri'}', sans-serif;">${originalContent}</p>
                         </div>
@@ -1986,26 +2118,22 @@
                         <!-- রিয়্যাকশন ও কমেন্ট অ্যাকশন বার -->
                         <div class="flex flex-wrap items-center justify-between border-t border-white/10 pt-3.5 select-none gap-3 card-controls-panel transition-opacity duration-200">
                             <div class="flex items-center gap-4.5">
-                                <!-- লাইক রিয়্যাকশন -->
                                 <button onclick="toggleReaction('${post.id}', 'like')" class="flex items-center gap-1.5 text-xs font-bold transition-all ${isLiked ? 'text-blue-500 scale-110' : 'text-gray-400 hover:text-blue-500'}">
                                     <i class="${isLiked ? 'ph-fill' : 'ph'} ph-thumbs-up text-[19px]"></i>
                                     <span>${postLikes.length}</span>
                                 </button>
                                 
-                                <!-- লাভ রিয়্যাকশন -->
                                 <button onclick="toggleReaction('${post.id}', 'love')" class="flex items-center gap-1.5 text-xs font-bold transition-all ${isLoved ? 'text-red-500 scale-110' : 'text-gray-400 hover:text-red-500'}">
                                     <i class="${isLoved ? 'ph-fill' : 'ph'} ph-heart text-[19px]"></i>
                                     <span>${postLoves.length}</span>
                                 </button>
 
-                                <!-- হাহা রিয়্যাকশন -->
                                 <button onclick="toggleReaction('${post.id}', 'haha')" class="flex items-center gap-1.5 text-xs font-bold transition-all ${isHaha ? 'text-yellow-500 scale-110' : 'text-gray-400 hover:text-yellow-500'}">
                                     <span class="text-base">${isHaha ? '😂' : '😀'}</span>
                                     <span>${postHahas.length}</span>
                                 </button>
                             </div>
 
-                            <!-- কমেন্ট ওপেনার বাটন -->
                             <button onclick="openCommentDrawer('${post.id}')" class="flex items-center gap-1.5 text-xs font-bold text-gray-400 hover:text-indigo-400 transition-colors">
                                 <i class="ph ph-chat-circle text-[19px]"></i>
                                 <span>${commentsCount > 0 ? `${commentsCount} টি মন্তব্য` : 'কমেন্ট'}</span>
@@ -2063,7 +2191,6 @@
             const dynamicFontSize = nameLength > 10 ? Math.max(12, Math.floor(240 / nameLength)) : 24;
             profilePageName.style.fontSize = `${dynamicFontSize}px`;
 
-            // কাস্টম রেন্ডারিং ফ্রেম
             const profileFrame = document.getElementById('profile-frame-div');
             if (profileFrame) {
                 profileFrame.className = "absolute inset-0 rounded-3xl transition-all";
@@ -2149,7 +2276,6 @@
                     rankColor = 'text-amber-600 font-extrabold';
                 }
 
-                // লিডারবোর্ডেও শ্রিঙ্ক-টু-ফিট ফন্ট সাইজ
                 const nameLength = (user.username || 'অজানা ইউজার').length;
                 const dynamicFontSize = nameLength > 12 ? Math.max(9, Math.floor(160 / nameLength)) : 14;
 
